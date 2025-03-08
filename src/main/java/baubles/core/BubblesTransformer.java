@@ -15,6 +15,9 @@ public class BubblesTransformer implements IClassTransformer {
             case "net.minecraft.enchantment.Enchantment": return EnchantmentTransformer.transformEnchantment(basicClass);
             case "net.minecraft.item.Item": return EnchantmentTransformer.transformItem(basicClass);
 
+            // Minecraft - Clear stacks in bauble slots in creative
+            case "net.minecraft.client.gui.inventory.GuiContainerCreative": return CreativeInvTransformer.transformGuiContainerCreative(basicClass);
+
             // Botania - Make slots not hardcoded
             case "vazkii.botania.common.item.equipment.bauble.ItemDivaCharm": return BotaniaTransformer.transformItemDivaCharm(basicClass);
             case "vazkii.botania.common.item.equipment.bauble.ItemTiara": return BotaniaTransformer.transformItemTiara(basicClass);
