@@ -63,7 +63,6 @@ public class SlotBauble extends SlotItemHandler {
             IBauble bauble = stack.getCapability(BaublesCapabilities.CAPABILITY_ITEM_BAUBLE, null);
             if (bauble != null) bauble.onUnequipped(stack, playerIn);
         }
-
         return super.onTake(playerIn, stack);
     }
 

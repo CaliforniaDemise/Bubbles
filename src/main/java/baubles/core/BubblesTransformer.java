@@ -50,6 +50,9 @@ public class BubblesTransformer implements IClassTransformer {
             case "artifacts.common.item.BaubleAmulet": return ArtifactsTransformer.transformBaubleAmulet(basicClass, this.isRLArtifact);
             case "artifacts.common.item.BaubleBottledCloud": return ArtifactsTransformer.transformBaubleBottledCloud(basicClass); // Non-RL
 
+            // Corail Tombstone - Fix auto equip
+            case "ovh.corail.tombstone.compatibility.CompatibilityBaubles": return CorailTombstoneTransformer.transformCompatibilityBaubles(basicClass);
+
             default: return basicClass;
         }
     }
