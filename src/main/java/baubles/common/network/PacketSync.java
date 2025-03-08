@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import java.io.IOException;
 import java.util.Objects;
 
-public class PacketSync implements IMessage {
+public class PacketSync implements IMessage, IMessageHandler<PacketSync, IMessage> {
 
     int playerId;
     byte slot = 0;
@@ -50,19 +50,17 @@ public class PacketSync implements IMessage {
         }
     }
 
-    public static class Handler implements IMessageHandler<PacketSync, IMessage> {
-        @Override
-        public IMessage onMessage(PacketSync message, MessageContext ctx) {
-            Minecraft.getMinecraft().addScheduledTask(() -> {
-                World world = Baubles.proxy.getClientWorld();
-                if (world == null) return;
-                Entity p = world.getEntityByID(message.playerId);
-                if (p instanceof EntityPlayer) {
-                    IBaublesItemHandler baubles = BaublesApi.getBaublesHandler((EntityPlayer) p);
-                    baubles.setStackInSlot(message.slot, message.bauble);
-                }
-            });
-            return null;
-        }
+    @Override
+    public IMessage onMessage(PacketSync message, MessageContext ctx) {
+        Minecraft.getMinecraft().addScheduledTask(() -> {
+            World world = Baubles.proxy.getClientWorld();
+            if (world == null) return;
+            Entity p = world.getEntityByID(message.playerId);
+            if (p instanceof EntityPlayer) {
+                IBaublesItemHandler baubles = BaublesApi.getBaublesHandler((EntityPlayer) p);
+                baubles.setStackInSlot(message.slot, message.bauble);
+            }
+        });
+        return null;
     }
 }
