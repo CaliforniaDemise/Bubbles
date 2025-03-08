@@ -12,8 +12,8 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentTranslation;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -27,21 +27,21 @@ public class CommandBaubles extends CommandBase {
         this.aliases.add("bau");
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName() {
         return "baubles";
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<String> getAliases() {
         return aliases;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public String getUsage(@Nonnull ICommandSender icommandsender) {
+    public String getUsage(@NotNull ICommandSender icommandsender) {
         return "/baubles <action> [<player> [<params>]]";
     }
 
@@ -51,12 +51,12 @@ public class CommandBaubles extends CommandBase {
     }
 
     @Override
-    public boolean isUsernameIndex(@Nonnull String[] astring, int i) {
+    public boolean isUsernameIndex(@NotNull String[] astring, int i) {
         return i == 1;
     }
 
     @Override
-    public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, String[] args) throws CommandException {
+    public void execute(@NotNull MinecraftServer server, @NotNull ICommandSender sender, String[] args) throws CommandException {
         if (args.length < 2 || args[0].equalsIgnoreCase("help")) {
             sender.sendMessage(new TextComponentTranslation("\u00a73You can also use /baub or /bau instead of /baubles."));
             sender.sendMessage(new TextComponentTranslation("\u00a73Use this to view the baubles inventory of a player."));

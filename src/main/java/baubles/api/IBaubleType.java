@@ -10,16 +10,15 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface IBaubleType {
 
     /**
      * Registry name of the bauble type.
      **/
-    @Nonnull
+    @NotNull
     ResourceLocation getRegistryName();
 
     int getOrder();
@@ -27,7 +26,7 @@ public interface IBaubleType {
     /**
      * Translation key of the bauble type. A bit more extensible version of "baubles.AMULET"
      **/
-    @Nonnull
+    @NotNull
     String getTranslationKey();
 
     /**

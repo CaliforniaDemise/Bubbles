@@ -5,9 +5,8 @@ import baubles.api.render.IRenderBauble;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This interface should be extended by items that can be worn in bauble slots
@@ -20,7 +19,7 @@ public interface IBauble {
      * This method return the type of bauble this is.
      * Type is used to determine the slots it can go into.
      */
-    @Nonnull
+    @NotNull
     default IBaubleType getType(ItemStack itemStack) {
         return getBaubleType(itemStack);
     }

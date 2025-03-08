@@ -42,10 +42,8 @@ public class CreativeInvTransformer extends BaseTransformer {
     }
 
     public static class PacketCreativeClean implements IMessage, IMessageHandler<PacketCreativeClean, IMessage> {
-
         @Override public void fromBytes(ByteBuf buf) {}
         @Override public void toBytes(ByteBuf buf) {}
-
         @Override
         public IMessage onMessage(PacketCreativeClean message, MessageContext ctx) {
             IBaublesItemHandler handler = BaublesApi.getBaublesHandler(ctx.getServerHandler().player);

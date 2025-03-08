@@ -16,9 +16,9 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 @SuppressWarnings("unused") // gets used by Forge event handler
 public class EventHandlerItem {
@@ -45,7 +45,6 @@ public class EventHandlerItem {
                     return capability == BaublesCapabilities.CAPABILITY_ITEM_BAUBLE;
                 }
 
-                @Nullable
                 @Override
                 public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
                     return capability == BaublesCapabilities.CAPABILITY_ITEM_BAUBLE ? BaublesCapabilities.CAPABILITY_ITEM_BAUBLE.cast(bauble) : null;
@@ -62,7 +61,6 @@ public class EventHandlerItem {
                 return capability == BaublesCapabilities.CAPABILITY_ITEM_BAUBLE;
             }
 
-            @Nullable
             @Override
             public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
                 return capability == BaublesCapabilities.CAPABILITY_ITEM_BAUBLE ? BaublesCapabilities.CAPABILITY_ITEM_BAUBLE.cast((IBauble) stack.getItem()) : null;

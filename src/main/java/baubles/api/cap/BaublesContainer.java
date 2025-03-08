@@ -18,8 +18,8 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.items.ItemHandlerHelper;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -96,7 +96,7 @@ public class BaublesContainer implements PlayerBaubleHandler, INBTSerializable<N
         setChanged(slot, true);
     }
 
-    protected int getStackLimit(int slot, @Nonnull ItemStack stack) {
+    protected int getStackLimit(int slot, @NotNull ItemStack stack) {
         return Math.min(getSlotLimit(slot), stack.getMaxStackSize());
     }
 
@@ -109,7 +109,7 @@ public class BaublesContainer implements PlayerBaubleHandler, INBTSerializable<N
     }
 
     @Override
-    public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
+    public void setStackInSlot(int slot, @NotNull ItemStack stack) {
         if (stack.isEmpty() || this.isItemValidForSlot(slot, stack, this.player)) {
             this.setStack(slot, stack);
             this.setChanged(slot, true);
@@ -121,7 +121,7 @@ public class BaublesContainer implements PlayerBaubleHandler, INBTSerializable<N
         return this.stacks.length;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ItemStack getStackInSlot(int slot) {
         slot = validateSlotIndex(slot);
@@ -131,9 +131,9 @@ public class BaublesContainer implements PlayerBaubleHandler, INBTSerializable<N
         return stack;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+    public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
         if (!this.isItemValidForSlot(slot, stack, this.player)) return stack;
         if (stack.isEmpty()) return ItemStack.EMPTY;
 
@@ -165,7 +165,7 @@ public class BaublesContainer implements PlayerBaubleHandler, INBTSerializable<N
         return reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() - limit) : ItemStack.EMPTY;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
         if (amount == 0) return ItemStack.EMPTY;

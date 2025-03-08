@@ -33,10 +33,10 @@ import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -134,7 +134,7 @@ public class GuiPlayerExpanded extends InventoryEffectRenderer {
         if (!ModConfigs.CosArmorGuiButton_Hidden) {
             this.cosButton = new GuiCosArmorButton(58, this.guiLeft + ModConfigs.CosArmorGuiButton_Left, this.guiTop + ModConfigs.CosArmorGuiButton_Top, 10, 10, "cos.gui.buttoncos") {
                 @Override
-                public boolean mousePressed(@Nonnull Minecraft mc, int mouseX, int mouseY) {
+                public boolean mousePressed(@NotNull Minecraft mc, int mouseX, int mouseY) {
                     boolean pressed = super.mousePressed(mc, mouseX, mouseY);
                     if (pressed) {
                         CosmeticArmorReworked.network.sendToServer(new PacketOpenCosArmorInventory());
@@ -146,7 +146,7 @@ public class GuiPlayerExpanded extends InventoryEffectRenderer {
         if (!ModConfigs.CosArmorToggleButton_Hidden) {
             GuiCosArmorToggleButton toggleButton = new GuiCosArmorToggleButton(59, this.guiLeft + ModConfigs.CosArmorToggleButton_Left, this.guiTop + ModConfigs.CosArmorToggleButton_Top, 5, 5, "") {
                 @Override
-                public boolean mousePressed(@Nonnull Minecraft mc, int mouseX, int mouseY) {
+                public boolean mousePressed(@NotNull Minecraft mc, int mouseX, int mouseY) {
                     boolean pressed = super.mousePressed(mc, mouseX, mouseY);
                     if (pressed) {
                         PlayerRenderHandler.HideCosArmor = !PlayerRenderHandler.HideCosArmor;

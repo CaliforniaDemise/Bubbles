@@ -4,8 +4,7 @@ import baubles.common.Baubles;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Default bauble types
@@ -30,7 +29,7 @@ public enum BaubleType implements IBaubleType {
         this.backgroundTexture = new ResourceLocation(Baubles.MODID, "gui/slots/" + name);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ResourceLocation getRegistryName() {
         return this.name;
@@ -41,7 +40,7 @@ public enum BaubleType implements IBaubleType {
         return 0;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getTranslationKey() {
         return translationKey;

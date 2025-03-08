@@ -11,8 +11,8 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.*;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Objects;
 
 public class ContainerPlayerExpanded extends Container {
@@ -42,12 +42,12 @@ public class ContainerPlayerExpanded extends Container {
                 }
 
                 @Override
-                public boolean isItemValid(@Nonnull ItemStack stack) {
+                public boolean isItemValid(@NotNull ItemStack stack) {
                     return stack.getItem().isValidArmor(stack, slot, player);
                 }
 
                 @Override
-                public boolean canTakeStack(@Nonnull EntityPlayer playerIn) {
+                public boolean canTakeStack(@NotNull EntityPlayer playerIn) {
                     ItemStack itemstack = this.getStack();
                     return (itemstack.isEmpty() || playerIn.isCreative() || !EnchantmentHelper.hasBindingCurse(itemstack)) && super.canTakeStack(playerIn);
                 }
@@ -75,7 +75,7 @@ public class ContainerPlayerExpanded extends Container {
 
         this.addSlotToContainer(new Slot(playerInv, 40, 77, 62) {
             @Override
-            public boolean isItemValid(@Nonnull ItemStack stack) {
+            public boolean isItemValid(@NotNull ItemStack stack) {
                 return super.isItemValid(stack);
             }
 
@@ -89,12 +89,12 @@ public class ContainerPlayerExpanded extends Container {
     }
 
     @Override
-    public void onCraftMatrixChanged(@Nonnull IInventory par1IInventory) {
+    public void onCraftMatrixChanged(@NotNull IInventory par1IInventory) {
         this.slotChangedCraftingGrid(this.thePlayer.getEntityWorld(), this.thePlayer, this.craftMatrix, this.craftResult);
     }
 
     @Override
-    public void onContainerClosed(@Nonnull EntityPlayer player) {
+    public void onContainerClosed(@NotNull EntityPlayer player) {
         super.onContainerClosed(player);
         this.baubles.resetOffset();
         this.craftResult.clear();
@@ -104,13 +104,13 @@ public class ContainerPlayerExpanded extends Container {
     }
 
     @Override
-    public boolean canInteractWith(@Nonnull EntityPlayer par1EntityPlayer) {
+    public boolean canInteractWith(@NotNull EntityPlayer par1EntityPlayer) {
         return true;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public ItemStack transferStackInSlot(@Nonnull EntityPlayer playerIn, int index) {
+    public ItemStack transferStackInSlot(@NotNull EntityPlayer playerIn, int index) {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = this.inventorySlots.get(index);
         if (slot != null && slot.getHasStack()) {
@@ -202,7 +202,7 @@ public class ContainerPlayerExpanded extends Container {
     }
 
     @Override
-    public boolean canMergeSlot(@Nonnull ItemStack stack, Slot slot) {
+    public boolean canMergeSlot(@NotNull ItemStack stack, Slot slot) {
         return slot.inventory != this.craftResult && super.canMergeSlot(stack, slot);
     }
 

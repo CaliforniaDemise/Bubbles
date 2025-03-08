@@ -6,8 +6,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 // TODO Remove it once sure.
 public class BaublesInventoryWrapper implements IInventory {
@@ -26,13 +25,13 @@ public class BaublesInventoryWrapper implements IInventory {
         this.player = player;
     }
 
-    @Nonnull
+   @NotNull
     @Override
     public String getName() {
         return "BaublesInventory";
     }
 
-    @Nonnull
+   @NotNull
     @Override
     public ITextComponent getDisplayName() {
         return new TextComponentString(this.getName());
@@ -43,19 +42,19 @@ public class BaublesInventoryWrapper implements IInventory {
         return handler.getSlots();
     }
 
-    @Nonnull
+   @NotNull
     @Override
     public ItemStack getStackInSlot(int index) {
         return handler.getStackInSlot(index);
     }
 
-    @Nonnull
+   @NotNull
     @Override
     public ItemStack decrStackSize(int index, int count) {
         return handler.extractItem(index, count, false);
     }
 
-    @Nonnull
+   @NotNull
     @Override
     public ItemStack removeStackFromSlot(int index) {
         ItemStack out = this.getStackInSlot(index);
@@ -64,7 +63,7 @@ public class BaublesInventoryWrapper implements IInventory {
     }
 
     @Override
-    public void setInventorySlotContents(int index, @Nonnull ItemStack stack) {
+    public void setInventorySlotContents(int index, @NotNull ItemStack stack) {
         handler.setStackInSlot(index, stack);
     }
 
@@ -74,12 +73,12 @@ public class BaublesInventoryWrapper implements IInventory {
     }
 
     @Override
-    public boolean isUsableByPlayer(@Nonnull EntityPlayer player) {
+    public boolean isUsableByPlayer(@NotNull EntityPlayer player) {
         return true;
     }
 
     @Override
-    public boolean isItemValidForSlot(int index, @Nonnull ItemStack stack) {
+    public boolean isItemValidForSlot(int index, @NotNull ItemStack stack) {
         return handler.isItemValidForSlot(index, stack, player);
     }
 
@@ -105,11 +104,11 @@ public class BaublesInventoryWrapper implements IInventory {
     }
 
     @Override
-    public void openInventory(@Nonnull EntityPlayer player) {
+    public void openInventory(@NotNull EntityPlayer player) {
     }
 
     @Override
-    public void closeInventory(@Nonnull EntityPlayer player) {
+    public void closeInventory(@NotNull EntityPlayer player) {
     }
 
     @Override

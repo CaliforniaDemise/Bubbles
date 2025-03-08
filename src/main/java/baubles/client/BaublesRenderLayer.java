@@ -22,26 +22,20 @@ import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Objects;
 
 public final class BaublesRenderLayer implements LayerRenderer<EntityPlayer> {
 
     @Override
-    public void doRenderLayer(@Nonnull EntityPlayer player, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
-
-        if (!Config.renderBaubles || player.getActivePotionEffect(MobEffects.INVISIBILITY) != null)
-            return;
-
+    public void doRenderLayer(@NotNull EntityPlayer player, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+        if (!Config.renderBaubles || player.getActivePotionEffect(MobEffects.INVISIBILITY) != null) return;
         IBaublesItemHandler inv = BaublesApi.getBaublesHandler(player);
-
         dispatchRenders(inv, player, RenderType.BODY, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, partialTicks);
-
         float yaw = player.prevRotationYawHead + (player.rotationYawHead - player.prevRotationYawHead) * partialTicks;
         float yawOffset = player.prevRenderYawOffset + (player.renderYawOffset - player.prevRenderYawOffset) * partialTicks;
         float pitch = player.prevRotationPitch + (player.rotationPitch - player.prevRotationPitch) * partialTicks;
-
         GlStateManager.pushMatrix();
         GlStateManager.rotate(yawOffset, 0, -1, 0);
         GlStateManager.rotate(yaw - 270, 0, 1, 0);

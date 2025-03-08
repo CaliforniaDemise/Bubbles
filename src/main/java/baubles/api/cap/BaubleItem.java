@@ -10,9 +10,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
-
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A basic example for a bauble item.
@@ -31,10 +29,9 @@ public class BaubleItem extends Item implements IBauble {
         return baubleType;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    @ParametersAreNonnullByDefault
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
+    public ActionResult<ItemStack> onItemRightClick(@NotNull World worldIn, EntityPlayer playerIn, @NotNull EnumHand handIn) {
         ItemStack stack = playerIn.getHeldItem(handIn);
         boolean check = false;
         IBaublesItemHandler handler = BaublesApi.getBaublesHandler(playerIn);

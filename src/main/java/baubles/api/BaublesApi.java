@@ -8,9 +8,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**
@@ -21,7 +21,7 @@ public class BaublesApi {
     /**
      * Retrieves the baubles item handler capability handler for the supplied player
      */
-    @Nonnull
+    @NotNull
     public static IBaublesItemHandler getBaublesHandler(EntityPlayer player) {
         return Objects.requireNonNull(getBaublesHandler((EntityLivingBase) player));
     }

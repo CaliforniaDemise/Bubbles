@@ -25,8 +25,8 @@ import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Objects;
 
 @SuppressWarnings("unused") // gets used by Forge event handler
@@ -66,7 +66,7 @@ public class ClientEventHandler {
                 GuiContainerCreative container = (GuiContainerCreative) gui;
                 event.getButtonList().add(new GuiBaublesButton(55, container, 95, 6, 10, 10, "button.baubles") {
                     @Override
-                    public void drawButton(@Nonnull Minecraft mc, int mouseX, int mouseY, float partialTicks) {
+                    public void drawButton(@NotNull Minecraft mc, int mouseX, int mouseY, float partialTicks) {
                         this.visible = container.getSelectedTabIndex() == CreativeTabs.INVENTORY.getIndex();
                         if (this.visible) {
                             super.drawButton(mc, mouseX, mouseY, partialTicks);

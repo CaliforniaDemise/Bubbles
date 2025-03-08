@@ -7,8 +7,9 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,7 +17,7 @@ public class BaubleTypes {
 
     private static final Map<ResourceLocation, IBaubleType> REGISTRY_MAP = new HashMap<>();
 
-    protected static void register(IBaubleType type) {
+    protected static void register(@NotNull IBaubleType type) {
         REGISTRY_MAP.put(type.getRegistryName(), type);
     }
 
@@ -54,7 +55,6 @@ public class BaubleTypes {
     @SuppressWarnings("unused")
     public static class Register extends Event {
         public void register(IBaubleType type) {
-            assert type.getRegistryName() != null;
             BaubleTypes.register(type);
         }
     }

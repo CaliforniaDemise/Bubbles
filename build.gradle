@@ -24,6 +24,14 @@ minecraft {
     useDependencyAccessTransformers = true
 }
 
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnlyApi 'org.jetbrains:annotations:24.1.0'
+}
+
 apply from: "dependencies.gradle"
 
 for (File at : sourceSets.main.resources.files) {

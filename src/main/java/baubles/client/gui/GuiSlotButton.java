@@ -8,9 +8,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
-
-import javax.annotation.Nonnull;
 
 public class GuiSlotButton extends GuiButton {
 
@@ -28,7 +27,7 @@ public class GuiSlotButton extends GuiButton {
     }
 
     @Override
-    public boolean mousePressed(@Nonnull Minecraft mc, int mouseX, int mouseY) {
+    public boolean mousePressed(@NotNull Minecraft mc, int mouseX, int mouseY) {
         boolean pressed = super.mousePressed(mc, mouseX, mouseY);
         if (pressed) {
             this.ticks = 10;
@@ -40,7 +39,7 @@ public class GuiSlotButton extends GuiButton {
     }
 
     @Override
-    public void drawButton(@Nonnull Minecraft mc, int mouseX, int mouseY, float partialTicks) {
+    public void drawButton(@NotNull Minecraft mc, int mouseX, int mouseY, float partialTicks) {
         if (this.visible) {
             mc.getTextureManager().bindTexture(GuiPlayerExpanded.background);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);

@@ -1,9 +1,8 @@
 package baubles.api;
 
 import net.minecraft.util.ResourceLocation;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class BaubleTypeImpl implements IBaubleType {
 
@@ -25,13 +24,13 @@ public class BaubleTypeImpl implements IBaubleType {
         this.textureLoc = new ResourceLocation(name.getNamespace(), "gui/slots/" + name.getPath());
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ResourceLocation getRegistryName() {
         return this.name;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getTranslationKey() {
         return translationKey;

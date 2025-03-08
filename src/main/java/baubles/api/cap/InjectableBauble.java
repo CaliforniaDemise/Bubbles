@@ -7,8 +7,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * An implementation of {@link IBauble} to inject to items that normally aren't baubles.
@@ -30,7 +29,7 @@ public class InjectableBauble implements IBauble {
         this.armor = armor;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public IBaubleType getType(ItemStack itemStack) {
         return this.type;
