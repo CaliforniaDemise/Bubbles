@@ -226,14 +226,12 @@ public class ContainerPlayerExpanded extends Container {
                     flag = true;
                 }
                 container.setOffset(slotIndex);
-                container.setChanged(slotIndex, true);
             }
             else if (itemstack.isEmpty() && bauble.canPutOnSlot(container, slotIndex, stack)) {
                 if (stack.getCount() > container.getSlotLimit(slotIndex))
                     container.setStackInSlot(slotIndex, stack.splitStack(container.getSlotLimit(slotIndex)));
                 else container.setStackInSlot(slotIndex, stack.splitStack(stack.getCount()));
                 container.setOffset(slotIndex);
-                container.setChanged(slotIndex, true);
                 flag = true;
             }
         }

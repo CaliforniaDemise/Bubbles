@@ -8,7 +8,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import org.jetbrains.annotations.NotNull;
 
-// TODO Remove it once sure.
 public class BaublesInventoryWrapper implements IInventory {
     final IBaublesItemHandler handler;
     final EntityPlayer player;

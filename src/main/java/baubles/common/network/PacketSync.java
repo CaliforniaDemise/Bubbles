@@ -6,6 +6,7 @@ import baubles.common.Baubles;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
@@ -26,7 +27,7 @@ public class PacketSync implements IMessage, IMessageHandler<PacketSync, IMessag
     public PacketSync() {
     }
 
-    public PacketSync(EntityPlayer p, int slot, ItemStack bauble) {
+    public PacketSync(EntityLivingBase p, int slot, ItemStack bauble) {
         this.slot = (byte) slot;
         this.bauble = bauble;
         this.playerId = p.getEntityId();
@@ -56,8 +57,9 @@ public class PacketSync implements IMessage, IMessageHandler<PacketSync, IMessag
             World world = Baubles.proxy.getClientWorld();
             if (world == null) return;
             Entity p = world.getEntityByID(message.playerId);
-            if (p instanceof EntityPlayer) {
-                IBaublesItemHandler baubles = BaublesApi.getBaublesHandler((EntityPlayer) p);
+            if (p instanceof EntityLivingBase) {
+                IBaublesItemHandler baubles = BaublesApi.getBaublesHandler((EntityLivingBase) p);
+                if (baubles == null) return;
                 baubles.setStackInSlot(message.slot, message.bauble);
             }
         });

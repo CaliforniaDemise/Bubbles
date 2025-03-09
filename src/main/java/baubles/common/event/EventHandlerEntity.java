@@ -21,6 +21,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.FakePlayer;
@@ -29,16 +30,14 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.*;
 
 @SuppressWarnings("unused") // gets used by Forge event handler
 public class EventHandlerEntity {
-
-    private final HashMap<UUID, ItemStack[]> baublesSync = new HashMap<UUID, ItemStack[]>();
 
     @SubscribeEvent
     public void cloneCapabilitiesEvent(PlayerEvent.Clone event) {
@@ -66,7 +65,7 @@ public class EventHandlerEntity {
         Entity entity = event.getEntity();
         if (entity instanceof EntityPlayerMP) {
             EntityPlayerMP player = (EntityPlayerMP) entity;
-            syncSlots(player, Collections.singletonList(player));
+            this.syncSlots(player, Collections.singletonList(player));
             BaublesContainer container = (BaublesContainer) BaublesApi.getBaublesHandler(player);
             container.pukeItems(player);
         }
@@ -76,59 +75,32 @@ public class EventHandlerEntity {
     public void onStartTracking(PlayerEvent.StartTracking event) {
         Entity target = event.getTarget();
         if (target instanceof EntityPlayerMP) {
-            syncSlots((EntityPlayer) target, Collections.singletonList(event.getEntityPlayer()));
+            this.syncSlots((EntityPlayer) target, Collections.singletonList(event.getEntityPlayer()));
         }
     }
 
     @SubscribeEvent
-    public void onPlayerLoggedOut(PlayerLoggedOutEvent event) {
-        baublesSync.remove(event.player.getUniqueID());
-    }
-
-    @SubscribeEvent
     public void playerTick(TickEvent.PlayerTickEvent event) {
-        // player events
         if (event.phase == TickEvent.Phase.END) {
             EntityPlayer player = event.player;
             IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
             for (int i = 0; i < baubles.getSlots(); i++) {
                 ItemStack stack = baubles.getStackInSlot(i);
-                IBauble bauble = stack.getCapability(BaublesCapabilities.CAPABILITY_ITEM_BAUBLE, null);
-                if (bauble != null) {
-                    bauble.onWornTick(stack, player);
+                if (stack.isEmpty()) continue;
+                IBauble bauble = Objects.requireNonNull(BaublesApi.getBauble(stack));
+                bauble.onWornTick(stack, player);
+                if (event.side == Side.SERVER && event.player.world.getWorldTime() % 10 == 0 && bauble.willAutoSync(stack, player)) {
+                    WorldServer world = (WorldServer) event.player.world;
+                    MinecraftServer server = world.getMinecraftServer();
+                    if (server != null) {
+                        Set<?> receivers = world.getEntityTracker().getTrackingPlayers(player);
+                        PacketSync sync = new PacketSync(player, i, stack);
+                        for (Object o : receivers) {
+                            EntityPlayerMP receiver = (EntityPlayerMP) o;
+                            PacketHandler.INSTANCE.sendTo(sync, receiver);
+                        }
+                    }
                 }
-            }
-            if (!player.world.isRemote) {
-                syncBaubles(player, baubles);
-            }
-        }
-    }
-
-    private void syncBaubles(EntityPlayer player, IBaublesItemHandler baubles) {
-        ItemStack[] items = baublesSync.get(player.getUniqueID());
-        if (items == null) {
-            items = new ItemStack[baubles.getSlots()];
-            Arrays.fill(items, ItemStack.EMPTY);
-            baublesSync.put(player.getUniqueID(), items);
-        }
-        if (items.length != baubles.getSlots()) {
-            ItemStack[] old = items;
-            items = new ItemStack[baubles.getSlots()];
-            System.arraycopy(old, 0, items, 0, Math.min(old.length, items.length));
-            baublesSync.put(player.getUniqueID(), items);
-        }
-        Set<EntityPlayer> receivers = null;
-        for (int i = 0; i < baubles.getSlots(); i++) {
-            ItemStack stack = baubles.getStackInSlot(i);
-            IBauble bauble = stack.getCapability(BaublesCapabilities.CAPABILITY_ITEM_BAUBLE, null);
-            if (baubles.isChanged(i) || bauble != null && bauble.willAutoSync(stack, player) && !ItemStack.areItemStacksEqual(stack, items[i])) {
-                if (receivers == null) {
-                    receivers = new HashSet<>(((WorldServer) player.world).getEntityTracker().getTrackingPlayers(player));
-                    receivers.add(player);
-                }
-                syncSlot(player, i, stack, receivers);
-                baubles.setChanged(i, false);
-                items[i] = stack == null ? ItemStack.EMPTY : stack.copy();
             }
         }
     }
@@ -156,10 +128,8 @@ public class EventHandlerEntity {
         }
     }
 
-    @GameRegistry.ObjectHolder("cofhcore:soulbound")
-    public static Enchantment COFH_SOULBOUND = null;
-    @GameRegistry.ObjectHolder("tombstone:soulbound")
-    public static Enchantment TOMBSTONE_SOULBOUND = null;
+    @GameRegistry.ObjectHolder("cofhcore:soulbound") public static Enchantment COFH_SOULBOUND = null;
+    @GameRegistry.ObjectHolder("tombstone:soulbound") public static Enchantment TOMBSTONE_SOULBOUND = null;
 
     public void dropItemsAt(EntityPlayer player, List<EntityItem> drops, Entity e) {
         IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);

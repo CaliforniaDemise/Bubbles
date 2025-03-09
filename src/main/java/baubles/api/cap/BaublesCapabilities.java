@@ -10,7 +10,6 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 
 public class BaublesCapabilities {
 
-    // TODO How should this be handled for other entities?
     /**
      * Access to the baubles' capability. 99% it's {@link BaublesContainer}
      * This capability is attached to entities with {@link EntityLivingBase} type.

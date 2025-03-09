@@ -33,12 +33,9 @@ public interface IBaublesItemHandler extends IItemHandlerModifiable {
      **/
     boolean isItemValidForSlot(int slotIndex, ItemStack stack, EntityLivingBase entity);
 
-    // TODO Is this needed? Used for updating IBaubles with willAutoSync true
+    void onContentsChanged(int slotIndex);
 
-    /**
-     * Used internally for syncing. Indicates if the inventory has changed since last sync
-     */
-    boolean isChanged(int slot);
-
-    void setChanged(int slot, boolean changed);
+    // TODO Remove it once sure.
+    @Deprecated boolean isChanged(int slot);
+    @Deprecated void setChanged(int slot, boolean changed);
 }

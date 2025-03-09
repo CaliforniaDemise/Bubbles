@@ -4,15 +4,22 @@ import baubles.api.BaublesApi;
 import baubles.api.IBauble;
 import baubles.api.IBaubleType;
 import baubles.common.Config;
+import baubles.common.network.PacketHandler;
+import baubles.common.network.PacketSync;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.util.Constants;
@@ -23,6 +30,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 /**
@@ -34,7 +42,6 @@ public class BaublesContainer implements PlayerBaubleHandler, INBTSerializable<N
     private final IBaubleType[] slotTypes;
 
     private int offset = 0; // Can't be higher than getSlots()
-    private boolean[] changed;
 
     /**
      * Entity which has the baubles inventory
@@ -57,7 +64,6 @@ public class BaublesContainer implements PlayerBaubleHandler, INBTSerializable<N
     public BaublesContainer(EntityLivingBase player) {
         this.slotTypes = getDefaultSlotTypes();
         this.stacks = new ItemStack[slotTypes.length];
-        this.changed = new boolean[slotTypes.length];
         this.player = player;
     }
 
@@ -92,8 +98,20 @@ public class BaublesContainer implements PlayerBaubleHandler, INBTSerializable<N
         this.offset = 0;
     }
 
-    protected void onContentsChanged(int slot) {
-        setChanged(slot, true);
+    @Override
+    public void onContentsChanged(int slot) {
+        if (!this.player.world.isRemote) {
+            WorldServer world = (WorldServer) this.player.world;
+            MinecraftServer server = world.getMinecraftServer();
+            if (server != null) {
+                Set<?> receivers = world.getEntityTracker().getTrackingPlayers(player);
+                PacketSync sync = new PacketSync(player, slot, this.getStackInSlot(slot));
+                for (Object o : receivers) {
+                    EntityPlayerMP receiver = (EntityPlayerMP) o;
+                    PacketHandler.INSTANCE.sendTo(sync, receiver);
+                }
+            }
+        }
     }
 
     protected int getStackLimit(int slot, @NotNull ItemStack stack) {
@@ -112,7 +130,7 @@ public class BaublesContainer implements PlayerBaubleHandler, INBTSerializable<N
     public void setStackInSlot(int slot, @NotNull ItemStack stack) {
         if (stack.isEmpty() || this.isItemValidForSlot(slot, stack, this.player)) {
             this.setStack(slot, stack);
-            this.setChanged(slot, true);
+            this.onContentsChanged(slot);
         }
     }
 
@@ -198,22 +216,6 @@ public class BaublesContainer implements PlayerBaubleHandler, INBTSerializable<N
         return 64;
     }
 
-    @Override
-    public boolean isChanged(int slot) {
-        if (changed == null) {
-            changed = new boolean[this.getSlots()];
-        }
-        return changed[slot];
-    }
-
-    @Override
-    public void setChanged(int slot, boolean change) {
-        if (changed == null) {
-            changed = new boolean[this.getSlots()];
-        }
-        this.changed[slot] = change;
-    }
-
     public void pukeItems(World world, double x, double y, double z) {
         if (this.itemsToPuke != null) {
             for (ItemStack stack : this.itemsToPuke) {
@@ -263,6 +265,9 @@ public class BaublesContainer implements PlayerBaubleHandler, INBTSerializable<N
         }
         if (!itemsToPuke.isEmpty()) this.itemsToPuke = itemsToPuke.toArray(new ItemStack[0]);
     }
+
+    @Deprecated @Override public boolean isChanged(int slot) { return false; }
+    @Deprecated @Override public void setChanged(int slot, boolean change) {}
 
     private static IBaubleType[] getDefaultSlotTypes() {
         return Config.getSlotTypes();
