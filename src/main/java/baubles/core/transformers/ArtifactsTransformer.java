@@ -227,16 +227,13 @@ public class ArtifactsTransformer extends BaseTransformer {
                 while (iterator.hasNext()) {
                     AbstractInsnNode node = iterator.next();
                     if (node.getOpcode() == GETSTATIC && ((FieldInsnNode) node).name.equals("AMULET")) {
-                        for (int i = 0; i < 5; i++) {
+                        for (int i = 0; i < 2; i++) {
                             iterator.remove();
                             node = iterator.next();
                         }
                         InsnList list = new InsnList();
-                        list.add(new InsnNode(ACONST_NULL));
-                        list.add(new VarInsnNode(ASTORE, 4));
                         list.add(new VarInsnNode(ALOAD, 1));
-                        list.add(new MethodInsnNode(INVOKESTATIC, "baubles/api/BaublesApi", "getBaublesHandler", "(Lnet/minecraft/entity/player/EntityPlayer;)Lbaubles/api/cap/IBaublesItemHandler;", false));
-                        list.add(new MethodInsnNode(INVOKEINTERFACE, "baubles/api/cap/IBaublesItemHandler", "getSlots", "()I", true));
+                        list.add(new MethodInsnNode(INVOKESTATIC, "baubles/core/transformers/ArtifactsTransformer", "$slotArray", "(Lnet/minecraft/entity/player/EntityPlayer;)[I", false));
                         method.instructions.insertBefore(node, list);
                         break;
                     }
@@ -244,6 +241,16 @@ public class ArtifactsTransformer extends BaseTransformer {
             }
         }
         return write(cls);
+    }
+
+    @SuppressWarnings("unused")
+    public static int[] $slotArray(EntityPlayer player) {
+        IBaublesItemHandler handler = BaublesApi.getBaublesHandler(player);
+        int[] out = new int[handler.getSlots()];
+        for (int i = 0; i < handler.getSlots(); i++) {
+            out[i] = i;
+        }
+        return out;
     }
 
     /**
