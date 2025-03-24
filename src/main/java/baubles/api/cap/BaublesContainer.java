@@ -110,6 +110,7 @@ public class BaublesContainer implements PlayerBaubleHandler, INBTSerializable<N
                     EntityPlayerMP receiver = (EntityPlayerMP) o;
                     PacketHandler.INSTANCE.sendTo(sync, receiver);
                 }
+                PacketHandler.INSTANCE.sendTo(sync, (EntityPlayerMP) player);
             }
         }
     }
