@@ -27,6 +27,10 @@ public class PacketSync implements IMessage, IMessageHandler<PacketSync, IMessag
     public PacketSync() {
     }
 
+    public PacketSync(EntityPlayer player, int slot, ItemStack bauble) {
+        this((EntityLivingBase) player, slot, bauble);
+    }
+
     public PacketSync(EntityLivingBase p, int slot, ItemStack bauble) {
         this.slot = (byte) slot;
         this.bauble = bauble;
