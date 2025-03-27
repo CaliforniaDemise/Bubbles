@@ -11,6 +11,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -110,7 +111,7 @@ public class BaublesContainer implements PlayerBaubleHandler, INBTSerializable<N
                     EntityPlayerMP receiver = (EntityPlayerMP) o;
                     PacketHandler.INSTANCE.sendTo(sync, receiver);
                 }
-                PacketHandler.INSTANCE.sendTo(sync, (EntityPlayerMP) player);
+                if (this.player instanceof EntityPlayer) PacketHandler.INSTANCE.sendTo(sync, (EntityPlayerMP) player);
             }
         }
     }

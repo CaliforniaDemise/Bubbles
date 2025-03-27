@@ -47,7 +47,7 @@ public class BubblesTransformer implements IClassTransformer {
             case "artifacts.client.model.layer.LayerBelt": return ArtifactsTransformer.transformLayerBelt(basicClass, this.isRLArtifact);
             case "artifacts.client.model.layer.LayerCloak": return ArtifactsTransformer.transformLayerCloak(basicClass, this.isRLArtifact);
             case "artifacts.client.model.layer.LayerDrinkingHat": return ArtifactsTransformer.transformLayerDrinkingHat(basicClass, this.isRLArtifact);
-            case "artifacts.client.model.layer.LayerGloves": return ArtifactsTransformer.transformLayerGloves(basicClass, this.isRLArtifact);
+            case "artifacts.client.model.layer.LayerGloves": return ArtifactsTransformer.transformLayerGloves(basicClass);
             case "artifacts.client.model.layer.LayerNightVisionGoggles": return ArtifactsTransformer.transformLayerNightVisionGoggles(basicClass, this.isRLArtifact);
             case "artifacts.client.model.layer.LayerSnorkel": return ArtifactsTransformer.transformLayerSnorkel(basicClass, this.isRLArtifact);
             case "artifacts.common.item.BaubleAmulet": return ArtifactsTransformer.transformBaubleAmulet(basicClass, this.isRLArtifact);

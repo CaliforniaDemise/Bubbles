@@ -134,8 +134,7 @@ public class ArtifactsTransformer extends BaseTransformer {
         return write(cls);
     }
 
-    public static byte[] transformLayerGloves(byte[] basicClass, boolean isRLArtifact) {
-        if (!isRLArtifact) return basicClass;
+    public static byte[] transformLayerGloves(byte[] basicClass) {
         ClassNode cls = read(basicClass);
         for (MethodNode method : cls.methods) {
             if (method.name.equals("setTextures")) {
