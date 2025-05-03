@@ -3,6 +3,7 @@ package baubles.common.container;
 import baubles.api.IBauble;
 import baubles.api.cap.BaublesCapabilities;
 import baubles.api.cap.BaublesContainer;
+import baubles.api.cap.IBaublesItemHandler;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Enchantments;
@@ -20,18 +21,14 @@ public class SlotBauble extends SlotItemHandler {
 
     private final int slotIndex;
 
-    private final BaublesContainer baublesHandler;
+    private final IBaublesItemHandler baublesHandler;
     private final EntityPlayer player;
 
-    public SlotBauble(EntityPlayer player, BaublesContainer itemHandler, int slot, int par4, int par5) {
+    public SlotBauble(EntityPlayer player, IBaublesItemHandler itemHandler, int slot, int par4, int par5) {
         super(itemHandler, slot, par4, par5);
         this.baublesHandler = itemHandler;
         this.player = player;
-        this.slotIndex = slot;
-    }
-
-    public BaublesContainer getBaublesHandler() {
-        return this.baublesHandler;
+        this.slotIndex = itemHandler instanceof BaublesContainer ? ((BaublesContainer) itemHandler).getSlotByOffset(slot) : slot;
     }
 
     @Deprecated // Try not to use it in your mod
@@ -43,7 +40,7 @@ public class SlotBauble extends SlotItemHandler {
     @Override
     public boolean isItemValid(@NotNull ItemStack stack) {
         IBauble bauble = stack.getCapability(BaublesCapabilities.CAPABILITY_ITEM_BAUBLE, null);
-        return bauble != null && baublesHandler.isItemValidForSlot(this.baublesHandler.getSlotByOffset(this.slotIndex), stack, player);
+        return bauble != null && baublesHandler.isItemValidForSlot(this.slotIndex, stack, player);
     }
 
     @Override
@@ -73,7 +70,7 @@ public class SlotBauble extends SlotItemHandler {
             getStack().getCapability(BaublesCapabilities.CAPABILITY_ITEM_BAUBLE, null).onUnequipped(getStack(), player);
         }
         ItemStack oldstack = getStack().copy();
-        ((IItemHandlerModifiable) this.getItemHandler()).setStackInSlot(this.baublesHandler.getSlotByOffset(this.slotIndex), stack);
+        ((IItemHandlerModifiable) this.getItemHandler()).setStackInSlot(this.slotIndex, stack);
         this.onSlotChanged();
         if (getHasStack() && !ItemStack.areItemStacksEqual(oldstack, getStack()) &&
                 getStack().hasCapability(BaublesCapabilities.CAPABILITY_ITEM_BAUBLE, null)) {
@@ -83,7 +80,7 @@ public class SlotBauble extends SlotItemHandler {
 
     @Override
     public int getSlotStackLimit() {
-        return this.baublesHandler.getSlotLimit(this.baublesHandler.getSlotByOffset(this.slotIndex));
+        return this.baublesHandler.getSlotLimit(this.slotIndex);
     }
 
     @Override
@@ -94,19 +91,19 @@ public class SlotBauble extends SlotItemHandler {
     @Nullable
     @Override
     public String getSlotTexture() {
-        ResourceLocation bg = this.getBaublesHandler().getSlotType(this.baublesHandler.getSlotByOffset(this.slotIndex)).getBackgroundTexture();
+        ResourceLocation bg = this.baublesHandler.getSlotType(this.slotIndex).getBackgroundTexture();
         return bg == null ? null : bg.toString();
     }
 
     @NotNull
     @Override
     public ItemStack getStack() {
-        return this.baublesHandler.getStackInSlot(this.baublesHandler.getSlotByOffset(this.slotIndex));
+        return this.baublesHandler.getStackInSlot(this.slotIndex);
     }
 
     @NotNull
     @Override
     public ItemStack decrStackSize(int amount) {
-        return this.baublesHandler.extractItem(this.baublesHandler.getSlotByOffset(this.slotIndex), amount, false);
+        return this.baublesHandler.extractItem(this.slotIndex, amount, false);
     }
 }
