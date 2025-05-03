@@ -43,7 +43,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 
-import static baubles.common.integration.ModCompatibility.CA;
+import static baubles.common.integration.ModCompatibility.COSMETIC_ARMOR;
 import static baubles.common.integration.ModCompatibility.ME$shouldMoveLeft;
 
 public class GuiPlayerExpanded extends InventoryEffectRenderer {
@@ -116,7 +116,7 @@ public class GuiPlayerExpanded extends InventoryEffectRenderer {
             this.buttonList.add(this.recipeBook);
         }
 
-        if (Loader.isModLoaded(CA)) {
+        if (Loader.isModLoaded(COSMETIC_ARMOR)) {
             this.initCosButtons();
             this.buttonList.add(this.cosButton);
             this.buttonList.add(this.cosToggleButton);
@@ -129,7 +129,7 @@ public class GuiPlayerExpanded extends InventoryEffectRenderer {
         this.recipeBook = new GuiButtonImage(10, this.guiLeft + 104, this.height / 2 - 22, 20, 18, 178, 0, 19, INVENTORY_BACKGROUND);
     }
 
-    @Optional.Method(modid = CA)
+    @Optional.Method(modid = COSMETIC_ARMOR)
     private void initCosButtons() {
         if (!ModConfigs.CosArmorGuiButton_Hidden) {
             this.cosButton = new GuiCosArmorButton(58, this.guiLeft + ModConfigs.CosArmorGuiButton_Left, this.guiTop + ModConfigs.CosArmorGuiButton_Top, 10, 10, "cos.gui.buttoncos") {
@@ -278,7 +278,7 @@ public class GuiPlayerExpanded extends InventoryEffectRenderer {
 
     @Override
     protected void drawActivePotionEffects() {
-        boolean moveLeft = ME$shouldMoveLeft(this);
+        boolean moveLeft = ModCompatibility.ME$shouldMoveLeft(this);
         int i = this.guiLeft;
         if (moveLeft) guiLeft -= 27;
         super.drawActivePotionEffects();

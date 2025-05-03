@@ -6,7 +6,7 @@ repositories {
     exclusiveContent {
         forRepository {
             maven {
-                url "https://cursemaven.com"
+                url "https://curse.cleanroommc.com"
             }
         }
         filter {
@@ -16,65 +16,52 @@ repositories {
 }
 
 dependencies {
-    var jei = "mezz:jei:4.25.5"
-    var mt = "curse.maven:mouse-tweaks-unofficial-461660:4661407"
-    var ut = "curse.maven:universaltweaks-705000:5529764"
-    var ca = "curse.maven:cosmeticarmor-237307:2937869"
-    var wings = "curse.maven:wings-302584:2829351"
-    var aa = "curse.maven:actuallyadditions-228404:3117927"
-    var qt = "curse.maven:quality-tools-264756:2732994"
-    var botania = "curse.maven:botania-225643:3330934"
-    var minieffects = "curse.maven:minieffects-1081085:6143104"
-    var mixins = project.runtime_ut.toBoolean() || project.runtime_me.toBoolean()
-
-    // JEI Extra Bounds
-    if (project.runtime_jei.toBoolean()) implementation(jei)
-    else compileOnly(jei)
-
-    // Mouse Tweaks
-    if (project.runtime_mt.toBoolean()) runtimeOnly(mt)
-
-    // No Recipe Book
-    if (project.runtime_ut.toBoolean()) {
-        runtimeOnly("com.cleanroommc:configanytime:3.0")
-        runtimeOnly(ut) { transitive = false }
-    }
-    compileOnly(ut) { transitive = false }
-
-    // Cosmetic Armors
-    if (project.runtime_ca.toBoolean()) runtimeOnly(ca)
-    compileOnly(ca)
-
-    // Wings
-    if (project.runtime_wings.toBoolean()) runtimeOnly(wings)
-    compileOnly(wings)
-
-    // Compatibility
-    if (project.runtime_aa.toBoolean()) runtimeOnly rfg.deobf(aa)
-    compileOnly rfg.deobf(aa)
-
-    // Fixes
-    if (project.runtime_qt.toBoolean()) {
-        runtimeOnly "curse.maven:potion-core-242872:2905184"
-        implementation rfg.deobf(qt)
-    }
-
-    if (project.runtime_botania.toBoolean()) {
-        runtimeOnly "curse.maven:autoreglib-250363:2746011"
-        runtimeOnly rfg.deobf(botania)
-    }
-    compileOnly rfg.deobf(botania)
-
-    if (project.runtime_rla.toBoolean()) implementation "curse.maven:rl-artifacts-819886:4475428"
-
-    if (project.runtime_me.toBoolean()) runtimeOnly(minieffects) { transitive = false }
-    compileOnly(minieffects) { transitive = false }
+    compileOnly "mezz:jei:4.25.5"
+    compileOnly ("curse.maven:universaltweaks-705000:5529764") { transitive = false }
+    compileOnly "curse.maven:cosmeticarmor-237307:2937869"
+    compileOnly "curse.maven:wings-302584:2829351"
+    compileOnly "curse.maven:botania-225643:3330934"
+    compileOnly ("curse.maven:minieffects-1081085:6143104") { transitive = false }
 
     compileOnly "curse.maven:cofh-core-69162:2920433"
-    compileOnly "curse.maven:wb-684624:4203074"
 
-    if (project.runtime_tab.toBoolean()) implementation "curse.maven:tab-279900:5717039"
+    if (project.just_enough_items.toBoolean()) runtimeOnly "mezz:jei:4.25.5"
+    if (project.mouse_tweaks.toInteger() != 0) {
+        if (project.mouse_tweaks.toInteger() == 1) runtimeOnly "curse.maven:mouse-tweaks-60089:3359843"
+        else runtimeOnly "curse.maven:mouse-tweaks-unofficial-461660:4661407"
+    }
+    if (project.universal_tweaks.toBoolean()) {
+        runtimeOnly "com.cleanroommc:configanytime:3.0"
+        runtimeOnly ("curse.maven:universaltweaks-705000:5529764") { transitive = false }
+    }
+    if (project.cosmetic_armor.toBoolean()) runtimeOnly "curse.maven:cosmeticarmor-237307:2937869"
+    if (project.wings.toBoolean()) {
+        runtimeOnly "curse.maven:llibrary-243298:3116493"
+        runtimeOnly "curse.maven:wings-302584:2829351"
+    }
+    if (project.actually_additions.toBoolean()) {
+        runtimeOnly "curse.maven:actuallyadditions-228404:3117927"
+    }
+    if (project.quality_tools.toBoolean()) {
+        runtimeOnly "curse.maven:potion-core-242872:2905184"
+        runtimeOnly "curse.maven:quality-tools-264756:2732994"
+    }
+    if (project.botania.toBoolean()) {
+        runtimeOnly "curse.maven:autoreglib-250363:2746011"
+        runtimeOnly "curse.maven:botania-225643:3330934"
+    }
+    if (project.artifacts_mod.toInteger() != 0) {
+        if (project.artifacts_mod.toInteger() == 1) runtimeOnly "curse.maven:artifacts-312353:4871204"
+        else runtimeOnly "curse.maven:rlartifacts-819886:4475428"
+    }
+    if (project.mini_effects.toBoolean()) {
+        runtimeOnly ("curse.maven:minieffects-1081085:6143104") { transitive = false }
+    }
+    if (project.trinkets_and_baubles.toBoolean()) {
+        runtimeOnly "curse.maven:tab-279900:5717039"
+    }
 
+    var mixins = project.universal_tweaks.toBoolean() || project.mini_effects.toBoolean()
     if (mixins) {
         annotationProcessor 'org.ow2.asm:asm-debug-all:5.2'
         annotationProcessor 'com.google.guava:guava:24.1.1-jre'

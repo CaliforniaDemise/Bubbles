@@ -96,12 +96,6 @@ public class Config {
             String modId = eventArgs.getModID();
             if (modId.equals(Baubles.MODID)) loadConfigs();
         }
-
-        @SubscribeEvent
-        public static void postConfigChange(ConfigChangedEvent.PostConfigChangedEvent event) {
-            String modId = event.getModID();
-            if (modId.equals(ModCompatibility.ME)) ModCompatibility.ME$applyOffset();
-        }
     }
 
     private static void writeSlotsJson(File file) {
