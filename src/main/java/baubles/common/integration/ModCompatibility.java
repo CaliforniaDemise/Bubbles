@@ -36,6 +36,7 @@ public class ModCompatibility {
     public static final String ACTUALLY_ADDITIONS = "actuallyadditions";
     public static final String WINGS = "wings";
     public static final String MINI_EFFECTS = "minieffects";
+    public static final String RELIQUARY = "xreliquary";
 
     public static final boolean MOUSE_TWEAKS_LOADED = Loader.isModLoaded(MOUSE_TWEAKS);
     public static final boolean NO_RECIPE_BOOK_LOADED = Loader.isModLoaded(NO_RECIPE_BOOK);
@@ -43,6 +44,7 @@ public class ModCompatibility {
     public static final boolean COSMETIC_ARMOR_LOADED = Loader.isModLoaded(COSMETIC_ARMOR);
     public static final boolean WINGS_LOADED = Loader.isModLoaded(WINGS);
     public static final boolean MINI_EFFECTS_LOADED = Loader.isModLoaded(MINI_EFFECTS);
+    public static final boolean RELIQUARY_LOADED = Loader.isModLoaded(RELIQUARY);
 
     private static boolean isLoaded = false;
     private static boolean MT_isOld = false;
@@ -104,11 +106,26 @@ public class ModCompatibility {
         Item item = stack.getItem();
         ResourceLocation loc = item.getRegistryName();
         if (loc == null) return null;
-        if (loc.getNamespace().equals(ACTUALLY_ADDITIONS)) {
-            if (loc.getNamespace().endsWith("suction_ring")) return new InjectableBauble(BaubleType.RING, INVENTORY | PASSIVE);
+        if (Config.compat_actuallyadditions && loc.getNamespace().equals(ACTUALLY_ADDITIONS)) {
+            if (loc.getPath().endsWith("suction_ring")) return new InjectableBauble(BaubleType.RING, INVENTORY | PASSIVE);
             if (loc.getPath().endsWith("potion_ring_advanced")) return new InjectableBauble(BaubleType.RING, INVENTORY | PASSIVE);
             if (loc.getPath().startsWith("item_battery")) return new InjectableBauble(BaubleType.RING, INVENTORY | PASSIVE);
             if (loc.getPath().endsWith("wings_of_the_bats")) return new InjectableBauble(BaubleType.TRINKET, INVENTORY | PASSIVE);
+        }
+        if (Config.compat_reliquary && loc.getNamespace().equals(RELIQUARY)) {
+            switch (loc.getPath()) {
+                case "angelheart_vial":
+                case "infernal_chalice":
+                case "infernal_claws":
+                case "phoenix_down": return new InjectableBauble(BaubleType.TRINKET, 0);
+                case "angelic_feather":
+                case "hero_medallion":
+                case "infernal_tear":
+                case "kraken_shell":
+                case "lantern_of_paranoia":
+                case "midas_touchstone": return new InjectableBauble(BaubleType.TRINKET, INVENTORY);
+            }
+
         }
         if (loc.getNamespace().equals(WINGS) && item instanceof ItemWings) return new InjectableBauble(BaubleType.BODY, ARMOR);
         return null;

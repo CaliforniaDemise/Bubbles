@@ -56,6 +56,10 @@ public class BubblesTransformer implements IClassTransformer {
             // Corail Tombstone - Fix auto equip
             case "ovh.corail.tombstone.compatibility.CompatibilityBaubles": return CorailTombstoneTransformer.transformCompatibilityBaubles(basicClass);
 
+            // Reliquary - Baubles support
+            case "xreliquary.items.ItemAngelheartVial": return ReliquaryTransformer.transformItemAngelHeartVial(basicClass);
+            case "xreliquary.items.ItemPhoenixDown": return ReliquaryTransformer.transformItemPhoenixDown(basicClass);
+
             default: return basicClass;
         }
     }
