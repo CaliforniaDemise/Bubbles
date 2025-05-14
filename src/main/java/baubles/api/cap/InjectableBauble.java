@@ -16,17 +16,17 @@ import org.jetbrains.annotations.NotNull;
  **/
 public class InjectableBauble implements IBauble {
 
-    private final Item item;
     private final IBaubleType type;
 
-    private final boolean passive; // Apply effects as if it's hold in hand
-    private final int armor; // 0-2   0 = Only inventory update | 1 = Only armor update | 2 = both
+    private final int value;
 
-    public InjectableBauble(Item item, IBaubleType type, boolean passive, int armor) {
-        this.item = item;
+    public static final int INVENTORY = 1;
+    public static final int ARMOR = 2;
+    public static final int PASSIVE = 4;
+
+    public InjectableBauble(IBaubleType type, int value) {
         this.type = type;
-        this.passive = passive;
-        this.armor = armor;
+        this.value = value;
     }
 
     @NotNull
@@ -37,8 +37,9 @@ public class InjectableBauble implements IBauble {
 
     @Override
     public void onWornTick(ItemStack itemstack, EntityLivingBase player) {
-        if (this.armor != 1) item.onUpdate(itemstack, player.world, player, 0, !passive);
-        if (this.armor != 0 && player instanceof EntityPlayer)
-            item.onArmorTick(player.world, (EntityPlayer) player, itemstack);
+        Item item = itemstack.getItem();
+        if ((this.value & INVENTORY) != 0) item.onUpdate(itemstack, player.world, player, 0, (this.value & PASSIVE) != 0);
+        if ((this.value & ARMOR) != 0 && player instanceof EntityPlayer)
+            itemstack.getItem().onArmorTick(player.world, (EntityPlayer) player, itemstack);
     }
 }

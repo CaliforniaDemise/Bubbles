@@ -1,28 +1,39 @@
 package baubles.common;
 
 import baubles.api.IBaubleType;
+import baubles.api.cap.InjectableBauble;
 import baubles.common.init.BaubleTypes;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
+import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.oredict.OreDictionary;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Stream;
 
 import static baubles.api.BaubleType.*;
 
@@ -32,6 +43,9 @@ public class Config {
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 
     private static File CONFIG_DIR;
+
+    private static final Map<ResourceLocation, Object2IntMap<IBaubleType>> TYPE_MAP = new HashMap<>();
+    private static final Map<ItemStack, O2IPair<IBaubleType>> STACK_MAP = new Object2ObjectOpenCustomHashMap<>(new ItemStackStrategy());
 
     // Configuration Options
     public static boolean renderBaubles = true;
@@ -43,19 +57,50 @@ public class Config {
     }
 
     @Nullable
+    public static Pair<IBaubleType, Integer> getItemType(ItemStack stack) {
+        if (STACK_MAP.isEmpty()) return null;
+        O2IPair<IBaubleType> pair = STACK_MAP.get(stack);
+        if (pair != null) return Pair.of(pair.left, pair.right);
+        return null;
+    }
+
+    @Nullable
     public static Object2IntMap<IBaubleType> getDefaultSlotMap(Entity entity) {
         if (!(entity instanceof EntityLivingBase)) return null;
+        File entities = new File(CONFIG_DIR, Baubles.MODID + "/entities");
+        if (!entities.exists()) {
+            Object2IntMap<IBaubleType> map = new Object2IntOpenHashMap<>();
+            int multiplier = expandedMode ? 2 : 1;
+            map.put(AMULET, multiplier);
+            map.put(RING, 2 * multiplier);
+            map.put(BELT, multiplier);
+            map.put(HEAD, multiplier);
+            map.put(BODY, multiplier);
+            map.put(CHARM, multiplier);
+            return map;
+        }
+        ResourceLocation location;
+        if (entity instanceof EntityPlayer) location = new ResourceLocation("player");
+        else location = EntityList.getKey(entity);
+        if (location == null) return null;
+        {
+            Object2IntMap<IBaubleType> map = TYPE_MAP.get(location);
+            if (map != null) return map;
+        }
         try {
-            ResourceLocation location;
             if (entity instanceof EntityPlayer) {
-                Object2IntMap<IBaubleType> map = checkOldJson(CONFIG_DIR);
-                if (map != null) return map;
-                location = new ResourceLocation("player");
+                Object2IntMap<IBaubleType> map = checkSlotsJson(CONFIG_DIR);
+                if (map != null) {
+                    TYPE_MAP.put(location, map);
+                    return map;
+                }
             }
-            else location = EntityList.getKey(entity);
-            if (location == null) return null;
             File file = new File(CONFIG_DIR, Baubles.MODID + "/entities/" + location.toString().replace(':', '/') + ".json");
-            if (file.exists()) return readSlotMapJson(file);
+            if (file.exists()) {
+                Object2IntMap<IBaubleType> map = readSlotMapJson(file);
+                TYPE_MAP.put(location, map);
+                return map;
+            }
             else if (entity instanceof EntityPlayer) {
                 Object2IntMap<IBaubleType> map = new Object2IntOpenHashMap<>();
                 int multiplier = expandedMode ? 2 : 1;
@@ -65,6 +110,7 @@ public class Config {
                 map.put(HEAD, multiplier);
                 map.put(BODY, multiplier);
                 map.put(CHARM, multiplier);
+                TYPE_MAP.put(location, map);
                 return map;
             }
             return null;
@@ -74,7 +120,9 @@ public class Config {
 
     private static Object2IntMap<IBaubleType> readSlotMapJson(File file) throws IOException {
         Object2IntMap<IBaubleType> map = new Object2IntOpenHashMap<>();
-        JsonObject object = GSON.fromJson(new InputStreamReader(Files.newInputStream(file.toPath())), JsonObject.class);
+        InputStreamReader reader = new InputStreamReader(Files.newInputStream(file.toPath()));
+        JsonObject object = GSON.fromJson(reader, JsonObject.class);
+        reader.close();
         object.entrySet().forEach(entry -> {
             IBaubleType type = BaubleTypes.get(getLocation(entry.getKey()));
             if (type == null) {
@@ -90,7 +138,7 @@ public class Config {
     }
 
     @Nullable
-    private static Object2IntMap<IBaubleType> checkOldJson(File configFile) throws IOException {
+    private static Object2IntMap<IBaubleType> checkSlotsJson(File configFile) throws IOException {
         File slots = new File(configFile.getParentFile(), Baubles.MODID + "/slots.json");
         if (slots.exists()) {
             Baubles.log.info("Found {}, generating new jsons from it.", slots.getName());
@@ -119,6 +167,95 @@ public class Config {
             return map;
         }
         return null;
+    }
+
+    public static void initDefaultBaubles() {
+        File types = new File(CONFIG_DIR, Baubles.MODID + "/types");
+        if (!types.exists()) return;
+        try (Stream<Path> stream = Files.walk(types.toPath())) {
+            stream.filter(p -> !p.toFile().isDirectory()).forEach(p -> {
+                ResourceLocation location;
+                {
+                    String path = p.getName(p.getNameCount() - 1).toString();
+                    path = path.substring(0, path.length() - 5);
+                    location = new ResourceLocation(p.getName(p.getNameCount() - 2).toString(), path);
+                }
+                IBaubleType type = BaubleTypes.get(location);
+                if (type == null) {
+                    Baubles.log.error("Could not find bauble type {} while reading file {}", location, p.getFileName().toFile().getName());
+                    return;
+                }
+                try { checkTypeJson(type, p.toFile()); } catch (IOException e) { throw new RuntimeException(e); }
+            });
+        }
+        catch (IOException e) { throw new RuntimeException(e); }
+    }
+
+    private static void checkTypeJson(IBaubleType type, File typeFile) throws IOException {
+        InputStreamReader reader = new InputStreamReader(Files.newInputStream(typeFile.toPath()));
+        JsonObject object = GSON.fromJson(reader, JsonObject.class);
+        if (object.has("items")) {
+            for (JsonElement e : object.getAsJsonArray("items")) {
+                ResourceLocation location;
+                int metadata = 0;
+                int value = 0;
+                String str = e.getAsString();
+                String[] split = str.split("#");
+                {
+                    if (split.length != 1) {
+                        String s = split[1];
+                        for (int i = 0; i < s.length(); i++) {
+                            char c = s.charAt(i);
+                            switch (Character.toLowerCase(c)) {
+                                case 'a': value |= InjectableBauble.ARMOR; break;
+                                case 'i': value |= InjectableBauble.INVENTORY; break;
+                                case 'p': value |= InjectableBauble.INVENTORY | InjectableBauble.PASSIVE; break;
+                            }
+                        }
+                    }
+                }
+                {
+                    split = split[0].split(":");
+                    if (split.length == 1) location = new ResourceLocation(split[0]);
+                    else location = new ResourceLocation(split[0], split[1]);
+                    if (split.length > 2) {
+                        if (split[2].equals("*")) metadata = OreDictionary.WILDCARD_VALUE;
+                        else metadata = Integer.parseInt(split[2]);
+                    }
+                }
+                Item item = ForgeRegistries.ITEMS.getValue(location);
+                if (item == null || item == Items.AIR) {
+                    Baubles.log.error("Could not find item from " + e.getAsString());
+                    continue;
+                }
+                ItemStack stack = new ItemStack(item, 1, metadata);
+                STACK_MAP.put(stack, new O2IPair<>(type, value));
+            }
+        }
+        if (object.has("ores")) {
+            for (JsonElement e : object.getAsJsonArray("ores")) {
+                int value = 0;
+                String[] split = e.getAsString().split("#");
+                {
+                    if (split.length != 1) {
+                        String s = split[1];
+                        for (int i = 0; i < s.length(); i++) {
+                            char c = s.charAt(i);
+                            switch (Character.toLowerCase(c)) {
+                                case 'a': value |= InjectableBauble.ARMOR; break;
+                                case 'i': value |= InjectableBauble.INVENTORY; break;
+                                case 'p': value |= InjectableBauble.INVENTORY | InjectableBauble.PASSIVE; break;
+                            }
+                        }
+                    }
+                }
+                NonNullList<ItemStack> list = OreDictionary.getOres(split[0]);
+                if (list == null || list.isEmpty()) continue;
+                for (ItemStack stack : list) {
+                    STACK_MAP.put(stack, new O2IPair<>(type, value));
+                }
+            }
+        }
     }
 
     private static ResourceLocation getLocation(String regName) {
@@ -152,6 +289,31 @@ public class Config {
         public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
             String modId = eventArgs.getModID();
             if (modId.equals(Baubles.MODID)) loadConfigs();
+        }
+    }
+
+    private static class ItemStackStrategy implements Hash.Strategy<ItemStack> {
+
+        @Override
+        public int hashCode(ItemStack stack) {
+            if (stack == null || stack.isEmpty()) return 0;
+            return stack.getItem().hashCode() << 13 ^ stack.getMetadata() << 31;
+        }
+
+        @Override
+        public boolean equals(ItemStack a, ItemStack b) {
+            if (a == null || b == null) return false;
+            if (a.isEmpty() && b.isEmpty()) return true;
+            return ItemStack.areItemsEqual(a, b);
+        }
+    }
+
+    private static class O2IPair<K> {
+        final K left;
+        final int right;
+        O2IPair(K left, int right) {
+            this.left = left;
+            this.right = right;
         }
     }
 }

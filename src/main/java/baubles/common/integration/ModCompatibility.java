@@ -1,8 +1,10 @@
 package baubles.common.integration;
 
 import baubles.api.BaubleType;
+import baubles.api.IBaubleType;
 import baubles.api.cap.InjectableBauble;
 import baubles.client.gui.GuiPlayerExpanded;
+import baubles.common.Config;
 import lain.mods.cos.client.GuiCosArmorInventory;
 import me.paulf.wings.server.item.ItemWings;
 import mod.acgaming.universaltweaks.config.UTConfigTweaks;
@@ -15,12 +17,15 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
+import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.input.Mouse;
 import snownee.minieffects.api.InjectedMiniEffectsHolder;
 import snownee.minieffects.api.Vec2i;
 import snownee.minieffects.handlers.MiniEffectsOffsets;
 import yalter.mousetweaks.MTConfig;
 import yalter.mousetweaks.Main;
+
+import static baubles.api.cap.InjectableBauble.*;
 
 public class ModCompatibility {
 
@@ -94,18 +99,18 @@ public class ModCompatibility {
 
     // Compatibility
     public static InjectableBauble getBaubleToInject(ItemStack stack) {
+        Pair<IBaubleType, Integer> type = Config.getItemType(stack);
+        if (type != null) return new InjectableBauble(type.getKey(), type.getValue());
         Item item = stack.getItem();
         ResourceLocation loc = item.getRegistryName();
         if (loc == null) return null;
         if (loc.getNamespace().equals(ACTUALLY_ADDITIONS)) {
-            if (loc.getNamespace().endsWith("suction_ring")) return new InjectableBauble(item, BaubleType.RING, true, 0);
-            if (loc.getPath().endsWith("potion_ring_advanced")) return new InjectableBauble(item, BaubleType.RING, true, 0);
-            if (loc.getPath().startsWith("item_battery")) return new InjectableBauble(item, BaubleType.RING, true, 0);
-            if (loc.getPath().endsWith("wings_of_the_bats")) return new InjectableBauble(item, BaubleType.TRINKET, true, 0);
+            if (loc.getNamespace().endsWith("suction_ring")) return new InjectableBauble(BaubleType.RING, INVENTORY | PASSIVE);
+            if (loc.getPath().endsWith("potion_ring_advanced")) return new InjectableBauble(BaubleType.RING, INVENTORY | PASSIVE);
+            if (loc.getPath().startsWith("item_battery")) return new InjectableBauble(BaubleType.RING, INVENTORY | PASSIVE);
+            if (loc.getPath().endsWith("wings_of_the_bats")) return new InjectableBauble(BaubleType.TRINKET, INVENTORY | PASSIVE);
         }
-        if (loc.getNamespace().equals(WINGS) && item instanceof ItemWings) return new InjectableBauble(item, BaubleType.BODY, false, 1);
+        if (loc.getNamespace().equals(WINGS) && item instanceof ItemWings) return new InjectableBauble(BaubleType.BODY, ARMOR);
         return null;
     }
-
-
 }
