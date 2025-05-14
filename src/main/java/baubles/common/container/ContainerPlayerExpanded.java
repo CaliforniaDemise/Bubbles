@@ -28,6 +28,8 @@ public class ContainerPlayerExpanded extends Container {
     private final EntityPlayer thePlayer;
     public BaublesContainer baubles;
 
+    private int offset = 0;
+
     public ContainerPlayerExpanded(InventoryPlayer playerInv, EntityPlayer player) {
         this.thePlayer = player;
         baubles = (BaublesContainer) BaublesApi.getBaublesHandler(player);
@@ -68,7 +70,7 @@ public class ContainerPlayerExpanded extends Container {
         }
 
         for (int i = 0; i < Math.min(8, Objects.requireNonNull(baubles).getSlots()); i++) {
-            this.addSlotToContainer(new SlotBauble(player, baubles, i, -22, 6 + (i * 18)));
+            this.addSlotToContainer(new SlotBauble(player, baubles, this, i, -22, 6 + (i * 18)));
         }
 
         for (int i = 0; i < 3; ++i) {
@@ -96,6 +98,20 @@ public class ContainerPlayerExpanded extends Container {
         this.onCraftMatrixChanged(this.craftMatrix);
     }
 
+    public int getSlotByOffset(int slotIndex) {
+        if (slotIndex < 0) slotIndex += this.baubles.getSlots();
+        return (this.offset + slotIndex) % this.baubles.getSlots();
+    }
+
+    public void setOffset(int offset) {
+        if (this.baubles.getSlots() < 9) return;
+        this.offset = offset;
+    }
+
+    public void resetOffset() {
+        this.offset = 0;
+    }
+
     @Override
     public void onCraftMatrixChanged(@NotNull IInventory par1IInventory) {
         this.slotChangedCraftingGrid(this.thePlayer.getEntityWorld(), this.thePlayer, this.craftMatrix, this.craftResult);
@@ -104,7 +120,7 @@ public class ContainerPlayerExpanded extends Container {
     @Override
     public void onContainerClosed(@NotNull EntityPlayer player) {
         super.onContainerClosed(player);
-        this.baubles.resetOffset();
+        this.resetOffset();
         this.craftResult.clear();
         if (!player.world.isRemote) {
             this.clearContainer(player, player.world, this.craftMatrix);
@@ -233,13 +249,13 @@ public class ContainerPlayerExpanded extends Container {
                     itemstack.setCount(maxSize);
                     flag = true;
                 }
-                container.setOffset(slotIndex);
+                this.setOffset(slotIndex);
             }
             else if (itemstack.isEmpty() && bauble.canPutOnSlot(container, slotIndex, container.getSlotType(slotIndex), stack)) {
                 if (stack.getCount() > container.getSlotLimit(slotIndex))
                     container.setStackInSlot(slotIndex, stack.splitStack(container.getSlotLimit(slotIndex)));
                 else container.setStackInSlot(slotIndex, stack.splitStack(stack.getCount()));
-                container.setOffset(slotIndex);
+                this.setOffset(slotIndex);
                 flag = true;
             }
         }

@@ -3,7 +3,6 @@ package baubles.api.cap;
 import baubles.api.BaublesApi;
 import baubles.api.IBauble;
 import baubles.api.IBaubleType;
-import baubles.common.Baubles;
 import baubles.common.Config;
 import baubles.common.init.BaubleTypes;
 import baubles.common.network.PacketHandler;
@@ -33,15 +32,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.concurrent.Callable;
 
-// TODO Move offset to container? It's used nowhere except SlotBauble which is bound to Container
 /**
  * Default implementation of {@link IBaublesItemHandler}
  **/
-public class BaublesContainer implements PlayerBaubleHandler, INBTSerializable<NBTTagCompound> {
+public class BaublesContainer implements IBaublesItemHandler, INBTSerializable<NBTTagCompound> {
 
     private final SlotMap slots;
-
-    private int offset = 0; // Can't be higher than getSlots()
 
     /**
      * Entity which has the baubles inventory
@@ -73,25 +69,24 @@ public class BaublesContainer implements PlayerBaubleHandler, INBTSerializable<N
         return this.slots.getSlotType(slotIndex);
     }
 
-    public int getOffset() {
-        return this.offset;
+    public void grow(IBaubleType type, int amount) {
+        int index = this.slots.getIndex(type);
+        if (index < 0) return;
+        ItemStack[] stacks = this.slots.list.get(index).getValue();
+        amount += stacks.length;
+        this.slots.setSlotAmount(type, amount);
     }
 
-    @Override
-    public int getSlotByOffset(int slotIndex) {
-        if (slotIndex < 0) slotIndex += this.getSlots();
-        return (this.offset + slotIndex) % this.getSlots();
+    public void shrink(IBaubleType type, int amount) {
+        int index = this.slots.getIndex(type);
+        if (index < 0) return;
+        ItemStack[] stacks = this.slots.list.get(index).getValue();
+        if (stacks.length <= amount) this.slots.setSlotAmount(type, 0);
+        else this.slots.setSlotAmount(type, stacks.length - amount);
     }
 
-    @Override
-    public void setOffset(int offset) {
-        if (this.getSlots() < 9) return;
-        this.offset = offset;
-    }
-
-    @Override
-    public void resetOffset() {
-        this.offset = 0;
+    public void set(IBaubleType type, int amount) {
+        this.slots.setSlotAmount(type, amount);
     }
 
     @Override
@@ -277,12 +272,11 @@ public class BaublesContainer implements PlayerBaubleHandler, INBTSerializable<N
             this.setSort();
         }
 
-        Object2IntMap<IBaubleType> getMapArray(IBaubleType[] types) {
-            Object2IntMap<IBaubleType> map = new Object2IntOpenHashMap<>();
-            for (IBaubleType type : types) {
-                map.put(type, map.get(type) + 1);
+        int getIndex(IBaubleType type) {
+            for (int i = 0; i < this.list.size(); i++) {
+                if (this.list.get(i).getKey() == type) return i;
             }
-            return map;
+            return -1;
         }
 
         void setSlotAmount(IBaubleType type, int slotAmount) {
@@ -291,15 +285,23 @@ public class BaublesContainer implements PlayerBaubleHandler, INBTSerializable<N
             while (iterator.hasNext()) {
                 Pair<IBaubleType, ItemStack[]> pair = iterator.next();
                 if (pair.getKey() == type) {
-                    if (pair.getValue().length == slotAmount) return;
-                    ItemStack[] items = new ItemStack[slotAmount];
-                    for (int a = 0; a < pair.getValue().length; a++) {
-                        if (a >= slotAmount && pair.getValue()[a] != ItemStack.EMPTY) this.addDrop(pair.getValue()[a]);
-                        else items[a] = pair.getValue()[a];
+                    if (slotAmount > 0) {
+                        if (pair.getValue().length == slotAmount) return;
+                        ItemStack[] items = new ItemStack[slotAmount];
+                        for (int a = 0; a < pair.getValue().length; a++) {
+                            if (a >= slotAmount && pair.getValue()[a] != ItemStack.EMPTY) this.addDrop(pair.getValue()[a]);
+                            else items[a] = pair.getValue()[a];
+                        }
+                        this.list.set(i, Pair.of(type, items));
+                        this.slotAmount += slotAmount - pair.getValue().length;
+                        return;
                     }
-                    this.list.set(i, Pair.of(type, items));
-                    this.slotAmount += slotAmount - pair.getValue().length;
-                    return;
+                    else {
+                        iterator.remove();
+                        this.slotAmount -= pair.getValue().length;
+                        this.setSort();
+                        return;
+                    }
                 }
                 i++;
             }

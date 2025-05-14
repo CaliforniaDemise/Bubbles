@@ -39,6 +39,8 @@ import static baubles.api.BaubleType.*;
 
 public class Config {
 
+    public static final String CATEGORY_COMPATIBILITY = "compatibility";
+
     public static Configuration config;
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 
@@ -50,6 +52,9 @@ public class Config {
     // Configuration Options
     public static boolean renderBaubles = true;
     public static boolean expandedMode = false;
+
+    public static boolean compat_actuallyadditions = true;
+    public static boolean compat_reliquary = true;
 
     public static void initialize(File configFile) {
         initConfig(configFile);
@@ -276,6 +281,8 @@ public class Config {
     public static void loadConfigs() {
         expandedMode = config.getBoolean("baubleExpanded.enabled", Configuration.CATEGORY_GENERAL, expandedMode, "Set this to true to have more slots than normal.");
         renderBaubles = config.getBoolean("baubleRender.enabled", Configuration.CATEGORY_CLIENT, renderBaubles, "Set this to false to disable rendering of baubles in the player.");
+        compat_actuallyadditions = config.getBoolean("actuallyAdditions.enabled", CATEGORY_COMPATIBILITY, compat_actuallyadditions, "Make some of AA's items baubles.");
+        compat_reliquary = config.getBoolean("reliquary.enabled", CATEGORY_COMPATIBILITY, compat_reliquary, "Make some of Reliquary's items baubles.");
         if (config.hasChanged()) config.save();
     }
 

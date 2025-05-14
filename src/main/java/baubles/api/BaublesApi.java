@@ -1,6 +1,7 @@
 package baubles.api;
 
 import baubles.api.cap.BaublesCapabilities;
+import baubles.api.cap.BaublesContainer;
 import baubles.api.cap.IBaublesItemHandler;
 import baubles.api.inv.BaublesInventoryWrapper;
 import net.minecraft.entity.EntityLivingBase;
@@ -17,6 +18,14 @@ import java.util.Objects;
  * @author Azanor
  */
 public class BaublesApi {
+
+    /**
+     * Easy method for reaching to grow, shrink and set slot amount methods.
+     **/
+    @NotNull
+    public static BaublesContainer getBaublesContainer(EntityPlayer player) {
+        return (BaublesContainer) getBaublesHandler(player);
+    }
 
     /**
      * Retrieves the baubles item handler capability handler for the supplied player

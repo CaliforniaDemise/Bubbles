@@ -1,29 +1,24 @@
 package baubles.client.gui;
 
-import baubles.api.cap.BaublesContainer;
-import baubles.common.container.ContainerPlayerExpanded;
 import baubles.common.network.PacketChangeOffset;
 import baubles.common.network.PacketHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
 
 public class GuiSlotButton extends GuiButton {
 
-    protected final GuiContainer parent;
+    protected final GuiPlayerExpanded parent;
 
     private final boolean isDown;
-    private final BaublesContainer baublesHandler;
     private int ticks;
 
-    public GuiSlotButton(int id, GuiContainer parent, int x, int y, int widthIn, int heightIn, boolean isDown) {
+    public GuiSlotButton(int id, GuiPlayerExpanded parent, int x, int y, int widthIn, int heightIn, boolean isDown) {
         super(id, x, y, widthIn, heightIn, "");
         this.isDown = isDown;
         this.parent = parent;
-        this.baublesHandler = ((ContainerPlayerExpanded) parent.inventorySlots).baubles;
     }
 
     @Override
@@ -33,7 +28,7 @@ public class GuiSlotButton extends GuiButton {
             this.ticks = 10;
             int amount = isDown ? 1 : -1;
             PacketHandler.INSTANCE.sendToServer(new PacketChangeOffset(amount));
-            baublesHandler.setOffset(baublesHandler.getSlotByOffset(amount));
+            this.parent.getContainer().setOffset(this.parent.getContainer().getSlotByOffset(amount));
         }
         return pressed;
     }

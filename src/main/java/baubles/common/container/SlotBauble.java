@@ -24,15 +24,22 @@ public class SlotBauble extends SlotItemHandler {
     private final IBaublesItemHandler baublesHandler;
     private final EntityPlayer player;
 
-    public SlotBauble(EntityPlayer player, IBaublesItemHandler itemHandler, int slot, int xPos, int yPos) {
+    private final ContainerPlayerExpanded container;
+
+    public SlotBauble(EntityPlayer player, IBaublesItemHandler itemHandler, ContainerPlayerExpanded container, int slot, int xPos, int yPos) {
         super(itemHandler, slot, xPos, yPos);
         this.baublesHandler = itemHandler;
         this.player = player;
         this.slotIndex = slot;
+        this.container = container;
+    }
+
+    public SlotBauble(EntityPlayer player, IBaublesItemHandler itemHandler, int slot, int xPos, int yPos) {
+        this(player, itemHandler, null, slot, xPos, yPos);
     }
 
     public int getRealSlotIndex() {
-        if (this.baublesHandler instanceof BaublesContainer) return ((BaublesContainer) this.baublesHandler).getSlotByOffset(this.slotIndex);
+        if (this.container != null) return this.container.getSlotByOffset(this.slotIndex);
         return this.slotIndex;
     }
 

@@ -1,6 +1,5 @@
 package baubles.common.network;
 
-import baubles.api.cap.BaublesContainer;
 import baubles.common.container.ContainerPlayerExpanded;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.util.IThreadListener;
@@ -35,8 +34,7 @@ public class PacketChangeOffset implements IMessage, IMessageHandler<PacketChang
         IThreadListener mainThread = (WorldServer) ctx.getServerHandler().player.world;
         mainThread.addScheduledTask(() -> {
             ContainerPlayerExpanded container = (ContainerPlayerExpanded) ctx.getServerHandler().player.openContainer;
-            BaublesContainer baublesHandler = container.baubles;
-            baublesHandler.setOffset(baublesHandler.getSlotByOffset(message.offsetChange));
+            container.setOffset(container.getSlotByOffset(message.offsetChange));
         });
         return null;
     }

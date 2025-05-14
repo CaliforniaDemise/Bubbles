@@ -44,7 +44,6 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 
 import static baubles.common.integration.ModCompatibility.COSMETIC_ARMOR;
-import static baubles.common.integration.ModCompatibility.ME$shouldMoveLeft;
 
 public class GuiPlayerExpanded extends InventoryEffectRenderer {
 
@@ -169,9 +168,9 @@ public class GuiPlayerExpanded extends InventoryEffectRenderer {
             if (mouseY >= yLoc && mouseY < yLoc + getMaxY()) {
                 int slotIndex = (mouseY - yLoc) / 18;
                 BaublesContainer container = ((BaublesContainer) baublesHandler);
-                ItemStack stack = container.getStackInSlot(container.getSlotByOffset(slotIndex));
+                ItemStack stack = container.getStackInSlot(getContainer().getSlotByOffset(slotIndex));
                 if (!stack.isEmpty()) return;
-                IBaubleType type = container.getSlotType(container.getSlotByOffset(slotIndex));
+                IBaubleType type = container.getSlotType(getContainer().getSlotByOffset(slotIndex));
                 FontRenderer renderer = Minecraft.getMinecraft().fontRenderer;
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 GlStateManager.enableBlend();
@@ -202,10 +201,9 @@ public class GuiPlayerExpanded extends InventoryEffectRenderer {
         if (ModCompatibility.MT$shouldScroll(this.getSlotUnderMouse())) {
             int dWheel = Mouse.getEventDWheel();
             if (dWheel != 0) {
-                BaublesContainer container = (BaublesContainer) baublesHandler;
                 int value = -(dWheel / 120);
                 PacketHandler.INSTANCE.sendToServer(new PacketChangeOffset(value));
-                container.setOffset(container.getSlotByOffset(value));
+                getContainer().setOffset(getContainer().getSlotByOffset(value));
             }
         }
     }
@@ -324,5 +322,9 @@ public class GuiPlayerExpanded extends InventoryEffectRenderer {
 
     public int getActualMaxBaubleSlots() {
         return 8;
+    }
+
+    public ContainerPlayerExpanded getContainer() {
+        return (ContainerPlayerExpanded) this.inventorySlots;
     }
 }
