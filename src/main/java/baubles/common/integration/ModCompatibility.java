@@ -123,7 +123,8 @@ public class ModCompatibility {
                 case "infernal_tear":
                 case "kraken_shell":
                 case "lantern_of_paranoia":
-                case "midas_touchstone": return new InjectableBauble(BaubleType.TRINKET, INVENTORY);
+                case "midas_touchstone":
+                case "witherless_rose": return new InjectableBauble(BaubleType.TRINKET, INVENTORY);
             }
 
         }

@@ -15,6 +15,7 @@ public class ReliquaryTransformer extends BaseTransformer {
         for (MethodNode method : cls.methods) {
             if (method.name.equals("decreaseAngelHeartByOne")) {
                 AbstractInsnNode node = method.instructions.getLast();
+                while (node.getOpcode() != RETURN) node = node.getPrevious();
                 InsnList list = new InsnList();
                 list.add(new VarInsnNode(ALOAD, 0));
                 list.add(new FieldInsnNode(GETSTATIC, "xreliquary/init/ModItems", "angelheartVial", "Lxreliquary/items/ItemAngelheartVial;"));
@@ -31,6 +32,7 @@ public class ReliquaryTransformer extends BaseTransformer {
         for (MethodNode method : cls.methods) {
             if (method.name.equals("revertPhoenixDownToAngelicFeather")) {
                 AbstractInsnNode node = method.instructions.getLast();
+                while (node.getOpcode() != RETURN) node = node.getPrevious();
                 InsnList list = new InsnList();
                 list.add(new VarInsnNode(ALOAD, 0));
                 list.add(new FieldInsnNode(GETSTATIC, "xreliquary/init/ModItems", "phoenixDown", "Lxreliquary/items/ItemPhoenixDown;"));
