@@ -55,7 +55,7 @@ public class CorailTombstoneTransformer extends BaseTransformer {
             for (int i = 0; i < handler.getSlots(); i++) {
                 ItemStack baubleStack = handler.getStackInSlot(i);
                 if (!baubleStack.isEmpty()) continue;
-                if (bauble.canEquip(stack, player) && bauble.canPutOnSlot(handler, i, stack)) {
+                if (bauble.canEquip(stack, player) && bauble.canPutOnSlot(handler, i, handler.getSlotType(i), stack)) {
                     handler.setStackInSlot(i, stack);
                     bauble.onEquipped(stack, player);
                     corailTombstone.setStackInSlot(slot, ItemStack.EMPTY);

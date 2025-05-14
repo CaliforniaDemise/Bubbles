@@ -1,15 +1,23 @@
 package baubles.api;
 
+import baubles.api.cap.BaublesCapabilities;
 import baubles.api.cap.IBaublesItemHandler;
 import baubles.api.render.IRenderBauble;
+import baubles.common.event.EventHandlerItem;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * This interface should be extended by items that can be worn in bauble slots
+ * A capability that defines an item that can be put into bauble slots.
+ * If you want to define a bauble item you may implement this on items class or inject it with {@link AttachCapabilitiesEvent<Item>}
+ * If you want to get IBauble from an ItemStack, use {@link BaublesApi#getBauble(ItemStack)} or get from {@link BaublesCapabilities#CAPABILITY_ITEM_BAUBLE} if getBauble is insufficient.
+ * DO NOT CHECK IF ITEM IS INSTANCE OF THIS. It's only for convenience.
+ * @see EventHandlerItem#itemCapabilityAttach(AttachCapabilitiesEvent)
  *
  * @author Azanor
  */
@@ -20,23 +28,25 @@ public interface IBauble {
      * Type is used to determine the slots it can go into.
      */
     @NotNull
-    default IBaubleType getType(ItemStack itemStack) {
+    default IBaubleType getType(@NotNull ItemStack itemStack) {
         return getBaubleType(itemStack);
     }
 
     /**
-     * This method return the type of bauble this is.
-     * Type is used to determine the slots it can go into.
-     *
-     * @deprecated prefer calling {@link IBauble#getType(ItemStack)} wherever possible
+     * @deprecated
+     * @see IBauble#getType(ItemStack)}
      */
     @Deprecated
-    default BaubleType getBaubleType(ItemStack itemstack) {
+    default BaubleType getBaubleType(@NotNull ItemStack itemstack) {
         return BaubleType.TRINKET;
     }
 
-    default boolean canPutOnSlot(IBaublesItemHandler handler, int slotIndex, ItemStack stack) {
-        return this.getType(stack) == BaubleType.TRINKET || handler.getSlotType(slotIndex) == BaubleType.TRINKET || this.getType(stack) == handler.getSlotType(slotIndex);
+    /**
+     * Check that happens before putting the item to an empty slot
+     * @see IBauble#canEquip(ItemStack, EntityLivingBase) for entity based check.
+     **/
+    default boolean canPutOnSlot(IBaublesItemHandler handler, int slotIndex, IBaubleType slotType, ItemStack stack) {
+        return this.getType(stack) == BaubleType.TRINKET || slotType == BaubleType.TRINKET || this.getType(stack) == slotType;
     }
 
     /**

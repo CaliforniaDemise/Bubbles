@@ -4,13 +4,18 @@ import baubles.api.BaublesApi;
 import baubles.api.IBauble;
 import baubles.api.cap.BaublesCapabilities;
 import baubles.api.cap.BaublesContainer;
+import baubles.common.network.PacketHandler;
+import baubles.common.network.PacketSyncSlots;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.*;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
+import net.minecraftforge.fml.relauncher.Side;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -26,13 +31,16 @@ public class ContainerPlayerExpanded extends Container {
     public ContainerPlayerExpanded(InventoryPlayer playerInv, EntityPlayer player) {
         this.thePlayer = player;
         baubles = (BaublesContainer) BaublesApi.getBaublesHandler(player);
+        if (!player.world.isRemote) {
+            PacketSyncSlots syncSlots = new PacketSyncSlots(this.baubles.serializeNBT());
+            PacketHandler.INSTANCE.sendTo(syncSlots, ((EntityPlayerMP) player));
+        }
         this.addSlotToContainer(new SlotCrafting(playerInv.player, this.craftMatrix, this.craftResult, 0, 154, 28));
         for (int i = 0; i < 2; ++i) {
             for (int j = 0; j < 2; ++j) {
                 this.addSlotToContainer(new Slot(this.craftMatrix, j + i * 2, 98 + j * 18, 18 + i * 18));
             }
         }
-
         for (int k = 0; k < 4; k++) {
             final EntityEquipmentSlot slot = equipmentSlots[k];
             this.addSlotToContainer(new Slot(playerInv, 36 + (3 - k), 8, 8 + k * 18) {
@@ -227,7 +235,7 @@ public class ContainerPlayerExpanded extends Container {
                 }
                 container.setOffset(slotIndex);
             }
-            else if (itemstack.isEmpty() && bauble.canPutOnSlot(container, slotIndex, stack)) {
+            else if (itemstack.isEmpty() && bauble.canPutOnSlot(container, slotIndex, container.getSlotType(slotIndex), stack)) {
                 if (stack.getCount() > container.getSlotLimit(slotIndex))
                     container.setStackInSlot(slotIndex, stack.splitStack(container.getSlotLimit(slotIndex)));
                 else container.setStackInSlot(slotIndex, stack.splitStack(stack.getCount()));

@@ -37,7 +37,7 @@ public enum BaubleType implements IBaubleType {
 
     @Override
     public int getOrder() {
-        return 0;
+        return 100 + (this.ordinal() * 100);
     }
 
     @NotNull

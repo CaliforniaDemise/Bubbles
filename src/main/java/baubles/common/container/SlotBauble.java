@@ -24,8 +24,8 @@ public class SlotBauble extends SlotItemHandler {
     private final IBaublesItemHandler baublesHandler;
     private final EntityPlayer player;
 
-    public SlotBauble(EntityPlayer player, IBaublesItemHandler itemHandler, int slot, int par4, int par5) {
-        super(itemHandler, slot, par4, par5);
+    public SlotBauble(EntityPlayer player, IBaublesItemHandler itemHandler, int slot, int xPos, int yPos) {
+        super(itemHandler, slot, xPos, yPos);
         this.baublesHandler = itemHandler;
         this.player = player;
         this.slotIndex = slot;
@@ -70,16 +70,18 @@ public class SlotBauble extends SlotItemHandler {
 
     @Override
     public void putStack(@NotNull ItemStack stack) {
-        if (this.getHasStack() && !ItemStack.areItemStacksEqual(stack, this.getStack()) &&
-                this.getStack().hasCapability(BaublesCapabilities.CAPABILITY_ITEM_BAUBLE, null)) {
-            this.getStack().getCapability(BaublesCapabilities.CAPABILITY_ITEM_BAUBLE, null).onUnequipped(this.getStack(), player);
+        ItemStack slotStack = this.getStack();
+        if (this.getHasStack() && !ItemStack.areItemStacksEqual(stack, slotStack)) {
+            IBauble bauble = slotStack.getCapability(BaublesCapabilities.CAPABILITY_ITEM_BAUBLE, null);
+            if (bauble != null) bauble.onUnequipped(slotStack, this.player);
         }
         ItemStack oldstack = this.getStack().copy();
         ((IItemHandlerModifiable) this.getItemHandler()).setStackInSlot(this.getRealSlotIndex(), stack);
         this.onSlotChanged();
-        if (getHasStack() && !ItemStack.areItemStacksEqual(oldstack, this.getStack()) &&
-                this.getStack().hasCapability(BaublesCapabilities.CAPABILITY_ITEM_BAUBLE, null)) {
-            Objects.requireNonNull(this.getStack().getCapability(BaublesCapabilities.CAPABILITY_ITEM_BAUBLE, null)).onEquipped(this.getStack(), player);
+        slotStack = this.getStack();
+        if (this.getHasStack() && !ItemStack.areItemStacksEqual(oldstack, slotStack)) {
+            IBauble bauble = slotStack.getCapability(BaublesCapabilities.CAPABILITY_ITEM_BAUBLE, null);
+            if (bauble != null) bauble.onEquipped(slotStack, this.player);
         }
     }
 

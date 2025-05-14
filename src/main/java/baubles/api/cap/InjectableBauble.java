@@ -31,7 +31,7 @@ public class InjectableBauble implements IBauble {
 
     @NotNull
     @Override
-    public IBaubleType getType(ItemStack itemStack) {
+    public IBaubleType getType(@NotNull ItemStack itemStack) {
         return this.type;
     }
 

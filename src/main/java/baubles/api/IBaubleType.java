@@ -21,6 +21,9 @@ public interface IBaubleType {
     @NotNull
     ResourceLocation getRegistryName();
 
+    /**
+     * Order of slot placement
+     **/
     int getOrder();
 
     /**
