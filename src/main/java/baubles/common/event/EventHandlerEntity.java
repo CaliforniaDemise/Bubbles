@@ -67,7 +67,6 @@ public class EventHandlerEntity {
             EntityPlayerMP player = (EntityPlayerMP) entity;
             this.syncSlots(player, Collections.singletonList(player));
             BaublesContainer container = (BaublesContainer) BaublesApi.getBaublesHandler(player);
-            container.pukeItems(player);
         }
     }
 
@@ -84,6 +83,8 @@ public class EventHandlerEntity {
         if (event.phase == TickEvent.Phase.END) {
             EntityPlayer player = event.player;
             IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
+            BaublesContainer container = (BaublesContainer) baubles;
+            container.update(player);
             for (int i = 0; i < baubles.getSlots(); i++) {
                 ItemStack stack = baubles.getStackInSlot(i);
                 if (stack.isEmpty()) continue;

@@ -1,14 +1,16 @@
 package baubles.api.cap;
 
+import baubles.api.BaublesApi;
 import baubles.api.IBauble;
 import baubles.api.IBaubleType;
+import baubles.common.Baubles;
 import baubles.common.Config;
 import baubles.common.init.BaubleTypes;
 import baubles.common.network.PacketHandler;
 import baubles.common.network.PacketSync;
+import baubles.common.network.PacketSyncSlots;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -47,11 +49,6 @@ public class BaublesContainer implements PlayerBaubleHandler, INBTSerializable<N
     private final EntityLivingBase player;
 
     /**
-     * Items to drop when slots get updated
-     **/
-    private ItemStack[] itemsToPuke = null;
-
-    /**
      * Only for internal use. Do not use it anywhere else.
      * Used for factory parameter of {@link CapabilityManager#register(Class, Capability.IStorage, Callable)}
      **/
@@ -60,8 +57,9 @@ public class BaublesContainer implements PlayerBaubleHandler, INBTSerializable<N
     }
 
     public BaublesContainer(EntityLivingBase player) {
-        this.slots = new SlotMap();
-        this.slots.init(getDefaultSlotTypes());
+        Object2IntMap<IBaubleType> map = Config.getDefaultSlotMap(player);
+        if (map == null) map = new Object2IntOpenHashMap<>();
+        this.slots = new SlotMap(map);
         this.player = player;
     }
 
@@ -135,7 +133,7 @@ public class BaublesContainer implements PlayerBaubleHandler, INBTSerializable<N
 
     @Override
     public int getSlots() {
-        return this.slots.getSlotAmount();
+        return this.slots.slotAmount;
     }
 
     @NotNull
@@ -215,95 +213,25 @@ public class BaublesContainer implements PlayerBaubleHandler, INBTSerializable<N
         return 64;
     }
 
-    public void pukeItems(World world, double x, double y, double z) {
-        if (this.itemsToPuke != null) {
-            for (ItemStack stack : this.itemsToPuke) {
-                EntityItem eItem = new EntityItem(world, x, y, z, stack);
-                world.spawnEntity(eItem);
-            }
-            this.itemsToPuke = null;
-        }
-    }
-
-    public void pukeItems(Entity entity) {
-        this.pukeItems(entity.world, entity.posX, entity.posY, entity.posZ);
+    public void update(EntityPlayer player) {
+        this.slots.drop(player.world, player.posX, player.posY, player.posZ);
+        this.slots.sort();
+        this.slots.syncSlots(player);
+        this.slots.updated = 0;
     }
 
     @Override
     public NBTTagCompound serializeNBT() {
-        NBTTagCompound compound = new NBTTagCompound();
-        NBTTagList typeList = new NBTTagList();
-        for (Pair<IBaubleType, ItemStack[]> pair : this.slots.list) {
-            ItemStack[] items = pair.getValue();
-            NBTTagCompound typeTag = new NBTTagCompound();
-            NBTTagList itemsList = new NBTTagList();
-            for (int a = 0; a < items.length; a++) {
-                ItemStack stack = items[a];
-                if (stack == null || stack.isEmpty()) continue;
-                NBTTagCompound stackTag = new NBTTagCompound();
-                stackTag.setInteger("Slot", a);
-                stack.writeToNBT(stackTag);
-                itemsList.appendTag(stackTag);
-            }
-            typeTag.setString("Name", pair.getKey().getRegistryName().toString());
-            typeTag.setInteger("Count", items.length);
-            typeTag.setTag("Items", itemsList);
-            typeList.appendTag(typeTag);
-        }
-        compound.setTag("Types", typeList);
-        return compound;
+        return this.slots.serializeNBT();
     }
 
     @Override
     public void deserializeNBT(NBTTagCompound nbt) {
-        this.slots.list.clear();
-        this.slots.slotAmount = 0;
-        if (nbt.hasKey("Items", Constants.NBT.TAG_COMPOUND)) this.deserializeNBTOld(nbt);
-        else {
-            NBTTagList typeList = nbt.getTagList("Types", Constants.NBT.TAG_COMPOUND);
-            for (int i = 0; i < typeList.tagCount(); i++) {
-                NBTTagCompound typeTag = typeList.getCompoundTagAt(i);
-                IBaubleType type = BaubleTypes.get(new ResourceLocation(typeTag.getString("Name")));
-                int slotCount = typeTag.getInteger("Count");
-                NBTTagList itemsList = typeTag.getTagList("Items", Constants.NBT.TAG_COMPOUND);
-                ItemStack[] stacks = new ItemStack[slotCount];
-                for (int a = 0; a < itemsList.tagCount(); a++) {
-                    NBTTagCompound stackTag = itemsList.getCompoundTagAt(a);
-                    int slot = stackTag.getInteger("Slot");
-                    ItemStack stack = new ItemStack(stackTag);
-                    stacks[slot] = stack;
-                }
-                this.slots.list.add(Pair.of(type, stacks));
-                this.slots.slotAmount += slotCount;
-                this.slots.list.sort(Comparator.comparingInt(p -> p.getKey().getOrder()));
-            }
-        }
-    }
-
-    private void deserializeNBTOld(NBTTagCompound nbt) {
-        NBTTagList list = nbt.getTagList("Items", Constants.NBT.TAG_COMPOUND);
-//        List<ItemStack> itemsToPuke = new ArrayList<>();
-        for (int i = 0; i < list.tagCount(); i++) {
-            NBTTagCompound stackTag = list.getCompoundTagAt(i);
-            int slot = stackTag.getInteger("Slot");
-            if (!stackTag.hasKey("id", 8)) continue;
-            ItemStack stack = new ItemStack(stackTag);
-            this.slots.putItem(slot, stack);
-//            IBauble bauble = Objects.requireNonNull(BaublesApi.getBauble(stack));
-//            if (slot < getSlots()) {
-//                if (bauble.canPutOnSlot(this, slot, this.getSlotType(slot), stack)) this.slots.putItem(slot, stack);
-//                else itemsToPuke.add(stack);
-//            } else itemsToPuke.add(new ItemStack(stackTag));
-        }
-//        if (!itemsToPuke.isEmpty()) this.itemsToPuke = itemsToPuke.toArray(new ItemStack[0]);
+        this.slots.deserializeNBT(nbt);
     }
 
     @Deprecated @Override public boolean isChanged(int slot) { return false; }
     @Deprecated @Override public void setChanged(int slot, boolean change) {}
-
-    private static IBaubleType[] getDefaultSlotTypes() {
-        return Config.getSlotTypes();
-    }
 
     /**
      * Use {@link BaublesContainer#getStackInSlot(int)}
@@ -322,43 +250,42 @@ public class BaublesContainer implements PlayerBaubleHandler, INBTSerializable<N
     }
 
     private int validateSlotIndex(int slot) {
-        if (slot < 0 || slot >= this.slots.getSlotAmount()) {
+        if (slot < 0 || slot >= this.slots.slotAmount) {
             return -1;
         }
         return slot;
     }
 
-    // TODO Handle item dropping when slot amount is decreased
-    private static class SlotMap {
+    private class SlotMap implements INBTSerializable<NBTTagCompound> {
 
-        private final List<Pair<IBaubleType, ItemStack[]>> list;
+        final List<Pair<IBaubleType, ItemStack[]>> list;
+        List<ItemStack> toDrop = null;
 
-        private int slotAmount = 0;
+        int slotAmount = 0;
+        int updated = 0;
 
-        protected SlotMap() {
+        static final int SORT = 1, DROP = 2, SYNC = 4;
+
+        SlotMap(Object2IntMap<IBaubleType> map) {
             this.list = new ArrayList<>();
-        }
-
-        private void init(IBaubleType[] types) {
-            Object2IntMap<IBaubleType> map = new Object2IntOpenHashMap<>();
-            for (IBaubleType type : types) {
-                if (type == null) continue;
-                map.put(type, map.getInt(type) + 1);
-            }
             map.object2IntEntrySet().forEach(entry -> {
                 this.slotAmount += entry.getIntValue();
                 ItemStack[] stacks = new ItemStack[entry.getIntValue()];
                 Arrays.fill(stacks, ItemStack.EMPTY);
                 this.list.add(Pair.of(entry.getKey(), stacks));
             });
-            this.list.sort(Comparator.comparingInt(p -> p.getKey().getOrder()));
+            this.setSort();
         }
 
-        protected int getSlotAmount() {
-            return this.slotAmount;
+        Object2IntMap<IBaubleType> getMapArray(IBaubleType[] types) {
+            Object2IntMap<IBaubleType> map = new Object2IntOpenHashMap<>();
+            for (IBaubleType type : types) {
+                map.put(type, map.get(type) + 1);
+            }
+            return map;
         }
 
-        protected void setTypeAmount(IBaubleType type, int slotAmount) {
+        void setSlotAmount(IBaubleType type, int slotAmount) {
             Iterator<Pair<IBaubleType, ItemStack[]>> iterator = this.list.iterator();
             int i = 0;
             while (iterator.hasNext()) {
@@ -366,7 +293,10 @@ public class BaublesContainer implements PlayerBaubleHandler, INBTSerializable<N
                 if (pair.getKey() == type) {
                     if (pair.getValue().length == slotAmount) return;
                     ItemStack[] items = new ItemStack[slotAmount];
-                    System.arraycopy(pair.getValue(), 0, items, 0, Math.min(slotAmount, pair.getValue().length));
+                    for (int a = 0; a < pair.getValue().length; a++) {
+                        if (a >= slotAmount && pair.getValue()[a] != ItemStack.EMPTY) this.addDrop(pair.getValue()[a]);
+                        else items[a] = pair.getValue()[a];
+                    }
                     this.list.set(i, Pair.of(type, items));
                     this.slotAmount += slotAmount - pair.getValue().length;
                     return;
@@ -377,10 +307,10 @@ public class BaublesContainer implements PlayerBaubleHandler, INBTSerializable<N
             ItemStack[] items = new ItemStack[slotAmount];
             Arrays.fill(items, ItemStack.EMPTY);
             this.list.add(Pair.of(type, items));
-            this.list.sort(Comparator.comparingInt(p -> p.getKey().getOrder()));
+            this.setSort();
         }
 
-        protected void putItem(int slotIndex, ItemStack stack) {
+        void putItem(int slotIndex, ItemStack stack) {
             if (stack == null) stack = ItemStack.EMPTY;
             int slot = 0;
             for (Pair<IBaubleType, ItemStack[]> pair : this.list) {
@@ -393,7 +323,7 @@ public class BaublesContainer implements PlayerBaubleHandler, INBTSerializable<N
             }
         }
 
-        protected ItemStack getStack(int slotIndex) {
+        ItemStack getStack(int slotIndex) {
             int slot = 0;
             for (Pair<IBaubleType, ItemStack[]> pair : this.list) {
                 int newSlot = slot + pair.getValue().length;
@@ -405,13 +335,111 @@ public class BaublesContainer implements PlayerBaubleHandler, INBTSerializable<N
             return ItemStack.EMPTY;
         }
 
-        private IBaubleType getSlotType(int slotIndex) {
+        void syncSlots(EntityPlayer player) {
+            if ((this.updated & SYNC) == 0 || player.world.isRemote) return;
+            PacketSyncSlots syncSlots = new PacketSyncSlots(BaublesContainer.this.serializeNBT());
+            PacketHandler.INSTANCE.sendTo(syncSlots, (EntityPlayerMP) player);
+        }
+
+        void sort() {
+            if ((this.updated & SORT) == 0) return;
+            this.list.sort(Comparator.comparingInt(p -> p.getKey().getOrder()));
+        }
+
+        void drop(World world, double x, double y, double z) {
+            if ((this.updated & DROP) == 0) return;
+            if (this.toDrop != null) {
+                for (ItemStack stack : this.toDrop) {
+                    EntityItem eItem = new EntityItem(world, x, y, z, stack);
+                    world.spawnEntity(eItem);
+                }
+                this.toDrop = null;
+            }
+        }
+
+        void setSort() { this.updated |= SORT; }
+        void setSync() { this.updated |= SYNC; }
+
+        IBaubleType getSlotType(int slotIndex) {
             int slot = 0;
             for (Pair<IBaubleType, ItemStack[]> pair : this.list) {
                 slot += pair.getValue().length;
                 if (slotIndex < slot) return pair.getKey();
             }
             throw new IndexOutOfBoundsException("Amount of slots are less than " + slotIndex);
+        }
+
+        void addDrop(ItemStack stack) {
+            if (this.toDrop == null) this.toDrop = new ArrayList<>(4);
+            this.toDrop.add(stack);
+            this.updated |= DROP;
+        }
+
+        @Override
+        public NBTTagCompound serializeNBT() {
+            NBTTagCompound compound = new NBTTagCompound();
+            NBTTagList typeList = new NBTTagList();
+            for (Pair<IBaubleType, ItemStack[]> pair : this.list) {
+                ItemStack[] items = pair.getValue();
+                NBTTagCompound typeTag = new NBTTagCompound();
+                NBTTagList itemsList = new NBTTagList();
+                for (int a = 0; a < items.length; a++) {
+                    ItemStack stack = items[a];
+                    if (stack == null || stack.isEmpty()) continue;
+                    NBTTagCompound stackTag = new NBTTagCompound();
+                    stackTag.setInteger("Slot", a);
+                    stack.writeToNBT(stackTag);
+                    itemsList.appendTag(stackTag);
+                }
+                typeTag.setString("Name", pair.getKey().getRegistryName().toString());
+                typeTag.setInteger("Count", items.length);
+                typeTag.setTag("Items", itemsList);
+                typeList.appendTag(typeTag);
+            }
+            compound.setTag("Types", typeList);
+            return compound;
+        }
+
+        @Override
+        public void deserializeNBT(NBTTagCompound nbt) {
+            this.list.clear();
+            this.slotAmount = 0;
+            if (nbt.hasKey("Items", Constants.NBT.TAG_COMPOUND)) this.deserializeNBTOld(nbt);
+            else {
+                NBTTagList typeList = nbt.getTagList("Types", Constants.NBT.TAG_COMPOUND);
+                for (int i = 0; i < typeList.tagCount(); i++) {
+                    NBTTagCompound typeTag = typeList.getCompoundTagAt(i);
+                    IBaubleType type = BaubleTypes.get(new ResourceLocation(typeTag.getString("Name")));
+                    int slotCount = typeTag.getInteger("Count");
+                    NBTTagList itemsList = typeTag.getTagList("Items", Constants.NBT.TAG_COMPOUND);
+                    ItemStack[] stacks = new ItemStack[slotCount];
+                    for (int a = 0; a < itemsList.tagCount(); a++) {
+                        NBTTagCompound stackTag = itemsList.getCompoundTagAt(a);
+                        int slot = stackTag.getInteger("Slot");
+                        ItemStack stack = new ItemStack(stackTag);
+                        stacks[slot] = stack;
+                    }
+                    this.list.add(Pair.of(type, stacks));
+                    this.slotAmount += slotCount;
+                    this.setSync();
+                }
+            }
+        }
+
+        private void deserializeNBTOld(NBTTagCompound nbt) {
+            NBTTagList list = nbt.getTagList("Items", Constants.NBT.TAG_COMPOUND);
+            for (int i = 0; i < list.tagCount(); i++) {
+                NBTTagCompound stackTag = list.getCompoundTagAt(i);
+                int slot = stackTag.getInteger("Slot");
+                if (!stackTag.hasKey("id", 8)) continue;
+                ItemStack stack = new ItemStack(stackTag);
+                this.putItem(slot, stack);
+                IBauble bauble = Objects.requireNonNull(BaublesApi.getBauble(stack));
+                if (slot < getSlots()) {
+                    if (bauble.canPutOnSlot(BaublesContainer.this, slot, this.getSlotType(slot), stack)) this.putItem(slot, stack);
+                    else this.addDrop(stack);
+                } else this.addDrop(new ItemStack(stackTag));
+            }
         }
     }
 }

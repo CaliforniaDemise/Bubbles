@@ -11,7 +11,7 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 public class BaublesCapabilities {
 
     /**
-     * Access to the baubles' capability. 99% it's {@link BaublesContainer}
+     * Access to the entities Baubles capability. If the entity is player, the instance is likely {@link BaublesContainer}.
      * This capability is attached to entities with {@link EntityLivingBase} type.
      */
     @CapabilityInject(IBaublesItemHandler.class)
