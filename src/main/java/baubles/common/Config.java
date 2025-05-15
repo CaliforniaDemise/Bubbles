@@ -1,5 +1,6 @@
 package baubles.common;
 
+import baubles.api.BaubleTypeImpl;
 import baubles.api.IBaubleType;
 import baubles.api.cap.InjectableBauble;
 import baubles.common.init.BaubleTypes;
@@ -31,9 +32,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static baubles.api.BaubleType.*;
@@ -114,7 +113,7 @@ public class Config {
 
     private static Object2IntMap<IBaubleType> getSlotsFromJson(File file) throws IOException {
         Object2IntMap<IBaubleType> map = new Object2IntOpenHashMap<>();
-        InputStreamReader reader = new InputStreamReader(Files.newInputStream(file.toPath()));
+        Reader reader = new InputStreamReader(Files.newInputStream(file.toPath()));
         JsonObject object = GSON.fromJson(reader, JsonObject.class);
         reader.close();
         object.entrySet().forEach(entry -> {
@@ -171,16 +170,49 @@ public class Config {
         return map;
     }
 
-    public static void initDefaultBaubles() {
+    @Nullable
+    public static List<IBaubleType> getCustomBaubleTypes() {
+        List<IBaubleType> out = new ArrayList<>();
+        File types = new File(CONFIG_DIR, Baubles.MODID + "/types");
+        if (!types.exists()) return null;
+        try (Stream<Path> stream = Files.walk(types.toPath())) {
+            stream.filter(p -> !p.toFile().isDirectory() && p.getName(p.getNameCount() - 2).toString().equals("custom")).forEach(p -> {
+                ResourceLocation location;
+                {
+                    String path = p.getName(p.getNameCount() - 1).toString();
+                    path = path.substring(0, path.length() - 5);
+                    location = new ResourceLocation(Baubles.MODID, path);
+                }
+                IBaubleType type = BaubleTypes.get(location);
+                int order;
+                {
+                    try {
+                        Reader reader = new InputStreamReader(Files.newInputStream(p));
+                        JsonObject object = GSON.fromJson(reader, JsonObject.class);
+                        order = object.has("order") ? object.get("order").getAsInt() : 0;
+                        reader.close();
+                    }
+                    catch (IOException e) { throw new RuntimeException(e); }
+                }
+                if (type == null) out.add(new BaubleTypeImpl(location, order));
+            });
+        }
+        catch (IOException e) { throw new RuntimeException(e); }
+        return out;
+    }
+
+    public static void initCustomBaubleItems() {
         File types = new File(CONFIG_DIR, Baubles.MODID + "/types");
         if (!types.exists()) return;
         try (Stream<Path> stream = Files.walk(types.toPath())) {
             stream.filter(p -> !p.toFile().isDirectory()).forEach(p -> {
                 ResourceLocation location;
                 {
+                    String namespace = p.getName(p.getNameCount() - 2).toString();
+                    if (namespace.equals("custom")) namespace = Baubles.MODID;
                     String path = p.getName(p.getNameCount() - 1).toString();
                     path = path.substring(0, path.length() - 5);
-                    location = new ResourceLocation(p.getName(p.getNameCount() - 2).toString(), path);
+                    location = new ResourceLocation(namespace, path);
                 }
                 IBaubleType type = BaubleTypes.get(location);
                 if (type == null) {
@@ -194,7 +226,7 @@ public class Config {
     }
 
     private static void checkTypeJson(IBaubleType type, File typeFile) throws IOException {
-        InputStreamReader reader = new InputStreamReader(Files.newInputStream(typeFile.toPath()));
+        Reader reader = new InputStreamReader(Files.newInputStream(typeFile.toPath()));
         JsonObject object = GSON.fromJson(reader, JsonObject.class);
         if (object.has("items")) {
             for (JsonElement e : object.getAsJsonArray("items")) {

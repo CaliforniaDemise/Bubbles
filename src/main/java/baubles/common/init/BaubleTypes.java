@@ -2,6 +2,7 @@ package baubles.common.init;
 
 import baubles.api.BaubleType;
 import baubles.api.IBaubleType;
+import baubles.common.Config;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.TextureStitchEvent;
@@ -11,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class BaubleTypes {
@@ -29,6 +31,8 @@ public class BaubleTypes {
         register(BaubleType.HEAD);
         register(BaubleType.BODY);
         register(BaubleType.CHARM);
+        List<IBaubleType> customTypes = Config.getCustomBaubleTypes();
+        if (customTypes != null) customTypes.forEach(BaubleTypes::register);
     }
 
     @Nullable

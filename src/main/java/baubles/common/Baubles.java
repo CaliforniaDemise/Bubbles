@@ -81,7 +81,7 @@ public class Baubles {
 
     @EventHandler
     public void init(FMLInitializationEvent evt) {
-        Config.initDefaultBaubles();
+        Config.initCustomBaubleItems();
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, proxy);
         proxy.init();
     }

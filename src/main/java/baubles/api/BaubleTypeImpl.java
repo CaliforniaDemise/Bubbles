@@ -6,19 +6,21 @@ import org.jetbrains.annotations.Nullable;
 
 public class BaubleTypeImpl implements IBaubleType {
 
+    private final int order;
     private final ResourceLocation name;
     private final String translationKey;
     private final ResourceLocation textureLoc;
 
-    public BaubleTypeImpl(String namespace, String path) {
-        this(new ResourceLocation(namespace, path));
+    public BaubleTypeImpl(String namespace, String path, int order) {
+        this(new ResourceLocation(namespace, path), order);
     }
 
-    public BaubleTypeImpl(String name) {
-        this(new ResourceLocation(name));
+    public BaubleTypeImpl(String name, int order) {
+        this(new ResourceLocation(name), order);
     }
 
-    public BaubleTypeImpl(ResourceLocation name) {
+    public BaubleTypeImpl(ResourceLocation name, int order) {
+        this.order = order;
         this.name = name;
         this.translationKey = name.getNamespace() + ".type." + name.getPath();
         this.textureLoc = new ResourceLocation(name.getNamespace(), "gui/slots/" + name.getPath());
@@ -38,7 +40,7 @@ public class BaubleTypeImpl implements IBaubleType {
 
     @Override
     public int getOrder() {
-        return 0;
+        return this.order;
     }
 
     @Nullable

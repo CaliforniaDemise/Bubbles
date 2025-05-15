@@ -139,7 +139,7 @@ public class EventHandlerEntity {
             if (!baubles.getStackInSlot(i).isEmpty()) {
                 ItemStack stack = baubles.getStackInSlot(i);
                 IBauble bauble = Objects.requireNonNull(stack.getCapability(BaublesCapabilities.CAPABILITY_ITEM_BAUBLE, null));
-                IBauble.DropResult result = bauble.onDeath(i, stack, player);
+                IBauble.DeathResult result = bauble.onDeath(i, stack, player);
                 switch (result) {
                     case CUSTOM:
                     case ALWAYS_KEEP:

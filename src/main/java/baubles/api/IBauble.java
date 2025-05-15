@@ -103,14 +103,14 @@ public interface IBauble {
      * @param living    The entity that has died
      * @return Way item drop should be handled when entity dies.
      */
-    default DropResult onDeath(int slotIndex, ItemStack stack, EntityLivingBase living) {
-        return DropResult.DEFAULT;
+    default DeathResult onDeath(int slotIndex, ItemStack stack, EntityLivingBase living) {
+        return DeathResult.DEFAULT;
     }
 
     /**
      * Enums to define how item dropping should be handled on entity death.
      */
-    enum DropResult {
+    enum DeathResult {
         DEFAULT,
         ALWAYS_KEEP,
         ALWAYS_DROP,
