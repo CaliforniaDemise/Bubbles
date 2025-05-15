@@ -7,6 +7,7 @@ import baubles.common.init.BaubleTypes;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.minecraft.CrafttweakerMC;
 import crafttweaker.api.player.IPlayer;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
@@ -38,5 +39,12 @@ public class CTEntityPlayerExpansion {
         if (type == null) return;
         BaublesContainer container = BaublesApi.getBaublesContainer(CrafttweakerMC.getPlayer(player));
         container.set(type, amount);
+    }
+
+    @ZenMethod
+    public static void resetBaubleSlots(IPlayer player) {
+        EntityPlayer entity = CrafttweakerMC.getPlayer(player);
+        BaublesContainer container = BaublesApi.getBaublesContainer(entity);
+        container.reset();
     }
 }

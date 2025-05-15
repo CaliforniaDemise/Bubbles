@@ -25,4 +25,9 @@ public class BaublesEntityPlayerExpansion {
         BaublesContainer container = BaublesApi.getBaublesContainer(player);
         container.set(type, amount);
     }
+
+    public static void resetBaubleSlots(EntityPlayer player) {
+        BaublesContainer container = BaublesApi.getBaublesContainer(player);
+        container.reset();
+    }
 }

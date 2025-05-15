@@ -24,6 +24,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.oredict.OreDictionary;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
@@ -70,20 +71,9 @@ public class Config {
     }
 
     @Nullable
-    public static Object2IntMap<IBaubleType> getDefaultSlotMap(Entity entity) {
+    public static Object2IntMap<IBaubleType> getDefaultSlots(Entity entity) {
         if (!(entity instanceof EntityLivingBase)) return null;
         File entities = new File(CONFIG_DIR, Baubles.MODID + "/entities");
-        if (!entities.exists()) {
-            Object2IntMap<IBaubleType> map = new Object2IntOpenHashMap<>();
-            int multiplier = expandedMode ? 2 : 1;
-            map.put(AMULET, multiplier);
-            map.put(RING, 2 * multiplier);
-            map.put(BELT, multiplier);
-            map.put(HEAD, multiplier);
-            map.put(BODY, multiplier);
-            map.put(CHARM, multiplier);
-            return map;
-        }
         ResourceLocation location;
         if (entity instanceof EntityPlayer) location = new ResourceLocation("player");
         else location = EntityList.getKey(entity);
@@ -92,17 +82,16 @@ public class Config {
             Object2IntMap<IBaubleType> map = TYPE_MAP.get(location);
             if (map != null) return map;
         }
+        if (!entities.exists()) {
+            if (!(entity instanceof EntityPlayer)) return null;
+            Object2IntMap<IBaubleType> map = defaultPlayerSlots(CONFIG_DIR);
+            TYPE_MAP.put(location, map);
+            return map;
+        }
         try {
-            if (entity instanceof EntityPlayer) {
-                Object2IntMap<IBaubleType> map = checkSlotsJson(CONFIG_DIR);
-                if (map != null) {
-                    TYPE_MAP.put(location, map);
-                    return map;
-                }
-            }
             File file = new File(CONFIG_DIR, Baubles.MODID + "/entities/" + location.toString().replace(':', '/') + ".json");
             if (file.exists()) {
-                Object2IntMap<IBaubleType> map = readSlotMapJson(file);
+                Object2IntMap<IBaubleType> map = getSlotsFromJson(file);
                 TYPE_MAP.put(location, map);
                 return map;
             }
@@ -123,7 +112,7 @@ public class Config {
         catch (IOException e) { throw new RuntimeException("Error occurred while reading bauble slot json", e); }
     }
 
-    private static Object2IntMap<IBaubleType> readSlotMapJson(File file) throws IOException {
+    private static Object2IntMap<IBaubleType> getSlotsFromJson(File file) throws IOException {
         Object2IntMap<IBaubleType> map = new Object2IntOpenHashMap<>();
         InputStreamReader reader = new InputStreamReader(Files.newInputStream(file.toPath()));
         JsonObject object = GSON.fromJson(reader, JsonObject.class);
@@ -142,36 +131,44 @@ public class Config {
         return map;
     }
 
-    @Nullable
-    private static Object2IntMap<IBaubleType> checkSlotsJson(File configFile) throws IOException {
+    @NotNull
+    private static Object2IntMap<IBaubleType> defaultPlayerSlots(File configFile) {
         File slots = new File(configFile.getParentFile(), Baubles.MODID + "/slots.json");
         if (slots.exists()) {
             Baubles.log.info("Found {}, generating new jsons from it.", slots.getName());
             final String
                     NORMAL = "[\n \"amulet\",\n \"ring\",\n \"ring\",\n \"belt\",\n \"head\",\n \"body\",\n \"charm\"\n]",
                     EXPANDED = "[\n \"amulet\",\n \"amulet\",\n \"ring\",\n \"ring\",\n \"ring\",\n \"ring\",\n \"belt\",\n \"belt\",\n \"head\",\n \"head\",\n \"body\",\n \"body\",\n \"charm\",\n \"charm\"\n]";
-            byte[] fileByte = Files.readAllBytes(slots.toPath());
-            if (Arrays.equals(fileByte, NORMAL.getBytes(StandardCharsets.UTF_8)) || Arrays.equals(fileByte, EXPANDED.getBytes(StandardCharsets.UTF_8))) {
-                slots.delete();
-                return null;
-            }
-            JsonArray array = GSON.fromJson(new String(fileByte, StandardCharsets.UTF_8), JsonArray.class);
-            Object2IntMap<IBaubleType> map = new Object2IntOpenHashMap<>();
-            for (int i = 0; i < array.size(); i++) {
-                String slot = array.get(i).getAsString();
-                ResourceLocation location;
-                if (!slot.contains(":")) location = new ResourceLocation(Baubles.MODID, slot);
-                else location = new ResourceLocation(slot);
-                IBaubleType type = BaubleTypes.get(location);
-                if (type == null) {
-                    Baubles.log.error("Could not find bauble type from {}", location);
-                    continue;
+            byte[] fileByte;
+            try { fileByte = Files.readAllBytes(slots.toPath()); } catch (IOException e) { throw new RuntimeException(e); }
+            if (!Arrays.equals(fileByte, NORMAL.getBytes(StandardCharsets.UTF_8)) && !Arrays.equals(fileByte, EXPANDED.getBytes(StandardCharsets.UTF_8))) {
+                JsonArray array = GSON.fromJson(new String(fileByte, StandardCharsets.UTF_8), JsonArray.class);
+                Object2IntMap<IBaubleType> map = new Object2IntOpenHashMap<>();
+                for (int i = 0; i < array.size(); i++) {
+                    String slot = array.get(i).getAsString();
+                    ResourceLocation location;
+                    if (!slot.contains(":")) location = new ResourceLocation(Baubles.MODID, slot);
+                    else location = new ResourceLocation(slot);
+                    IBaubleType type = BaubleTypes.get(location);
+                    if (type == null) {
+                        Baubles.log.error("Could not find bauble type from {}", location);
+                        continue;
+                    }
+                    map.put(type, map.get(type) + 1);
                 }
-                map.put(type, map.get(type) + 1);
+                return map;
             }
-            return map;
+            else slots.delete();
         }
-        return null;
+        Object2IntMap<IBaubleType> map = new Object2IntOpenHashMap<>();
+        int multiplier = expandedMode ? 2 : 1;
+        map.put(AMULET, multiplier);
+        map.put(RING, 2 * multiplier);
+        map.put(BELT, multiplier);
+        map.put(HEAD, multiplier);
+        map.put(BODY, multiplier);
+        map.put(CHARM, multiplier);
+        return map;
     }
 
     public static void initDefaultBaubles() {

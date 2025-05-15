@@ -10,6 +10,7 @@ import baubles.common.network.PacketSync;
 import baubles.common.network.PacketSyncSlots;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -53,7 +54,7 @@ public class BaublesContainer implements IBaublesItemHandler, INBTSerializable<N
     }
 
     public BaublesContainer(EntityLivingBase player) {
-        Object2IntMap<IBaubleType> map = Config.getDefaultSlotMap(player);
+        Object2IntMap<IBaubleType> map = Config.getDefaultSlots(player);
         if (map == null) map = new Object2IntOpenHashMap<>();
         this.slots = new SlotMap(map);
         this.player = player;
@@ -71,9 +72,10 @@ public class BaublesContainer implements IBaublesItemHandler, INBTSerializable<N
 
     public void grow(IBaubleType type, int amount) {
         int index = this.slots.getIndex(type);
-        if (index < 0) return;
-        ItemStack[] stacks = this.slots.list.get(index).getValue();
-        amount += stacks.length;
+        if (index >= 0) {
+            ItemStack[] stacks = this.slots.list.get(index).getValue();
+            amount += stacks.length;
+        }
         this.slots.setSlotAmount(type, amount);
     }
 
@@ -87,6 +89,10 @@ public class BaublesContainer implements IBaublesItemHandler, INBTSerializable<N
 
     public void set(IBaubleType type, int amount) {
         this.slots.setSlotAmount(type, amount);
+    }
+
+    public void reset() {
+        this.slots.readSlot(Config.getDefaultSlots(this.player));
     }
 
     @Override
@@ -263,12 +269,19 @@ public class BaublesContainer implements IBaublesItemHandler, INBTSerializable<N
 
         SlotMap(Object2IntMap<IBaubleType> map) {
             this.list = new ArrayList<>();
-            map.object2IntEntrySet().forEach(entry -> {
-                this.slotAmount += entry.getIntValue();
-                ItemStack[] stacks = new ItemStack[entry.getIntValue()];
-                Arrays.fill(stacks, ItemStack.EMPTY);
-                this.list.add(Pair.of(entry.getKey(), stacks));
-            });
+            this.readSlot(map);
+        }
+
+        void readSlot(Object2IntMap<IBaubleType> map) {
+            if (this.slotAmount == 0) {
+                map.object2IntEntrySet().forEach(entry -> {
+                    this.slotAmount += entry.getIntValue();
+                    ItemStack[] stacks = new ItemStack[entry.getIntValue()];
+                    Arrays.fill(stacks, ItemStack.EMPTY);
+                    this.list.add(Pair.of(entry.getKey(), stacks));
+                });
+            }
+            else map.object2IntEntrySet().forEach(entry -> this.setSlotAmount(entry.getKey(), entry.getIntValue()));
             this.setSort();
         }
 
@@ -289,19 +302,18 @@ public class BaublesContainer implements IBaublesItemHandler, INBTSerializable<N
                         if (pair.getValue().length == slotAmount) return;
                         ItemStack[] items = new ItemStack[slotAmount];
                         for (int a = 0; a < pair.getValue().length; a++) {
-                            if (a >= slotAmount && pair.getValue()[a] != ItemStack.EMPTY) this.addDrop(pair.getValue()[a]);
+                            if (a >= slotAmount && (pair.getValue()[a] != ItemStack.EMPTY || pair.getValue()[a] != null)) this.addDrop(pair.getValue()[a]);
                             else items[a] = pair.getValue()[a];
                         }
                         this.list.set(i, Pair.of(type, items));
                         this.slotAmount += slotAmount - pair.getValue().length;
-                        return;
                     }
                     else {
                         iterator.remove();
                         this.slotAmount -= pair.getValue().length;
                         this.setSort();
-                        return;
                     }
+                    return;
                 }
                 i++;
             }
@@ -331,7 +343,9 @@ public class BaublesContainer implements IBaublesItemHandler, INBTSerializable<N
                 int newSlot = slot + pair.getValue().length;
                 if (slotIndex < newSlot) {
                     int typeIndex = slotIndex - slot;
-                    return pair.getValue()[typeIndex];
+                    ItemStack stack = pair.getValue()[typeIndex];
+                    if (stack == null) stack = ItemStack.EMPTY;
+                    return stack;
                 } else slot = newSlot;
             }
             return ItemStack.EMPTY;
@@ -349,9 +363,11 @@ public class BaublesContainer implements IBaublesItemHandler, INBTSerializable<N
         }
 
         void drop(World world, double x, double y, double z) {
+            if (world.isRemote) return;
             if ((this.updated & DROP) == 0) return;
             if (this.toDrop != null) {
                 for (ItemStack stack : this.toDrop) {
+                    if (stack == null || stack.isEmpty()) continue;
                     EntityItem eItem = new EntityItem(world, x, y, z, stack);
                     world.spawnEntity(eItem);
                 }
@@ -372,6 +388,7 @@ public class BaublesContainer implements IBaublesItemHandler, INBTSerializable<N
         }
 
         void addDrop(ItemStack stack) {
+            if (BaublesContainer.this.player.world.isRemote) return;
             if (this.toDrop == null) this.toDrop = new ArrayList<>(4);
             this.toDrop.add(stack);
             this.updated |= DROP;
@@ -404,10 +421,10 @@ public class BaublesContainer implements IBaublesItemHandler, INBTSerializable<N
 
         @Override
         public void deserializeNBT(NBTTagCompound nbt) {
-            this.list.clear();
-            this.slotAmount = 0;
-            if (nbt.hasKey("Items", Constants.NBT.TAG_COMPOUND)) this.deserializeNBTOld(nbt);
+            if (nbt.hasKey("Items", Constants.NBT.TAG_LIST)) this.deserializeNBTOld(nbt);
             else {
+                this.list.clear();
+                this.slotAmount = 0;
                 NBTTagList typeList = nbt.getTagList("Types", Constants.NBT.TAG_COMPOUND);
                 for (int i = 0; i < typeList.tagCount(); i++) {
                     NBTTagCompound typeTag = typeList.getCompoundTagAt(i);
@@ -435,7 +452,6 @@ public class BaublesContainer implements IBaublesItemHandler, INBTSerializable<N
                 int slot = stackTag.getInteger("Slot");
                 if (!stackTag.hasKey("id", 8)) continue;
                 ItemStack stack = new ItemStack(stackTag);
-                this.putItem(slot, stack);
                 IBauble bauble = Objects.requireNonNull(BaublesApi.getBauble(stack));
                 if (slot < getSlots()) {
                     if (bauble.canPutOnSlot(BaublesContainer.this, slot, this.getSlotType(slot), stack)) this.putItem(slot, stack);

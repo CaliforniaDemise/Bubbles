@@ -19,3 +19,25 @@ baubles.type.body=Body
 baubles.type.charm=Charm
 
 baubles.item.desc=Bauble (%s)
+
+baubles.command.usage=/baubles <action> [<player> [<params>]]
+baubles.command.help.desc=List and describe available commands.
+baubles.command.help.usage=  /baubles help
+baubles.command.view.desc=View Baubles inventory of the specified player.
+baubles.command.view.usage=  /baubles view <player>
+baubles.command.clear.desc=Clear players bauble inventory. By default it clears whole inventory. It will clear the slot if it's specified.
+baubles.command.clear.usage=  /baubles clear <player> [<slot>]
+baubles.command.slots.grow.desc=Increment the amount of the given type of slots by the given amount. Type is something like ring, charm etc.
+baubles.command.slots.grow.usage=  /baubles slots grow <player> <type> <amount>
+baubles.command.slots.shrink.desc=Shrink the amount of given type of slots by the given amount. Type is something like ring, charm etc.
+baubles.command.slots.shrink.usage=  /baubles slots shrink <player> <type> <amount>
+baubles.command.slots.set.desc=Set the amount of given type of slots. Type is something like ring, charm etc.
+baubles.command.slots.set.usage=  /baubles slots set <player> <type> <amount>
+baubles.command.slots.reset.desc=Reset the amount of bauble slots of player.
+baubles.command.slots.reset.usage=  /baubles slots reset
+baubles.command.view.result= [Slot %d - %s] %s
+baubles.command.clear.slot_error=Slot %d is outside the item array.
+baubles.command.clear.result=Cleared the bauble slot.
+baubles.command.invalid=Invalid command. Use /baubles help for more information.
+baubles.command.not_enough_arguments=Insufficient amount of arguments. Use /baubles help for more information.
+baubles.command.applied=Applied the command.
