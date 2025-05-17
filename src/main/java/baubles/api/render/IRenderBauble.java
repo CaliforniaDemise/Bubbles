@@ -48,6 +48,10 @@ public interface IRenderBauble {
     default void onPlayerBaubleRender(ItemStack stack, EntityPlayer player, RenderType type, float partialTicks) {
     }
 
+    default boolean shouldRender(ItemStack stack, EntityPlayer player) {
+        return true;
+    }
+
     enum RenderType {
         /**
          * Render Type for the player's body, translations apply on the player's rotation.

@@ -49,17 +49,14 @@ public final class BaublesRenderLayer implements LayerRenderer<EntityPlayer> {
             ItemStack stack = inv.getStackInSlot(i);
             if (!stack.isEmpty()) {
                 IBauble bauble = Objects.requireNonNull(stack.getCapability(BaublesCapabilities.CAPABILITY_ITEM_BAUBLE, null));
-                if (bauble.shouldRender(stack, player)) {
-                    IRenderBauble renderBauble = null;
-                    if (bauble instanceof IRenderBauble) renderBauble = (IRenderBauble) bauble;
-                    else if (stack.getItem() instanceof IRenderBauble) renderBauble = (IRenderBauble) stack.getItem();
-                    if (renderBauble == null)
-                        throw new RuntimeException("Render Bauble is null for " + stack.getItem().getRegistryName());
-                    GlStateManager.pushMatrix();
-                    GlStateManager.color(1F, 1F, 1F, 1F);
-                    renderBauble.onPlayerBaubleRender(stack, player, type, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, partialTicks);
-                    GlStateManager.popMatrix();
-                }
+                IRenderBauble renderBauble = null;
+                if (bauble instanceof IRenderBauble) renderBauble = (IRenderBauble) bauble;
+                else if (stack.getItem() instanceof IRenderBauble) renderBauble = (IRenderBauble) stack.getItem();
+                if (renderBauble == null || !renderBauble.shouldRender(stack, player)) continue;
+                GlStateManager.pushMatrix();
+                GlStateManager.color(1F, 1F, 1F, 1F);
+                renderBauble.onPlayerBaubleRender(stack, player, type, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, partialTicks);
+                GlStateManager.popMatrix();
             }
         }
     }

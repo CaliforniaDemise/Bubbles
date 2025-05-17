@@ -2,10 +2,8 @@ package baubles.api;
 
 import baubles.api.cap.BaublesCapabilities;
 import baubles.api.cap.IBaublesItemHandler;
-import baubles.api.render.IRenderBauble;
 import baubles.common.event.EventHandlerItem;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -80,10 +78,6 @@ public interface IBauble {
      */
     default boolean canUnequip(ItemStack itemstack, EntityLivingBase player) {
         return true;
-    }
-
-    default boolean shouldRender(ItemStack stack, EntityPlayer player) {
-        return this instanceof IRenderBauble || stack.getItem() instanceof IRenderBauble;
     }
 
     /**
