@@ -37,7 +37,6 @@ dependencies {
     }
     if (project.cosmetic_armor.toBoolean()) runtimeOnly "curse.maven:cosmeticarmor-237307:2937869"
     if (project.wings.toBoolean()) {
-        runtimeOnly "curse.maven:llibrary-243298:3116493"
         runtimeOnly "curse.maven:wings-302584:2829351"
     }
     if (project.actually_additions.toBoolean()) runtimeOnly "curse.maven:actuallyadditions-228404:3117927"

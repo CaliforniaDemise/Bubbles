@@ -15,7 +15,7 @@ public class StupidWingsEvents {
         event.addPlacing((player, handlers) -> {
             if (player instanceof EntityPlayer) {
                 IBaublesItemHandler handler = BaublesApi.getBaublesHandler((EntityPlayer) player);
-                for (int i = 0; i < 8; i++) {
+                for (int i = 0; i < handler.getSlots(); i++) {
                     handlers.add(HandlerSlot.create(handler, i));
                 }
             }
