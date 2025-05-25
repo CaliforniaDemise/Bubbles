@@ -31,18 +31,14 @@ public abstract class BaseTransformer implements Opcodes {
     protected static byte[] write(ClassNode cls, int options) {
         ClassWriter writer = new ClassWriter(options);
         cls.accept(writer);
-        return writer.toByteArray();
-    }
-
-    protected static void writeClass(ClassNode cls) {
-        if (!FMLLaunchHandler.isDeobfuscatedEnvironment()) return;
-        File file = new File("classOut/" + cls.name + ".class");
-        file.getParentFile().mkdirs();
-        try (OutputStream stream = Files.newOutputStream(file.toPath())) {
-            ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-            cls.accept(writer);
-            stream.write(writer.toByteArray());
-        } catch (IOException ignored) {
+        if (FMLLaunchHandler.isDeobfuscatedEnvironment()) {
+            File file = new File("classOut/" + cls.name + ".class");
+            file.getParentFile().mkdirs();
+            try (OutputStream stream = Files.newOutputStream(file.toPath())) {
+                stream.write(writer.toByteArray());
+            } catch (IOException ignored) {
+            }
         }
+        return writer.toByteArray();
     }
 }

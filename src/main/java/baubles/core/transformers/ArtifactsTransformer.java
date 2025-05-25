@@ -265,7 +265,7 @@ public class ArtifactsTransformer extends BaseTransformer {
                         }
                         InsnList list = new InsnList();
                         list.add(new VarInsnNode(ALOAD, 1));
-                        list.add(new MethodInsnNode(INVOKESTATIC, HOOK, "BaubleBottledCloud$isEquipped", "(Lnet/minecraft/entity/player/EntityPlayer;)Z", false));
+                        list.add(new MethodInsnNode(INVOKESTATIC, HOOK, "BaubleBottledCloud$getSlot", "(Lnet/minecraft/entity/player/EntityPlayer;)I", false));
                         method.instructions.insertBefore(node, list);
                         break;
                     }
@@ -286,13 +286,13 @@ public class ArtifactsTransformer extends BaseTransformer {
             return out;
         }
 
-        public static boolean BaubleBottledCloud$isEquipped(EntityPlayer player) {
+        public static int BaubleBottledCloud$getSlot(EntityPlayer player) {
             IBaublesItemHandler handler = BaublesApi.getBaublesHandler(player);
             for (int i = 0; i < handler.getSlots(); i++) {
                 ItemStack stack = handler.getStackInSlot(i);
-                if (stack.getItem() instanceof BaubleBottledCloud) return true;
+                if (stack.getItem() instanceof BaubleBottledCloud) return i;
             }
-            return false;
+            return -1;
         }
 
         @SideOnly(Side.CLIENT)
