@@ -152,7 +152,6 @@ public class PotionFingersTransformer extends BaseTransformer {
             m.visitMethodInsn(INVOKEVIRTUAL, cls.name, "updatePotionStatus", "(Lnet/minecraft/entity/EntityLivingBase;Lnet/minecraft/potion/Potion;Z)V", false);
             m.visitInsn(RETURN);
         }
-        writeClass(cls);
         return write(cls);
     }
 }

@@ -17,6 +17,8 @@ import java.util.Iterator;
  **/
 public class QualityToolsTransformer extends BaseTransformer {
 
+    private static final String HOOK = "baubles/core/transformers/QualityToolsTransformer$Hooks";
+
     public static byte[] transformBaublesHandler(byte[] basicClass) {
         ClassNode cls = read(basicClass);
         Iterator<MethodNode> mIterator = cls.methods.iterator();
@@ -117,7 +119,7 @@ public class QualityToolsTransformer extends BaseTransformer {
             MethodVisitor m = cls.visitMethod(ACC_PUBLIC, "getBaublesNamesForSlot", "(Lbaubles/api/cap/IBaublesItemHandler;I)Ljava/util/ArrayList;", null, null);
             m.visitVarInsn(ALOAD, 1);
             m.visitVarInsn(ILOAD, 2);
-            m.visitMethodInsn(INVOKESTATIC, "baubles/core/transformers/QualityToolsTransformer", "$getBaublesNameForSlot", "(Lbaubles/api/cap/IBaublesItemHandler;I)Ljava/util/ArrayList;", false);
+            m.visitMethodInsn(INVOKESTATIC, HOOK, "$getBaublesNameForSlot", "(Lbaubles/api/cap/IBaublesItemHandler;I)Ljava/util/ArrayList;", false);
             m.visitInsn(ARETURN);
         }
         writeClass(cls);
@@ -126,11 +128,13 @@ public class QualityToolsTransformer extends BaseTransformer {
 
     // TODO Find a better way to handle this
     @SuppressWarnings("unused")
-    public static ArrayList<String> $getBaublesNameForSlot(IBaublesItemHandler handler, int slot) {
-        ArrayList<String> list = new ArrayList<>();
-        IBaubleType type = handler.getSlotType(slot);
-        String name = type.getRegistryName().getNamespace().equals(Baubles.MODID) ? type.getRegistryName().getPath() : type.getRegistryName().toString();
-        list.add("baubles_" + name);
-        return list;
+    public static class Hooks {
+        public static ArrayList<String> $getBaublesNameForSlot(IBaublesItemHandler handler, int slot) {
+            ArrayList<String> list = new ArrayList<>();
+            IBaubleType type = handler.getSlotType(slot);
+            String name = type.getRegistryName().getNamespace().equals(Baubles.MODID) ? type.getRegistryName().getPath() : type.getRegistryName().toString();
+            list.add("baubles_" + name);
+            return list;
+        }
     }
 }

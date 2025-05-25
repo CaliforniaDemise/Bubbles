@@ -2,6 +2,7 @@ package baubles.core.transformers;
 
 import artifacts.common.init.ModItems;
 import artifacts.common.item.BaubleAmulet;
+import artifacts.common.item.BaubleBottledCloud;
 import baubles.api.BaubleType;
 import baubles.api.BaublesApi;
 import baubles.api.cap.IBaublesItemHandler;
@@ -9,6 +10,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHandSide;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.objectweb.asm.tree.*;
 
 import java.util.Iterator;
@@ -20,6 +23,8 @@ import java.util.ListIterator;
  * Fuck you Azanor. I hope no one makes you create another public API ever again.
  **/
 public class ArtifactsTransformer extends BaseTransformer {
+
+    private static final String HOOK = "baubles/core/transformers/ArtifactsTransformer$Hooks";
 
     public static boolean checkArtifacts(byte[] basicClass) {
         ClassNode cls = read(basicClass);
@@ -42,7 +47,7 @@ public class ArtifactsTransformer extends BaseTransformer {
                         while (node.getOpcode() != INVOKEINTERFACE);
                         InsnList list = new InsnList();
                         list.add(new VarInsnNode(ALOAD, 1));
-                        list.add(new MethodInsnNode(INVOKESTATIC, "baubles/core/transformers/ArtifactsTransformer", "LayerAmulet$getRenderStack", "(Lbaubles/api/BaubleType;Lnet/minecraft/entity/player/EntityPlayer;)I", false));
+                        list.add(new MethodInsnNode(INVOKESTATIC, HOOK, "LayerAmulet$getRenderStack", "(Lbaubles/api/BaubleType;Lnet/minecraft/entity/player/EntityPlayer;)I", false));
                         method.instructions.insertBefore(node, list);
                         break;
                     }
@@ -69,7 +74,7 @@ public class ArtifactsTransformer extends BaseTransformer {
                         while (node.getOpcode() != INVOKEINTERFACE);
                         InsnList list = new InsnList();
                         list.add(new VarInsnNode(ALOAD, 1));
-                        list.add(new MethodInsnNode(INVOKESTATIC, "baubles/core/transformers/ArtifactsTransformer", "LayerBelt$getRenderStack", "(Lbaubles/api/BaubleType;Lnet/minecraft/entity/player/EntityPlayer;)I", false));
+                        list.add(new MethodInsnNode(INVOKESTATIC, HOOK, "LayerBelt$getRenderStack", "(Lbaubles/api/BaubleType;Lnet/minecraft/entity/player/EntityPlayer;)I", false));
                         method.instructions.insertBefore(node, list);
                         break;
                     }
@@ -96,7 +101,7 @@ public class ArtifactsTransformer extends BaseTransformer {
                         while (node.getOpcode() != INVOKEINTERFACE);
                         InsnList list = new InsnList();
                         list.add(new VarInsnNode(ALOAD, 1));
-                        list.add(new MethodInsnNode(INVOKESTATIC, "baubles/core/transformers/ArtifactsTransformer", "LayerCloak$getRenderStack", "(Lbaubles/api/BaubleType;Lnet/minecraft/entity/player/EntityPlayer;)I", false));
+                        list.add(new MethodInsnNode(INVOKESTATIC, HOOK, "LayerCloak$getRenderStack", "(Lbaubles/api/BaubleType;Lnet/minecraft/entity/player/EntityPlayer;)I", false));
                         method.instructions.insertBefore(node, list);
                         break;
                     }
@@ -123,7 +128,7 @@ public class ArtifactsTransformer extends BaseTransformer {
                         while (node.getOpcode() != INVOKEINTERFACE);
                         InsnList list = new InsnList();
                         list.add(new VarInsnNode(ALOAD, 1));
-                        list.add(new MethodInsnNode(INVOKESTATIC, "baubles/core/transformers/ArtifactsTransformer", "LayerDrinkingHat$getRenderStack", "(Lbaubles/api/BaubleType;Lnet/minecraft/entity/player/EntityPlayer;)I", false));
+                        list.add(new MethodInsnNode(INVOKESTATIC, HOOK, "LayerDrinkingHat$getRenderStack", "(Lbaubles/api/BaubleType;Lnet/minecraft/entity/player/EntityPlayer;)I", false));
                         method.instructions.insertBefore(node, list);
                         break;
                     }
@@ -150,7 +155,7 @@ public class ArtifactsTransformer extends BaseTransformer {
                         InsnList list = new InsnList();
                         list.add(new VarInsnNode(ALOAD, 1));
                         list.add(new VarInsnNode(ALOAD, 2));
-                        list.add(new MethodInsnNode(INVOKESTATIC, "baubles/core/transformers/ArtifactsTransformer", "LayerGloves$getRenderStack", "(Lbaubles/api/BaubleType;Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/util/EnumHandSide;)I", false));
+                        list.add(new MethodInsnNode(INVOKESTATIC, HOOK, "LayerGloves$getRenderStack", "(Lbaubles/api/BaubleType;Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/util/EnumHandSide;)I", false));
                         method.instructions.insertBefore(node, list);
                         break;
                     }
@@ -177,7 +182,7 @@ public class ArtifactsTransformer extends BaseTransformer {
                         while (node.getOpcode() != INVOKEINTERFACE);
                         InsnList list = new InsnList();
                         list.add(new VarInsnNode(ALOAD, 1));
-                        list.add(new MethodInsnNode(INVOKESTATIC, "baubles/core/transformers/ArtifactsTransformer", "LayerNightVisionGoggles$getRenderStack", "(Lbaubles/api/BaubleType;Lnet/minecraft/entity/player/EntityPlayer;)I", false));
+                        list.add(new MethodInsnNode(INVOKESTATIC, HOOK, "LayerNightVisionGoggles$getRenderStack", "(Lbaubles/api/BaubleType;Lnet/minecraft/entity/player/EntityPlayer;)I", false));
                         method.instructions.insertBefore(node, list);
                         break;
                     }
@@ -203,7 +208,7 @@ public class ArtifactsTransformer extends BaseTransformer {
                         while (node.getOpcode() != INVOKEINTERFACE);
                         InsnList list = new InsnList();
                         list.add(new VarInsnNode(ALOAD, 1));
-                        list.add(new MethodInsnNode(INVOKESTATIC, "baubles/core/transformers/ArtifactsTransformer", "LayerSnorkel$getRenderStack", "(Lbaubles/api/BaubleType;Lnet/minecraft/entity/player/EntityPlayer;)I", false));
+                        list.add(new MethodInsnNode(INVOKESTATIC, HOOK, "LayerSnorkel$getRenderStack", "(Lbaubles/api/BaubleType;Lnet/minecraft/entity/player/EntityPlayer;)I", false));
                         method.instructions.insertBefore(node, list);
                         break;
                     }
@@ -232,7 +237,7 @@ public class ArtifactsTransformer extends BaseTransformer {
                         }
                         InsnList list = new InsnList();
                         list.add(new VarInsnNode(ALOAD, 1));
-                        list.add(new MethodInsnNode(INVOKESTATIC, "baubles/core/transformers/ArtifactsTransformer", "$slotArray", "(Lnet/minecraft/entity/player/EntityPlayer;)[I", false));
+                        list.add(new MethodInsnNode(INVOKESTATIC, HOOK, "$slotArray", "(Lnet/minecraft/entity/player/EntityPlayer;)[I", false));
                         method.instructions.insertBefore(node, list);
                         break;
                     }
@@ -240,16 +245,6 @@ public class ArtifactsTransformer extends BaseTransformer {
             }
         }
         return write(cls);
-    }
-
-    @SuppressWarnings("unused")
-    public static int[] $slotArray(EntityPlayer player) {
-        IBaublesItemHandler handler = BaublesApi.getBaublesHandler(player);
-        int[] out = new int[handler.getSlots()];
-        for (int i = 0; i < handler.getSlots(); i++) {
-            out[i] = i;
-        }
-        return out;
     }
 
     /**
@@ -270,8 +265,7 @@ public class ArtifactsTransformer extends BaseTransformer {
                         }
                         InsnList list = new InsnList();
                         list.add(new VarInsnNode(ALOAD, 1));
-                        list.add(new FieldInsnNode(GETSTATIC, "artifacts/common/init/ModItems", "BOTTLED_CLOUD", "Lartifacts/common/item/BaubleBase;"));
-                        list.add(new MethodInsnNode(INVOKESTATIC, "baubles/api/BaublesApi", "isBaubleEquipped", "(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/item/Item;)I", false));
+                        list.add(new MethodInsnNode(INVOKESTATIC, HOOK, "BaubleBottledCloud$isEquipped", "(Lnet/minecraft/entity/player/EntityPlayer;)Z", false));
                         method.instructions.insertBefore(node, list);
                         break;
                     }
@@ -282,90 +276,111 @@ public class ArtifactsTransformer extends BaseTransformer {
     }
 
     @SuppressWarnings("unused")
-    public static int LayerAmulet$getRenderStack(BaubleType type, EntityPlayer player) {
-        IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
-        for (int i = 0; i < baubles.getSlots(); i++) {
-            if (baubles.getSlotType(i) != type) continue;
-            ItemStack stack = baubles.getStackInSlot(i);
-            if (stack.getItem() instanceof BaubleAmulet) return i;
-        }
-        return -1;
-    }
-
-    @SuppressWarnings("unused")
-    public static int LayerBelt$getRenderStack(BaubleType type, EntityPlayer player) {
-        IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
-        for (int i = 0; i < baubles.getSlots(); i++) {
-            if (baubles.getSlotType(i) != type) continue;
-            Item item = baubles.getStackInSlot(i).getItem();
-            if(item == ModItems.BOTTLED_CLOUD) return i;
-            else if(item == ModItems.BOTTLED_FART) return i;
-            else if(item == ModItems.ANTIDOTE_VESSEL) return i;
-            else if(item == ModItems.BUBBLE_WRAP) return i;
-            else if(item == ModItems.OBSIDIAN_SKULL) return i;
-        }
-        return -1;
-    }
-
-    @SuppressWarnings("unused")
-    public static int LayerCloak$getRenderStack(BaubleType type, EntityPlayer player) {
-        IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
-        for (int i = 0; i < baubles.getSlots(); i++) {
-            if (baubles.getSlotType(i) != type) continue;
-            ItemStack stack = baubles.getStackInSlot(i);
-            if (stack.getItem() == ModItems.STAR_CLOAK) return i;
-        }
-        return -1;
-    }
-
-    @SuppressWarnings("unused")
-    public static int LayerDrinkingHat$getRenderStack(BaubleType type, EntityPlayer player) {
-        IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
-        for (int i = 0; i < baubles.getSlots(); i++) {
-            if (baubles.getSlotType(i) != type) continue;
-            ItemStack stack = baubles.getStackInSlot(i);
-            if (stack.getItem() == ModItems.DRINKING_HAT) return i;
-        }
-        return -1;
-    }
-
-    @SuppressWarnings("unused")
-    public static int LayerGloves$getRenderStack(BaubleType type, EntityPlayer player, EnumHandSide hand) {
-        IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
-        int a = -1;
-        int oldA;
-        for (int i = 0; i < baubles.getSlots(); i++) {
-            if (baubles.getSlotType(i) != type) continue;
-            Item item = baubles.getStackInSlot(i).getItem();
-            if (item == ModItems.POWER_GLOVE || item == ModItems.FERAL_CLAWS || item == ModItems.MECHANICAL_GLOVE || item == ModItems.FIRE_GAUNTLET || item == ModItems.POCKET_PISTON) {
-                oldA = a;
-                a = i;
-                if (hand == EnumHandSide.LEFT && oldA == -1) return a;
-                if (hand == EnumHandSide.RIGHT && oldA != -1) return a;
+    public static class Hooks {
+        public static int[] $slotArray(EntityPlayer player) {
+            IBaublesItemHandler handler = BaublesApi.getBaublesHandler(player);
+            int[] out = new int[handler.getSlots()];
+            for (int i = 0; i < handler.getSlots(); i++) {
+                out[i] = i;
             }
+            return out;
         }
-        return -1;
-    }
 
-    @SuppressWarnings("unused")
-    public static int LayerNightVisionGoggles$getRenderStack(BaubleType type, EntityPlayer player) {
-        IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
-        for (int i = 0; i < baubles.getSlots(); i++) {
-            if (baubles.getSlotType(i) != type) continue;
-            ItemStack stack = baubles.getStackInSlot(i);
-            if (stack.getItem() == ModItems.NIGHT_VISION_GOGGLES) return i;
+        public static boolean BaubleBottledCloud$isEquipped(EntityPlayer player) {
+            IBaublesItemHandler handler = BaublesApi.getBaublesHandler(player);
+            for (int i = 0; i < handler.getSlots(); i++) {
+                ItemStack stack = handler.getStackInSlot(i);
+                if (stack.getItem() instanceof BaubleBottledCloud) return true;
+            }
+            return false;
         }
-        return -1;
-    }
 
-    @SuppressWarnings("unused")
-    public static int LayerSnorkel$getRenderStack(BaubleType type, EntityPlayer player) {
-        IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
-        for (int i = 0; i < baubles.getSlots(); i++) {
-            if (baubles.getSlotType(i) != type) continue;
-            ItemStack stack = baubles.getStackInSlot(i);
-            if (stack.getItem() == ModItems.SNORKEL) return i;
+        @SideOnly(Side.CLIENT)
+        public static int LayerAmulet$getRenderStack(BaubleType type, EntityPlayer player) {
+            IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
+            for (int i = 0; i < baubles.getSlots(); i++) {
+                if (baubles.getSlotType(i) != type) continue;
+                ItemStack stack = baubles.getStackInSlot(i);
+                if (stack.getItem() instanceof BaubleAmulet) return i;
+            }
+            return -1;
         }
-        return -1;
+
+        @SideOnly(Side.CLIENT)
+        public static int LayerBelt$getRenderStack(BaubleType type, EntityPlayer player) {
+            IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
+            for (int i = 0; i < baubles.getSlots(); i++) {
+                if (baubles.getSlotType(i) != type) continue;
+                Item item = baubles.getStackInSlot(i).getItem();
+                if(item == ModItems.BOTTLED_CLOUD) return i;
+                else if(item == ModItems.BOTTLED_FART) return i;
+                else if(item == ModItems.ANTIDOTE_VESSEL) return i;
+                else if(item == ModItems.BUBBLE_WRAP) return i;
+                else if(item == ModItems.OBSIDIAN_SKULL) return i;
+            }
+            return -1;
+        }
+
+        @SideOnly(Side.CLIENT)
+        public static int LayerCloak$getRenderStack(BaubleType type, EntityPlayer player) {
+            IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
+            for (int i = 0; i < baubles.getSlots(); i++) {
+                if (baubles.getSlotType(i) != type) continue;
+                ItemStack stack = baubles.getStackInSlot(i);
+                if (stack.getItem() == ModItems.STAR_CLOAK) return i;
+            }
+            return -1;
+        }
+
+        @SideOnly(Side.CLIENT)
+        public static int LayerDrinkingHat$getRenderStack(BaubleType type, EntityPlayer player) {
+            IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
+            for (int i = 0; i < baubles.getSlots(); i++) {
+                if (baubles.getSlotType(i) != type) continue;
+                ItemStack stack = baubles.getStackInSlot(i);
+                if (stack.getItem() == ModItems.DRINKING_HAT) return i;
+            }
+            return -1;
+        }
+
+        @SideOnly(Side.CLIENT)
+        public static int LayerGloves$getRenderStack(BaubleType type, EntityPlayer player, EnumHandSide hand) {
+            IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
+            int a = -1;
+            int oldA;
+            for (int i = 0; i < baubles.getSlots(); i++) {
+                if (baubles.getSlotType(i) != type) continue;
+                Item item = baubles.getStackInSlot(i).getItem();
+                if (item == ModItems.POWER_GLOVE || item == ModItems.FERAL_CLAWS || item == ModItems.MECHANICAL_GLOVE || item == ModItems.FIRE_GAUNTLET || item == ModItems.POCKET_PISTON) {
+                    oldA = a;
+                    a = i;
+                    if (hand == EnumHandSide.LEFT && oldA == -1) return a;
+                    if (hand == EnumHandSide.RIGHT && oldA != -1) return a;
+                }
+            }
+            return -1;
+        }
+
+        @SideOnly(Side.CLIENT)
+        public static int LayerNightVisionGoggles$getRenderStack(BaubleType type, EntityPlayer player) {
+            IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
+            for (int i = 0; i < baubles.getSlots(); i++) {
+                if (baubles.getSlotType(i) != type) continue;
+                ItemStack stack = baubles.getStackInSlot(i);
+                if (stack.getItem() == ModItems.NIGHT_VISION_GOGGLES) return i;
+            }
+            return -1;
+        }
+
+        @SideOnly(Side.CLIENT)
+        public static int LayerSnorkel$getRenderStack(BaubleType type, EntityPlayer player) {
+            IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
+            for (int i = 0; i < baubles.getSlots(); i++) {
+                if (baubles.getSlotType(i) != type) continue;
+                ItemStack stack = baubles.getStackInSlot(i);
+                if (stack.getItem() == ModItems.SNORKEL) return i;
+            }
+            return -1;
+        }
     }
 }

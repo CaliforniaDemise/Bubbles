@@ -16,6 +16,8 @@ import java.util.Iterator;
  **/
 public class BotaniaTransformer extends BaseTransformer {
 
+    private static final String HOOK = "baubles/core/transformers/BotaniaTransformer$Hooks";
+
     public static byte[] transformItemDivaCharm(byte[] basicClass) {
         ClassNode cls = read(basicClass);
         for (MethodNode method : cls.methods) {
@@ -167,7 +169,7 @@ public class BotaniaTransformer extends BaseTransformer {
                         method.instructions.remove(node.getPrevious());
                         InsnList list = new InsnList();
                         list.add(new VarInsnNode(ALOAD, 2));
-                        list.add(new MethodInsnNode(INVOKESTATIC, "baubles/core/transformers/BotaniaTransformer", "$getTravelBeltSlot", "(Lnet/minecraft/entity/player/EntityPlayer;)I", false));
+                        list.add(new MethodInsnNode(INVOKESTATIC, HOOK, "$getTravelBeltSlot", "(Lnet/minecraft/entity/player/EntityPlayer;)I", false));
                         method.instructions.insertBefore(node, list);
                         break;
                     }
@@ -180,7 +182,7 @@ public class BotaniaTransformer extends BaseTransformer {
                         method.instructions.remove(node.getPrevious());
                         InsnList list = new InsnList();
                         list.add(new VarInsnNode(ALOAD, 2));
-                        list.add(new MethodInsnNode(INVOKESTATIC, "baubles/core/transformers/BotaniaTransformer", "$getTravelBeltSlot", "(Lnet/minecraft/entity/player/EntityPlayer;)I", false));
+                        list.add(new MethodInsnNode(INVOKESTATIC, HOOK, "$getTravelBeltSlot", "(Lnet/minecraft/entity/player/EntityPlayer;)I", false));
                         method.instructions.insertBefore(node, list);
                         break;
                     }
@@ -193,7 +195,7 @@ public class BotaniaTransformer extends BaseTransformer {
                         method.instructions.remove(node.getPrevious());
                         InsnList list = new InsnList();
                         list.add(new VarInsnNode(ALOAD, 1));
-                        list.add(new MethodInsnNode(INVOKESTATIC, "baubles/core/transformers/BotaniaTransformer", "$getTravelBeltSlot", "(Lnet/minecraft/entity/player/EntityPlayer;)I", false));
+                        list.add(new MethodInsnNode(INVOKESTATIC, HOOK, "$getTravelBeltSlot", "(Lnet/minecraft/entity/player/EntityPlayer;)I", false));
                         method.instructions.insertBefore(node, list);
                         break;
                     }
@@ -202,17 +204,6 @@ public class BotaniaTransformer extends BaseTransformer {
             }
         }
         return write(cls);
-    }
-
-    @SuppressWarnings("unused")
-    public static int $getTravelBeltSlot(EntityPlayer player) {
-        IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
-        for (int i = 0; i < baubles.getSlots(); i++) {
-            ItemStack stack = baubles.getStackInSlot(i);
-            if (stack.isEmpty()) continue;
-            if (stack.getItem() instanceof ItemTravelBelt) return i;
-        }
-        return -1;
     }
 
     public static byte[] transformItemWaterRing(byte[] basicClass) {
@@ -241,5 +232,18 @@ public class BotaniaTransformer extends BaseTransformer {
             }
         }
         return write(cls);
+    }
+
+    @SuppressWarnings("unused")
+    public static class Hooks {
+        public static int $getTravelBeltSlot(EntityPlayer player) {
+            IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
+            for (int i = 0; i < baubles.getSlots(); i++) {
+                ItemStack stack = baubles.getStackInSlot(i);
+                if (stack.isEmpty()) continue;
+                if (stack.getItem() instanceof ItemTravelBelt) return i;
+            }
+            return -1;
+        }
     }
 }

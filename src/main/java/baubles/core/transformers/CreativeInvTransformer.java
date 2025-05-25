@@ -16,6 +16,8 @@ import java.util.Iterator;
 
 public class CreativeInvTransformer extends BaseTransformer {
 
+    private static final String HOOK = "baubles/core/transformers/CreativeInvTransformer$Hooks";
+
     public static byte[] transformGuiContainerCreative(byte[] basicClass) {
         ClassNode cls = read(basicClass);
         for (MethodNode method : cls.methods) {
@@ -27,7 +29,7 @@ public class CreativeInvTransformer extends BaseTransformer {
                     if (node.getOpcode() == GOTO) {
                         i++;
                         if (i == 5) {
-                            method.instructions.insertBefore(node, new MethodInsnNode(INVOKESTATIC, "baubles/core/transformers/CreativeInvTransformer", "$cleanup", "()V", false));
+                            method.instructions.insertBefore(node, new MethodInsnNode(INVOKESTATIC, HOOK, "$cleanup", "()V", false));
                             break;
                         }
                     }
@@ -39,8 +41,10 @@ public class CreativeInvTransformer extends BaseTransformer {
     }
 
     @SuppressWarnings("unused")
-    public static void $cleanup() {
-        PacketHandler.INSTANCE.sendToServer(new PacketCreativeClean());
+    public static class Hooks {
+        public static void $cleanup() {
+            PacketHandler.INSTANCE.sendToServer(new PacketCreativeClean());
+        }
     }
 
     public static class PacketCreativeClean implements IMessage, IMessageHandler<PacketCreativeClean, IMessage> {

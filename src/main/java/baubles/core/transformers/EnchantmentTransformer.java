@@ -16,6 +16,8 @@ import java.util.List;
 
 public class EnchantmentTransformer extends BaseTransformer {
 
+    private static final String HOOK = "baubles/core/transformers/EnchantmentTransformer$Hooks";
+
     /**
      * Transforms {@link Enchantment#getEntityEquipment(EntityLivingBase)} for making enchantments in baubles work.
      **/
@@ -28,7 +30,7 @@ public class EnchantmentTransformer extends BaseTransformer {
                 InsnList list = new InsnList();
                 list.add(new VarInsnNode(ALOAD, 0));
                 list.add(new VarInsnNode(ALOAD, 1));
-                list.add(new MethodInsnNode(INVOKESTATIC, "baubles/core/transformers/EnchantmentTransformer", "Enchantment$getEntityEquipment_tooLazy", "(Ljava/util/List;Lnet/minecraft/enchantment/Enchantment;Lnet/minecraft/entity/EntityLivingBase;)Ljava/util/List;", false));
+                list.add(new MethodInsnNode(INVOKESTATIC, HOOK, "Enchantment$getEntityEquipment_tooLazy", "(Ljava/util/List;Lnet/minecraft/enchantment/Enchantment;Lnet/minecraft/entity/EntityLivingBase;)Ljava/util/List;", false));
                 method.instructions.insertBefore(node, list);
                 break;
             }
@@ -78,16 +80,18 @@ public class EnchantmentTransformer extends BaseTransformer {
     }
 
     @SuppressWarnings("unused")
-    public static List<ItemStack> Enchantment$getEntityEquipment_tooLazy(List<ItemStack> list, Enchantment enchantment, EntityLivingBase entity) {
-        if (!(entity instanceof EntityPlayer)) return list;
-        IBaublesItemHandler handler = BaublesApi.getBaublesHandler((EntityPlayer) entity);
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack stack = handler.getStackInSlot(i);
-            if (stack.isEmpty()) continue;
-            IBauble bauble = stack.getCapability(BaublesCapabilities.CAPABILITY_ITEM_BAUBLE, null);
-            if (bauble == null) continue;
-            if (bauble.getType(stack).canApplyEnchantment(enchantment, stack)) list.add(stack);
+    public static class Hooks {
+        public static List<ItemStack> Enchantment$getEntityEquipment_tooLazy(List<ItemStack> list, Enchantment enchantment, EntityLivingBase entity) {
+            if (!(entity instanceof EntityPlayer)) return list;
+            IBaublesItemHandler handler = BaublesApi.getBaublesHandler((EntityPlayer) entity);
+            for (int i = 0; i < handler.getSlots(); i++) {
+                ItemStack stack = handler.getStackInSlot(i);
+                if (stack.isEmpty()) continue;
+                IBauble bauble = stack.getCapability(BaublesCapabilities.CAPABILITY_ITEM_BAUBLE, null);
+                if (bauble == null) continue;
+                if (bauble.getType(stack).canApplyEnchantment(enchantment, stack)) list.add(stack);
+            }
+            return list;
         }
-        return list;
     }
 }

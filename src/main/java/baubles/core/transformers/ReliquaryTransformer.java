@@ -10,6 +10,8 @@ import org.objectweb.asm.tree.*;
 
 public class ReliquaryTransformer extends BaseTransformer {
 
+    private static final String HOOK = "baubles/core/transformers/ReliquaryTransformer$Hooks";
+
     public static byte[] transformItemAngelHeartVial(byte[] basicClass) {
         ClassNode cls = read(basicClass);
         for (MethodNode method : cls.methods) {
@@ -19,7 +21,7 @@ public class ReliquaryTransformer extends BaseTransformer {
                 InsnList list = new InsnList();
                 list.add(new VarInsnNode(ALOAD, 0));
                 list.add(new FieldInsnNode(GETSTATIC, "xreliquary/init/ModItems", "angelheartVial", "Lxreliquary/items/ItemAngelheartVial;"));
-                list.add(new MethodInsnNode(INVOKESTATIC, "baubles/core/transformers/ReliquaryTransformer", "$decreaseAngelHeartByOne", "(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/item/Item;)V", false));
+                list.add(new MethodInsnNode(INVOKESTATIC, HOOK, "$decreaseAngelHeartByOne", "(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/item/Item;)V", false));
                 method.instructions.insertBefore(node, list);
                 break;
             }
@@ -37,7 +39,7 @@ public class ReliquaryTransformer extends BaseTransformer {
                 list.add(new VarInsnNode(ALOAD, 0));
                 list.add(new FieldInsnNode(GETSTATIC, "xreliquary/init/ModItems", "phoenixDown", "Lxreliquary/items/ItemPhoenixDown;"));
                 list.add(new FieldInsnNode(GETSTATIC, "xreliquary/init/ModItems", "angelicFeather", "Lxreliquary/items/ItemAngelicFeather;"));
-                list.add(new MethodInsnNode(INVOKESTATIC, "baubles/core/transformers/ReliquaryTransformer", "$revertPhoenixDownToAngelicFeather", "(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/item/Item;Lnet/minecraft/item/Item;)V", false));
+                list.add(new MethodInsnNode(INVOKESTATIC, HOOK, "$revertPhoenixDownToAngelicFeather", "(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/item/Item;Lnet/minecraft/item/Item;)V", false));
                 method.instructions.insertBefore(node, list);
                 break;
             }
@@ -46,28 +48,29 @@ public class ReliquaryTransformer extends BaseTransformer {
     }
 
     @SuppressWarnings("unused")
-    public static void $revertPhoenixDownToAngelicFeather(EntityPlayer player, Item phoenixDown, Item angelicFeather) {
-        if (!Config.compat_reliquary) return;
-        IBaublesItemHandler handler = BaublesApi.getBaublesHandler(player);
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack stack = handler.getStackInSlot(i);
-            if (stack.getItem() == phoenixDown) {
-                handler.setStackInSlot(i, new ItemStack(angelicFeather));
-                handler.extractItem(i, 1, false);
-                return;
+    public static class Hooks {
+        public static void $revertPhoenixDownToAngelicFeather(EntityPlayer player, Item phoenixDown, Item angelicFeather) {
+            if (!Config.compat_reliquary) return;
+            IBaublesItemHandler handler = BaublesApi.getBaublesHandler(player);
+            for (int i = 0; i < handler.getSlots(); i++) {
+                ItemStack stack = handler.getStackInSlot(i);
+                if (stack.getItem() == phoenixDown) {
+                    handler.setStackInSlot(i, new ItemStack(angelicFeather));
+                    handler.extractItem(i, 1, false);
+                    return;
+                }
             }
         }
-    }
 
-    @SuppressWarnings("unused")
-    public static void $decreaseAngelHeartByOne(EntityPlayer player, Item angelHeart) {
-        if (!Config.compat_reliquary) return;
-        IBaublesItemHandler handler = BaublesApi.getBaublesHandler(player);
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack stack = handler.getStackInSlot(i);
-            if (stack.getItem() == angelHeart) {
-                handler.extractItem(i, 1, false);
-                return;
+        public static void $decreaseAngelHeartByOne(EntityPlayer player, Item angelHeart) {
+            if (!Config.compat_reliquary) return;
+            IBaublesItemHandler handler = BaublesApi.getBaublesHandler(player);
+            for (int i = 0; i < handler.getSlots(); i++) {
+                ItemStack stack = handler.getStackInSlot(i);
+                if (stack.getItem() == angelHeart) {
+                    handler.extractItem(i, 1, false);
+                    return;
+                }
             }
         }
     }

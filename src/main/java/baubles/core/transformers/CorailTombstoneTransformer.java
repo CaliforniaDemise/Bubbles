@@ -14,6 +14,8 @@ import java.util.*;
 
 public class CorailTombstoneTransformer extends BaseTransformer {
 
+    private static final String HOOK = "baubles/core/transformers/CorailTombstoneTransformer$Hooks";
+
     public static byte[] transformCompatibilityBaubles(byte[] basicClass) {
         ClassNode cls = read(basicClass);
         cls.methods.removeIf(m -> m.name.equals("autoEquip"));
@@ -23,43 +25,45 @@ public class CorailTombstoneTransformer extends BaseTransformer {
             m.visitVarInsn(ALOAD, 2);
             m.visitVarInsn(ALOAD, 3);
             m.visitVarInsn(ILOAD, 4);
-            m.visitMethodInsn(INVOKESTATIC, "baubles/core/transformers/CorailTombstoneTransformer", "$autoEquip", "(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraftforge/items/ItemStackHandler;Ljava/util/List;Z)V", false);
+            m.visitMethodInsn(INVOKESTATIC, HOOK, "$autoEquip", "(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraftforge/items/ItemStackHandler;Ljava/util/List;Z)V", false);
             m.visitInsn(RETURN);
         }
         return write(cls);
     }
 
     @SuppressWarnings("unused")
-    public static void $autoEquip(EntityPlayer player, ItemStackHandler corailTombstone, List<Integer> ids, boolean isRespawn) {
-        IBaublesItemHandler handler = BaublesApi.getBaublesHandler(player);
-        IntList intList = new IntArrayList(8);
-        List<ItemStack> stackList = new ArrayList<>(8);
-        {
-            Iterator<Integer> iterator = ids.stream().sorted(Comparator.reverseOrder()).iterator();
-            while (iterator.hasNext()) {
-                int i = iterator.next();
-                ItemStack stack = corailTombstone.getStackInSlot(i);
-                if (!stack.isEmpty()) {
-                    IBauble bauble = BaublesApi.getBauble(stack);
-                    if (bauble != null) {
-                        intList.add(i);
-                        stackList.add(stack);
+    public static class Hooks {
+        public static void $autoEquip(EntityPlayer player, ItemStackHandler corailTombstone, List<Integer> ids, boolean isRespawn) {
+            IBaublesItemHandler handler = BaublesApi.getBaublesHandler(player);
+            IntList intList = new IntArrayList(8);
+            List<ItemStack> stackList = new ArrayList<>(8);
+            {
+                Iterator<Integer> iterator = ids.stream().sorted(Comparator.reverseOrder()).iterator();
+                while (iterator.hasNext()) {
+                    int i = iterator.next();
+                    ItemStack stack = corailTombstone.getStackInSlot(i);
+                    if (!stack.isEmpty()) {
+                        IBauble bauble = BaublesApi.getBauble(stack);
+                        if (bauble != null) {
+                            intList.add(i);
+                            stackList.add(stack);
+                        }
                     }
                 }
             }
-        }
-        for (int a = 0; a < intList.size(); a++) {
-            int slot = intList.getInt(a);
-            ItemStack stack = stackList.get(a);
-            IBauble bauble = Objects.requireNonNull(BaublesApi.getBauble(stack));
-            for (int i = 0; i < handler.getSlots(); i++) {
-                ItemStack baubleStack = handler.getStackInSlot(i);
-                if (!baubleStack.isEmpty()) continue;
-                if (bauble.canEquip(stack, player) && bauble.canPutOnSlot(handler, i, handler.getSlotType(i), stack)) {
-                    handler.setStackInSlot(i, stack);
-                    bauble.onEquipped(stack, player);
-                    corailTombstone.setStackInSlot(slot, ItemStack.EMPTY);
-                    break;
+            for (int a = 0; a < intList.size(); a++) {
+                int slot = intList.getInt(a);
+                ItemStack stack = stackList.get(a);
+                IBauble bauble = Objects.requireNonNull(BaublesApi.getBauble(stack));
+                for (int i = 0; i < handler.getSlots(); i++) {
+                    ItemStack baubleStack = handler.getStackInSlot(i);
+                    if (!baubleStack.isEmpty()) continue;
+                    if (bauble.canEquip(stack, player) && bauble.canPutOnSlot(handler, i, handler.getSlotType(i), stack)) {
+                        handler.setStackInSlot(i, stack);
+                        bauble.onEquipped(stack, player);
+                        corailTombstone.setStackInSlot(slot, ItemStack.EMPTY);
+                        break;
+                    }
                 }
             }
         }
