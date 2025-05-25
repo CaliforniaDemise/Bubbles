@@ -1,8 +1,11 @@
 package baubles.core.transformers;
 
+import baubles.api.BaubleType;
 import baubles.api.IBaubleType;
 import baubles.api.cap.IBaublesItemHandler;
 import baubles.common.Baubles;
+import baubles.common.init.BaubleTypes;
+import net.minecraft.util.ResourceLocation;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.tree.*;
@@ -75,13 +78,8 @@ public class QualityToolsTransformer extends BaseTransformer {
             Label l_con_swith = new Label();
             m.visitJumpInsn(IFEQ, l_con_swith);
 
-            m.visitTypeInsn(NEW, "net/minecraft/util/ResourceLocation");
-            m.visitInsn(DUP);
-            m.visitLdcInsn("baubles");
             m.visitVarInsn(ALOAD, 2);
-            m.visitIntInsn(BIPUSH, 8);
-            m.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "substring", "(I)Ljava/lang/String;", false);
-            m.visitMethodInsn(INVOKESPECIAL, "net/minecraft/util/ResourceLocation", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V", false);
+            m.visitMethodInsn(INVOKESTATIC, HOOK, "$getBaubleTypeLocation", "(Ljava/lang/String;)Lnet/minecraft/util/ResourceLocation;", false);
             m.visitMethodInsn(INVOKESTATIC, "baubles/common/init/BaubleTypes", "get", "(Lnet/minecraft/util/ResourceLocation;)Lbaubles/api/IBaubleType;", false);
             m.visitVarInsn(ASTORE, 5); // IBaubleType
 
@@ -131,9 +129,24 @@ public class QualityToolsTransformer extends BaseTransformer {
         public static ArrayList<String> $getBaublesNameForSlot(IBaublesItemHandler handler, int slot) {
             ArrayList<String> list = new ArrayList<>();
             IBaubleType type = handler.getSlotType(slot);
-            String name = type.getRegistryName().getNamespace().equals(Baubles.MODID) ? type.getRegistryName().getPath() : type.getRegistryName().toString();
-            list.add("baubles_" + name);
+            if (type == BaubleType.TRINKET) {
+                for (IBaubleType t : BaubleTypes.getRegistryMap().values()) {
+                    if (t.getRegistryName().getNamespace().equals(Baubles.MODID)) list.add("baubles_" + t.getRegistryName().getPath());
+                    else list.add("baubles_" + t.getRegistryName());
+                }
+            }
+            else {
+                String name = type.getRegistryName().getNamespace().equals(Baubles.MODID) ? type.getRegistryName().getPath() : type.getRegistryName().toString();
+                list.add("baubles_" + name);
+                list.add("baubles_trinket");
+            }
             return list;
+        }
+
+        public static ResourceLocation $getBaubleTypeLocation(String name) {
+            name = name.substring(8);
+            if (!name.contains(":")) name = "baubles:" + name;
+            return new ResourceLocation(name);
         }
     }
 }
