@@ -31,6 +31,28 @@ public class ArtifactsTransformer extends BaseTransformer {
         return cls.visibleAnnotations.get(0).values.get(3).equals("RLArtifacts");
     }
 
+    public static byte[] transformAttributeModifierBauble(byte[] basicClass) {
+        ClassNode cls = read(basicClass);
+        for (MethodNode method : cls.methods) {
+            if (method.name.equals("applyModifiers")) {
+                Iterator<AbstractInsnNode> iterator = method.instructions.iterator();
+                while (iterator.hasNext()) {
+                    AbstractInsnNode node = iterator.next();
+                    if (node.getOpcode() == GETSTATIC) {
+                        InsnList list = new InsnList();
+                        list.add(new VarInsnNode(ALOAD, 2));
+                        list.add(new MethodInsnNode(INVOKESTATIC, HOOK, "$slotArray", "(Lnet/minecraft/entity/player/EntityPlayer;)[I", false));
+                        method.instructions.insertBefore(node, list);
+                        method.instructions.remove(node.getNext());
+                        method.instructions.remove(node);
+                        break;
+                    }
+                }
+            }
+        }
+        return write(cls);
+    }
+
     public static byte[] transformLayerAmulet(byte[] basicClass, boolean isRLArtifact) {
         if (!isRLArtifact) return basicClass;
         ClassNode cls = read(basicClass);

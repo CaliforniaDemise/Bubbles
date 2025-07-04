@@ -50,6 +50,7 @@ public class BubblesTransformer implements IClassTransformer {
             case "artifacts.client.model.layer.LayerGloves": return ArtifactsTransformer.transformLayerGloves(basicClass);
             case "artifacts.client.model.layer.LayerNightVisionGoggles": return ArtifactsTransformer.transformLayerNightVisionGoggles(basicClass, this.isRLArtifact);
             case "artifacts.client.model.layer.LayerSnorkel": return ArtifactsTransformer.transformLayerSnorkel(basicClass, this.isRLArtifact);
+            case "artifacts.common.item.AttributeModifierBauble": return ArtifactsTransformer.transformAttributeModifierBauble(basicClass);
             case "artifacts.common.item.BaubleAmulet": return ArtifactsTransformer.transformBaubleAmulet(basicClass, this.isRLArtifact);
             case "artifacts.common.item.BaubleBottledCloud": return ArtifactsTransformer.transformBaubleBottledCloud(basicClass); // Non-RL
 
@@ -59,6 +60,9 @@ public class BubblesTransformer implements IClassTransformer {
             // Reliquary - Baubles support
             case "xreliquary.items.ItemAngelheartVial": return ReliquaryTransformer.transformItemAngelHeartVial(basicClass);
             case "xreliquary.items.ItemPhoenixDown": return ReliquaryTransformer.transformItemPhoenixDown(basicClass);
+
+            // EBWizardry - Fix stuff
+            case "electroblob.wizardry.integration.baubles.WizardryBaublesIntegration": return EBWizardryTransformer.transformWizardryBaublesIntegration(basicClass);
 
             default: return basicClass;
         }

@@ -40,6 +40,7 @@ dependencies {
         runtimeOnly "curse.maven:wings-302584:2829351"
     }
     if (project.actually_additions.toBoolean()) runtimeOnly "curse.maven:actuallyadditions-228404:3117927"
+    if (project.ebwizardry.toBoolean()) runtimeOnly "curse.maven:ebwizardry-265642:5354477"
     if (project.quality_tools.toBoolean()) {
         runtimeOnly "curse.maven:potion-core-242872:2905184"
         runtimeOnly "curse.maven:quality-tools-264756:2732994"

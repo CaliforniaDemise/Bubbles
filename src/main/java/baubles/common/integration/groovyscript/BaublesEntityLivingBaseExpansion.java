@@ -6,6 +6,7 @@ import baubles.api.cap.IBaublesItemHandler;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 
+@SuppressWarnings("unused")
 public class BaublesEntityLivingBaseExpansion {
 
     public static IBaublesItemHandler getBaublesHandler(EntityLivingBase entity) {

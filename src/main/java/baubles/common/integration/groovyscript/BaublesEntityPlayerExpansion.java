@@ -5,6 +5,7 @@ import baubles.api.IBaubleType;
 import baubles.api.cap.BaublesContainer;
 import net.minecraft.entity.player.EntityPlayer;
 
+@SuppressWarnings("unused")
 public class BaublesEntityPlayerExpansion {
 
     public static BaublesContainer getBaublesContainer(EntityPlayer player) {

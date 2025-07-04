@@ -6,6 +6,7 @@ import baubles.api.IBaubleType;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("unused")
 public class BaublesItemStackExpansion {
 
     @Nullable
