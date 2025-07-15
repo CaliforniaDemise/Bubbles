@@ -14,7 +14,12 @@ public class EBWizardryTransformer extends BaseTransformer {
 
     private static final String HOOK = "baubles/core/transformers/EBWizardryTransformer$Hooks";
 
-    public static byte[] transformWizardryBaublesIntegration(byte[] basicClass) {
+    public static byte[] transform(String name, String transformedName, byte[] basicClass) {
+        if (transformedName.equals("electroblob.wizardry.integration.baubles.WizardryBaublesIntegration")) return transformWizardryBaublesIntegration(basicClass);
+        return basicClass;
+    }
+
+    private static byte[] transformWizardryBaublesIntegration(byte[] basicClass) {
         ClassNode cls = read(basicClass);
         for (MethodNode method : cls.methods) {
             if (method.name.equals("getEquippedArtefacts")) {

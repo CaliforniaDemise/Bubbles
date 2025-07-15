@@ -14,7 +14,12 @@ public class SpartanWeaponryTransformer extends BaseTransformer {
 
     private static final String HOOKS = "baubles/core/transformers/SpartanWeaponryTransformer$Hooks";
 
-    public static byte[] transformQuiverHelper(byte[] basicClass) {
+    public static byte[] transform(String name, String transformedName, byte[] basicClass) {
+        if (transformedName.equals("com.oblivioussp.spartanweaponry.util.QuiverHelper")) return transformQuiverHelper(basicClass);
+        return basicClass;
+    }
+
+    private static byte[] transformQuiverHelper(byte[] basicClass) {
         ClassNode cls = read(basicClass);
         for (MethodNode method : cls.methods) {
             if (method.name.equals("findValidQuivers")) {

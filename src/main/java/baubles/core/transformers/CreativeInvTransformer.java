@@ -18,7 +18,12 @@ public class CreativeInvTransformer extends BaseTransformer {
 
     private static final String HOOK = "baubles/core/transformers/CreativeInvTransformer$Hooks";
 
-    public static byte[] transformGuiContainerCreative(byte[] basicClass) {
+    public static byte[] transform(String name, String transformedName, byte[] basicClass) {
+        if (transformedName.equals("net.minecraft.client.gui.inventory.GuiContainerCreative")) return transformGuiContainerCreative(basicClass);
+        return basicClass;
+    }
+
+    private static byte[] transformGuiContainerCreative(byte[] basicClass) {
         ClassNode cls = read(basicClass);
         for (MethodNode method : cls.methods) {
             if (method.name.equals(getName("handleMouseClick", "func_184098_a"))) {

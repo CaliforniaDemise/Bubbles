@@ -22,7 +22,12 @@ public class QualityToolsTransformer extends BaseTransformer {
 
     private static final String HOOK = "baubles/core/transformers/QualityToolsTransformer$Hooks";
 
-    public static byte[] transformBaublesHandler(byte[] basicClass) {
+    public static byte[] transform(String name, String transformedName, byte[] basicClass) {
+        if (transformedName.equals("com.tmtravlr.qualitytools.baubles.BaublesHandler")) return transformBaublesHandler(basicClass);
+        return basicClass;
+    }
+
+    private static byte[] transformBaublesHandler(byte[] basicClass) {
         ClassNode cls = read(basicClass);
         Iterator<MethodNode> mIterator = cls.methods.iterator();
         while (mIterator.hasNext()) {

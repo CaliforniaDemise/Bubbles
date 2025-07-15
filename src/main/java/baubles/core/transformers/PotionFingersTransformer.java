@@ -12,7 +12,12 @@ import java.util.Iterator;
  **/
 public class PotionFingersTransformer extends BaseTransformer {
 
-    public static byte[] transformItemRing(byte[] basicClass) {
+    public static byte[] transform(String name, String transformedName, byte[] basicClass) {
+        if (transformedName.equals("vazkii.potionfingers.ItemRing")) return transformItemRing(basicClass);
+        return basicClass;
+    }
+
+    private static byte[] transformItemRing(byte[] basicClass) {
         ClassNode cls = read(basicClass);
         boolean wornTickExists = false;
         Iterator<MethodNode> iterator = cls.methods.iterator();

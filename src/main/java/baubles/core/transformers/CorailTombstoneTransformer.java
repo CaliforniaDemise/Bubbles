@@ -16,7 +16,12 @@ public class CorailTombstoneTransformer extends BaseTransformer {
 
     private static final String HOOK = "baubles/core/transformers/CorailTombstoneTransformer$Hooks";
 
-    public static byte[] transformCompatibilityBaubles(byte[] basicClass) {
+    public static byte[] transform(String name, String transformedName, byte[] basicClass) {
+        if (transformedName.equals("ovh.corail.tombstone.compatibility.CompatibilityBaubles")) return transformCompatibilityBaubles(basicClass);
+        return basicClass;
+    }
+
+    private static byte[] transformCompatibilityBaubles(byte[] basicClass) {
         ClassNode cls = read(basicClass);
         cls.methods.removeIf(m -> m.name.equals("autoEquip"));
         { // autoEquip

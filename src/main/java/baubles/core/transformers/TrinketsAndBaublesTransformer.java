@@ -8,11 +8,20 @@ import java.util.Iterator;
 
 public class TrinketsAndBaublesTransformer extends BaseTransformer {
 
+    public static byte[] transform(String name, String transformedName, byte[] basicClass) {
+        switch (transformedName) {
+            case "xzeroair.trinkets.util.compat.baubles.BaublesHelper": return transformBaublesHelper(basicClass);
+            case "xzeroair.trinkets.client.gui.TrinketGuiButton": return transformTrinketGuiButton(basicClass);
+            case "xzeroair.trinkets.container.TrinketInventoryContainer": return transformTrinketInventoryContainer(basicClass);
+            default: return basicClass;
+        }
+    }
+
     /**
-     * This fucking mod use setPlayer method which shouldn't even be used by mods.
-     * Fucking mod developers, I swear.
+     * Uses IBaublesItemHandler#setPlayer even though it's an internal class.
+     * Fuck you.
      **/
-    public static byte[] transformBaublesHelper(byte[] basicClass) {
+    private static byte[] transformBaublesHelper(byte[] basicClass) {
         ClassNode cls = read(basicClass);
         cls.methods.removeIf(method -> method.name.equals("getBaublesHandler"));
         { // getBaublesHandler(EntityLivingBase)
@@ -60,7 +69,7 @@ public class TrinketsAndBaublesTransformer extends BaseTransformer {
         return write(cls);
     }
 
-    public static byte[] transformTrinketGuiButton(byte[] basicClass) {
+    private static byte[] transformTrinketGuiButton(byte[] basicClass) {
         ClassNode cls = read(basicClass);
         for (MethodNode method : cls.methods) {
             if (method.name.equals(getName("drawButton", "func_191745_a"))) {
@@ -85,7 +94,7 @@ public class TrinketsAndBaublesTransformer extends BaseTransformer {
         return write(cls);
     }
 
-    public static byte[] transformTrinketInventoryContainer(byte[] basicClass) {
+    private static byte[] transformTrinketInventoryContainer(byte[] basicClass) {
         ClassNode cls = read(basicClass);
         for (MethodNode method : cls.methods) {
             if (method.name.equals(getName("transferStackInSlot", "func_82846_b"))) {

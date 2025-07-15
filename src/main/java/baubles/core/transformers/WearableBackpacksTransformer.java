@@ -12,7 +12,12 @@ import java.util.Iterator;
  **/
 public class WearableBackpacksTransformer extends BaseTransformer {
 
-    public static byte[] transformBackpackHelper(byte[] basicClass) {
+    public static byte[] transform(String name, String transformedName, byte[] basicClass) {
+        if (transformedName.equals("net.mcft.copy.backpacks.api.BackpackHelper")) return transformBackpackHelper(basicClass);
+        return basicClass;
+    }
+
+    private static byte[] transformBackpackHelper(byte[] basicClass) {
         ClassNode cls = read(basicClass);
         for (MethodNode method : cls.methods) {
             if (method.name.equals("setBackpackBaubleSlotItemStack")) {
