@@ -64,6 +64,9 @@ public class BubblesTransformer implements IClassTransformer {
             // EBWizardry - Fix stuff
             case "electroblob.wizardry.integration.baubles.WizardryBaublesIntegration": return EBWizardryTransformer.transformWizardryBaublesIntegration(basicClass);
 
+            // Spartan Weaponry - Quiver fix
+            case "com.oblivioussp.spartanweaponry.util.QuiverHelper": return SpartanWeaponryTransformer.transformQuiverHelper(basicClass);
+
             default: return basicClass;
         }
     }

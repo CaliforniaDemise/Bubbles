@@ -23,6 +23,7 @@ dependencies {
     compileOnly "curse.maven:botania-225643:3330934"
     compileOnly ("curse.maven:minieffects-1081085:6143104") { transitive = false }
     compileOnly ("com.cleanroommc:groovyscript:1.2.4") { transitive = false }
+    compileOnly "curse.maven:spartan-weaponry-278141:5564836"
 
     compileOnly "curse.maven:cofh-core-69162:2920433"
 
@@ -57,8 +58,9 @@ dependencies {
     if (project.trinkets_and_baubles.toBoolean()) runtimeOnly "curse.maven:tab-279900:5717039"
     if (project.groovyscript.toBoolean()) runtimeOnly ("com.cleanroommc:groovyscript:1.2.4") { transitive = false }
     if (project.reliquary.toBoolean()) runtimeOnly "curse.maven:reliquary-241319:2761319"
+    if (project.spartan_weaponry.toBoolean()) runtimeOnly "curse.maven:spartan-weaponry-278141:5564836"
 
-    var mixins = project.universal_tweaks.toBoolean() || project.mini_effects.toBoolean() || project.groovyscript.toBoolean()
+    var mixins = project.universal_tweaks.toBoolean() || project.mini_effects.toBoolean() || project.groovyscript.toBoolean() || project.spartan_weaponry.toBoolean()
     if (mixins) {
         annotationProcessor 'org.ow2.asm:asm-debug-all:5.2'
         annotationProcessor 'com.google.guava:guava:24.1.1-jre'
