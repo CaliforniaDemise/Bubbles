@@ -18,9 +18,8 @@ import java.util.Iterator;
 import java.util.ListIterator;
 
 /**
- * Ah yes, yet another "loop is le bad" way of handling Baubles
- * I'm giving to middle finger to developers of every single mod that has hardcoded the slots and also Azanor.
- * Fuck you Azanor. I hope no one makes you create another public API ever again.
+ * Lovely lovely.
+ * Love from Croatia 🇭🇷♥
  **/
 public class ArtifactsTransformer extends BaseTransformer {
 

@@ -13,11 +13,6 @@ import org.objectweb.asm.tree.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-/**
- * Quality Tools checks if item is IBauble instead of checking capabilities.
- * Change it to check capabilities instead. Fixes issues with Wings and EbWizardry.
- * Check slots properly, fixes the issues that occur with more than 7 slots.
- **/
 public class QualityToolsTransformer extends BaseTransformer {
 
     private static final String HOOK = "baubles/core/transformers/QualityToolsTransformer$Hooks";

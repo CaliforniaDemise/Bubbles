@@ -10,10 +10,6 @@ import vazkii.botania.common.item.equipment.bauble.ItemTravelBelt;
 
 import java.util.Iterator;
 
-/**
- * Botania has some items that gets item from specific bauble slots.
- * Makes items work properly with Bubbles. Typical Vazkii mess.
- **/
 public class BotaniaTransformer extends BaseTransformer {
 
     private static final String HOOK = "baubles/core/transformers/BotaniaTransformer$Hooks";

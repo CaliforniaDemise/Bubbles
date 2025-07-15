@@ -13,12 +13,12 @@ public class BubblesTransformer implements IClassTransformer {
         if (transformedName.equals("artifacts.Artifacts")) this.isRLArtifact = ArtifactsTransformer.checkArtifacts(basicClass);
         basicClass = ArtifactsTransformer.transform(name, transformedName, basicClass, this.isRLArtifact); // Artifacts - Fix hardcoded stuff.
         basicClass = BotaniaTransformer.transform(name, transformedName, basicClass); // Botania - Fix hardcoded slots.
-        basicClass = CorailTombstoneTransformer.transform(name, transformedName, basicClass); // Fix drops.
+        basicClass = CorailTombstoneTransformer.transform(name, transformedName, basicClass); // Corail Tombstone - Fix drops on death.
         basicClass = CreativeInvTransformer.transform(name, transformedName, basicClass); // Minecraft - Make creative inventory delete all action delete items in bauble slots too.
         basicClass = EBWizardryTransformer.transform(name, transformedName, basicClass); // Electroblob's Wizardry - Fix bauble items not working.
         basicClass = EnchantmentTransformer.transform(name, transformedName, basicClass); // Minecraft - Apply enchants of bauble items.
         basicClass = PotionFingersTransformer.transform(name, transformedName, basicClass); // Potion Fingers - Fix hardcoded slots.
-        basicClass = QualityToolsTransformer.transform(name, transformedName, basicClass); // Quality Tools - Check bauble capability instead of super class and support custom slot definitions.
+        basicClass = QualityToolsTransformer.transform(name, transformedName, basicClass); // Quality Tools - Change it to check bauble capability instead of super class and add support for custom bauble types.
         basicClass = ReliquaryTransformer.transform(name, transformedName, basicClass); // Reliquary - Support reliquary items.
         basicClass = SpartanWeaponryTransformer.transform(name, transformedName, basicClass); // Spartan Weaponry - Fix Quiver.
         basicClass = TrinketsAndBaublesTransformer.transform(name, transformedName, basicClass); // Trinkets and Baubles - Fix crash.
