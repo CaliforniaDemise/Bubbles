@@ -59,6 +59,11 @@ dependencies {
     if (project.groovyscript.toBoolean()) runtimeOnly ("com.cleanroommc:groovyscript:1.2.4") { transitive = false }
     if (project.reliquary.toBoolean()) runtimeOnly "curse.maven:reliquary-241319:2761319"
     if (project.spartan_weaponry.toBoolean()) runtimeOnly "curse.maven:spartan-weaponry-278141:5564836"
+    if (project.wizardry.toBoolean()) {
+        runtimeOnly "curse.maven:forgelin-248453:2727070"
+        runtimeOnly rfg.deobf("curse.maven:librarianlib-252910:3041340")
+        runtimeOnly "curse.maven:wizardry-278155:5160012"
+    }
 
     var mixins = project.universal_tweaks.toBoolean() || project.mini_effects.toBoolean() || project.groovyscript.toBoolean() || project.spartan_weaponry.toBoolean()
     if (mixins) {

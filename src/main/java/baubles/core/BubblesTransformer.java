@@ -24,6 +24,7 @@ public class BubblesTransformer implements IClassTransformer {
         basicClass = SpartanWeaponryTransformer.transform(name, transformedName, basicClass); // Spartan Weaponry - Fix Quiver.
         basicClass = TrinketsAndBaublesTransformer.transform(name, transformedName, basicClass); // Trinkets and Baubles - Fix crash.
         basicClass = WearableBackpacksTransformer.transform(name, transformedName, basicClass); // Wearable Backpacks - Fix casting crash.
+        basicClass = WizardryTransformer.transform(name, transformedName, basicClass); // Wizardry - Fix bauble items not working.
         return basicClass;
     }
 }
