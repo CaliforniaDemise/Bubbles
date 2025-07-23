@@ -108,7 +108,7 @@ public class PotionFingersTransformer extends BaseTransformer {
             m.visitMethodInsn(INVOKEINTERFACE, "baubles/api/cap/IBaublesItemHandler", "getStackInSlot", "(I)Lnet/minecraft/item/ItemStack;", true);
             m.visitVarInsn(ASTORE, 7);
             m.visitVarInsn(ALOAD, 7);
-            m.visitMethodInsn(INVOKEVIRTUAL, "net/minecraft/item/ItemStack", getName("getItem", ""), "()Lnet/minecraft/item/Item;", false);
+            m.visitMethodInsn(INVOKEVIRTUAL, "net/minecraft/item/ItemStack", getName("getItem", "func_77973_b"), "()Lnet/minecraft/item/Item;", false);
             m.visitTypeInsn(INSTANCEOF, "vazkii/potionfingers/ItemRing");
             Label l_con_instance = new Label();
             m.visitJumpInsn(IFEQ, l_con_instance);
