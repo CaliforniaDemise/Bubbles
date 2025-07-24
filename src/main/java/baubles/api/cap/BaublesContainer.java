@@ -431,6 +431,7 @@ public class BaublesContainer implements IBaublesItemHandler, INBTSerializable<N
                     int slotCount = typeTag.getInteger("Count");
                     NBTTagList itemsList = typeTag.getTagList("Items", Constants.NBT.TAG_COMPOUND);
                     ItemStack[] stacks = new ItemStack[slotCount];
+                    Arrays.fill(stacks, ItemStack.EMPTY);
                     for (int a = 0; a < itemsList.tagCount(); a++) {
                         NBTTagCompound stackTag = itemsList.getCompoundTagAt(a);
                         int slot = stackTag.getInteger("Slot");
@@ -451,6 +452,7 @@ public class BaublesContainer implements IBaublesItemHandler, INBTSerializable<N
                 int slot = stackTag.getInteger("Slot");
                 if (!stackTag.hasKey("id", 8)) continue;
                 ItemStack stack = new ItemStack(stackTag);
+                if (stack.isEmpty()) continue;
                 IBauble bauble = Objects.requireNonNull(BaublesApi.getBauble(stack));
                 if (slot < getSlots()) {
                     if (bauble.canPutOnSlot(BaublesContainer.this, slot, this.getSlotType(slot), stack)) this.putItem(slot, stack);
