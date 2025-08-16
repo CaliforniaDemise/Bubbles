@@ -7,6 +7,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 /**
  * An item handler specific for baubles
@@ -21,7 +24,13 @@ public interface IBaublesItemHandler extends IItemHandlerModifiable {
      **/
     EntityLivingBase getEntity();
 
+    /**
+     * Gets the bauble type of the slot based on slots index.
+     **/
     IBaubleType getSlotType(int slotIndex);
+
+    @NotNull
+    List<ItemStack> getTypeStacks(IBaubleType type);
 
     /**
      * {@link IItemHandler#isItemValid(int, ItemStack)} but with entity.

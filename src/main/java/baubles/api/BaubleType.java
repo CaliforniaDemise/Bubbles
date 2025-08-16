@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Default bauble types
  **/
-public enum BaubleType implements IBaubleType {
+public enum BaubleType implements IBaubleType, Comparable<BaubleType> {
 
     AMULET("amulet"),
     RING("ring"),
