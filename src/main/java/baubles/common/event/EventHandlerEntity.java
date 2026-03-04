@@ -47,7 +47,13 @@ public class EventHandlerEntity {
             BaublesContainer bcn = (BaublesContainer) BaublesApi.getBaublesHandler(event.getEntityPlayer());
             bcn.deserializeNBT(nbt);
         } catch (Exception e) {
-            Baubles.log.error("Could not clone player [" + event.getOriginal().getName() + "] baubles when changing dimensions");
+            Baubles.log.error("Could not clone player [" + event.getOriginal().getName() + "] baubles when changing dimensions", e);
+            try {
+                BaublesContainer bcn = (BaublesContainer) BaublesApi.getBaublesHandler(event.getEntityPlayer());
+                if (bcn != null) bcn.reset();
+            } catch (Exception e2) {
+                Baubles.log.error("Could not reset baubles container after failed clone", e2);
+            }
         }
     }
 

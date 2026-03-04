@@ -3,6 +3,7 @@ package baubles.api.cap;
 import baubles.api.BaublesApi;
 import baubles.api.IBauble;
 import baubles.api.IBaubleType;
+import baubles.common.Baubles;
 import baubles.common.Config;
 import baubles.common.init.BaubleTypes;
 import baubles.common.network.PacketHandler;
@@ -418,7 +419,12 @@ public class BaublesContainer implements IBaublesItemHandler, INBTSerializable<N
                 NBTTagList typeList = nbt.getTagList("Types", Constants.NBT.TAG_COMPOUND);
                 for (int i = 0; i < typeList.tagCount(); i++) {
                     NBTTagCompound typeTag = typeList.getCompoundTagAt(i);
-                    IBaubleType type = BaubleTypes.get(new ResourceLocation(typeTag.getString("Name")));
+                    ResourceLocation typeName = new ResourceLocation(typeTag.getString("Name"));
+                    IBaubleType type = BaubleTypes.get(typeName);
+                    if (type == null) {
+                        Baubles.log.warn("Unknown bauble type '{}' in NBT, skipping", typeName);
+                        continue;
+                    }
                     int slotCount = typeTag.getInteger("Count");
                     NBTTagList itemsList = typeTag.getTagList("Items", Constants.NBT.TAG_COMPOUND);
                     ItemStack[] stacks = new ItemStack[slotCount];
