@@ -21,6 +21,7 @@ public class BubblesTransformer implements IClassTransformer {
         basicClass = PotionFingersTransformer.transform(name, transformedName, basicClass); // Potion Fingers - Fix hardcoded slots.
         basicClass = QualityToolsTransformer.transform(name, transformedName, basicClass); // Quality Tools - Change it to check bauble capability instead of super class and add support for custom bauble types.
         basicClass = ReliquaryTransformer.transform(name, transformedName, basicClass); // Reliquary - Support reliquary items.
+        basicClass = RootsTransformer.transform(name, transformedName, basicClass);
         basicClass = SpartanWeaponryTransformer.transform(name, transformedName, basicClass); // Spartan Weaponry - Fix Quiver.
         basicClass = TrinketsAndBaublesTransformer.transform(name, transformedName, basicClass); // Trinkets and Baubles - Fix crash.
         basicClass = WearableBackpacksTransformer.transform(name, transformedName, basicClass); // Wearable Backpacks - Fix casting crash.
