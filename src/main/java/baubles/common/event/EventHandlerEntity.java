@@ -9,6 +9,7 @@ import baubles.api.cap.IBaublesItemHandler;
 import baubles.common.Baubles;
 import baubles.common.network.PacketHandler;
 import baubles.common.network.PacketSync;
+import baubles.common.network.PacketSyncSlots;
 import cofh.core.enchantment.EnchantmentSoulbound;
 import cofh.core.util.helpers.ItemHelper;
 import cofh.core.util.helpers.MathHelper;
@@ -65,8 +66,10 @@ public class EventHandlerEntity {
         Entity entity = event.getEntity();
         if (entity instanceof EntityPlayerMP) {
             EntityPlayerMP player = (EntityPlayerMP) entity;
-            this.syncSlots(player, Collections.singletonList(player));
             BaublesContainer container = (BaublesContainer) BaublesApi.getBaublesHandler(player);
+            PacketSyncSlots syncSlots = new PacketSyncSlots(container.serializeNBT());
+            PacketHandler.INSTANCE.sendTo(syncSlots, player);
+//            this.syncSlots(player, Collections.singletonList(player));
         }
     }
 
