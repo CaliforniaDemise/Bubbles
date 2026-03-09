@@ -2,6 +2,7 @@ package baubles.api;
 
 import baubles.common.Baubles;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
@@ -55,12 +56,10 @@ public enum BaubleType implements IBaubleType {
     public boolean canApplyEnchantment(Enchantment enchantment, ItemStack stack) {
         if (enchantment.type == null) return false;
         if (IBaubleType.super.canApplyEnchantment(enchantment, stack)) return true;
-        switch (enchantment.type) {
-            case ARMOR_HEAD: if (this == HEAD) return true;
-            case ARMOR_CHEST: if (this == AMULET || this == BODY) return true;
-            case ARMOR_LEGS: if (this == BELT) return true;
-            case BREAKABLE: return stack.isItemStackDamageable();
-        }
+        if (enchantment.type == EnumEnchantmentType.ARMOR_HEAD) return this == HEAD;
+        if (enchantment.type == EnumEnchantmentType.ARMOR_CHEST) return (this == AMULET || this == BODY);
+        if (enchantment.type == EnumEnchantmentType.ARMOR_LEGS) return this == BELT;
+        if (enchantment.type == EnumEnchantmentType.BREAKABLE) return stack.isItemStackDamageable();
         return false;
     }
 
