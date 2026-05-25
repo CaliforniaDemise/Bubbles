@@ -35,8 +35,10 @@ public interface IBaublesItemHandler extends IItemHandlerModifiable {
 
     void onContentsChanged(int slotIndex);
 
-    @Deprecated boolean isChanged(int slot);
-    @Deprecated void setChanged(int slot, boolean changed);
+    @Deprecated default void setPlayer(EntityLivingBase entity) {}
+
+    @Deprecated default boolean isChanged(int slot) { return false; }
+    @Deprecated default void setChanged(int slot, boolean changed) {}
 
     @Deprecated default boolean isEventBlocked() { return false; }
     @Deprecated default void setEventBlock(boolean blockEvents) {}

@@ -234,9 +234,6 @@ public class BaublesContainer implements IBaublesItemHandler, INBTSerializable<N
         this.slots.deserializeNBT(nbt);
     }
 
-    @Deprecated @Override public boolean isChanged(int slot) { return false; }
-    @Deprecated @Override public void setChanged(int slot, boolean change) {}
-
     /**
      * Use {@link BaublesContainer#getStackInSlot(int)}
      **/
