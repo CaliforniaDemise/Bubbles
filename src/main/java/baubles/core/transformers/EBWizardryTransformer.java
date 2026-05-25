@@ -1,21 +1,23 @@
 package baubles.core.transformers;
 
-import baubles.api.BaubleType;
 import baubles.api.BaublesApi;
 import baubles.api.cap.IBaublesItemHandler;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
+import com.google.common.collect.ImmutableSet;
+import electroblob.wizardry.item.ItemArtefact;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import org.objectweb.asm.tree.*;
 
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
-public class EBWizardryTransformer extends BaseTransformer {
+public final class EBWizardryTransformer extends BaseTransformer {
 
     private static final String HOOK = "baubles/core/transformers/EBWizardryTransformer$Hooks";
 
-    public static byte[] transform(String name, String transformedName, byte[] basicClass) {
-        if (transformedName.equals("electroblob.wizardry.integration.baubles.WizardryBaublesIntegration")) return transformWizardryBaublesIntegration(basicClass);
+    public static byte[] transform(String _name, String name, byte[] basicClass) {
+        if (name.equals("electroblob.wizardry.integration.baubles.WizardryBaublesIntegration")) return transformWizardryBaublesIntegration(basicClass);
         return basicClass;
     }
 
@@ -23,16 +25,13 @@ public class EBWizardryTransformer extends BaseTransformer {
         ClassNode cls = read(basicClass);
         for (MethodNode method : cls.methods) {
             if (method.name.equals("getEquippedArtefacts")) {
-                Iterator<AbstractInsnNode> iterator = method.instructions.iterator();
-                AbstractInsnNode node = iterator.next();
-                if (node.getOpcode() == INVOKEVIRTUAL && ((MethodInsnNode) node).name.equals("getValidSlots")) {
-                    InsnList list = new InsnList();
-                    list.add(new VarInsnNode(ALOAD, 0));
-                    list.add(new MethodInsnNode(INVOKESTATIC, HOOK, "$getTypeSlots", "(Lbaubles/api/BaubleType;Lnet/minecraft/entity/player/EntityPlayer;)[I", false));
-                    method.instructions.insertBefore(node, list);
-                    iterator.remove();
-                    break;
-                }
+                AbstractInsnNode node = method.instructions.getFirst();
+                InsnList list = new InsnList();
+                list.add(new VarInsnNode(ALOAD, 0));
+                list.add(new VarInsnNode(ALOAD, 1));
+                list.add(new MethodInsnNode(INVOKESTATIC, HOOK, "WBI$getArtefacts", "(Lnet/minecraft/entity/player/EntityPlayer;[Lelectroblob/wizardry/item/ItemArtefact$Type)Ljava/util/List;", false));
+                method.instructions.insertBefore(node, list);
+                break;
             }
         }
         return write(cls);
@@ -40,15 +39,19 @@ public class EBWizardryTransformer extends BaseTransformer {
 
     @SuppressWarnings("unused")
     public static class Hooks {
-        public static int[] $getTypeSlots(BaubleType type, EntityPlayer player) {
-            IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
-            IntList list = new IntArrayList();
-            for (int i = 0; i < baubles.getSlots(); i++) {
-                if (baubles.getSlotType(i) == type) {
-                    list.add(i);
+
+        public static List<ItemArtefact> WBI$getArtefacts(EntityPlayer player, ItemArtefact.Type... types) {
+            List<ItemArtefact> artefacts = new ArrayList<>();
+            IBaublesItemHandler handler = BaublesApi.getBaublesHandler(player);
+            Set<ItemArtefact.Type> set = ImmutableSet.copyOf(types);
+            for (int i = 0; i < handler.getSlots(); ++i) {
+                ItemStack stack = handler.getStackInSlot(i);
+                if (!stack.isEmpty() && stack.getItem() instanceof ItemArtefact) {
+                    ItemArtefact artefact = (ItemArtefact) stack.getItem();
+                    if (set.contains(artefact.getType())) artefacts.add(artefact);
                 }
             }
-            return list.toArray(new int[0]);
+            return artefacts;
         }
     }
 }
