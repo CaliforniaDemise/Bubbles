@@ -35,7 +35,9 @@ public interface IBaublesItemHandler extends IItemHandlerModifiable {
 
     void onContentsChanged(int slotIndex);
 
-    // TODO Remove it once sure.
     @Deprecated boolean isChanged(int slot);
     @Deprecated void setChanged(int slot, boolean changed);
+
+    @Deprecated default boolean isEventBlocked() { return false; }
+    @Deprecated default void setEventBlock(boolean blockEvents) {}
 }

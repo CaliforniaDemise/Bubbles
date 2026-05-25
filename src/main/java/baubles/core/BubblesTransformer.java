@@ -12,6 +12,10 @@ public class BubblesTransformer implements IClassTransformer {
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
         if (transformedName.startsWith("baubles.core.transformers.")) return basicClass;
         if (transformedName.equals("artifacts.Artifacts")) this.isRLArtifact = ArtifactsTransformer.checkArtifacts(basicClass);
+        AstralSorceryTransformer.transform(name, transformedName, basicClass);
+        BetterAnimalsPlusTransformer.transform(name, transformedName, basicClass);
+        CosmeticArmorsTransformer.transform(name, transformedName, basicClass);
+
         basicClass = ArtifactsTransformer.transform(name, transformedName, basicClass, this.isRLArtifact); // Artifacts - Fix hardcoded stuff.
         basicClass = BotaniaTransformer.transform(name, transformedName, basicClass); // Botania - Fix hardcoded slots.
         basicClass = CorailTombstoneTransformer.transform(name, transformedName, basicClass); // Corail Tombstone - Fix drops on death.

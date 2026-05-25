@@ -69,6 +69,10 @@ public class BaublesContainer implements IBaublesItemHandler, INBTSerializable<N
         return this.slots.getSlotType(slotIndex);
     }
 
+    public int[] getAllSlots() {
+        return slots.slotArray;
+    }
+
     public void grow(IBaubleType type, int amount) {
         int index = this.slots.getIndex(type);
         if (index >= 0) {
@@ -266,6 +270,8 @@ public class BaublesContainer implements IBaublesItemHandler, INBTSerializable<N
 
         static final int SORT = 1, DROP = 2, SYNC = 4;
 
+        int[] slotArray = new int[0];
+
         SlotMap(Object2IntMap<IBaubleType> map) {
             this.list = new ArrayList<>();
             this.readSlot(map);
@@ -359,6 +365,10 @@ public class BaublesContainer implements IBaublesItemHandler, INBTSerializable<N
         void sort() {
             if ((this.updated & SORT) == 0) return;
             this.list.sort(Comparator.comparingInt(p -> p.getKey().getOrder()));
+            this.slotArray = new int[slotAmount];
+            for (int i = 0; i < slotAmount; ++i) {
+                this.slotArray[i] = i;
+            }
         }
 
         void drop(World world, double x, double y, double z) {
