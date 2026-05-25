@@ -27,9 +27,15 @@ public final class EBWizardryTransformer extends BaseTransformer {
             if (method.name.equals("getEquippedArtefacts")) {
                 AbstractInsnNode node = method.instructions.getFirst();
                 InsnList list = new InsnList();
+                LabelNode l_con = new LabelNode();
+                list.add(new InsnNode(ICONST_1));
+                list.add(new JumpInsnNode(IFEQ, l_con));
                 list.add(new VarInsnNode(ALOAD, 0));
                 list.add(new VarInsnNode(ALOAD, 1));
                 list.add(new MethodInsnNode(INVOKESTATIC, HOOK, "WBI$getArtefacts", "(Lnet/minecraft/entity/player/EntityPlayer;[Lelectroblob/wizardry/item/ItemArtefact$Type)Ljava/util/List;", false));
+                list.add(new InsnNode(ARETURN));
+                list.add(l_con);
+                list.add(new FrameNode(F_SAME, 0, null, 0, null));
                 method.instructions.insertBefore(node, list);
                 break;
             }

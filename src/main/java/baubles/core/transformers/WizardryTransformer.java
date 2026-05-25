@@ -1,72 +1,66 @@
 package baubles.core.transformers;
 
+import baubles.api.BaublesApi;
+import baubles.api.IBauble;
 import baubles.api.cap.IBaublesItemHandler;
 import com.google.common.collect.ImmutableList;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import org.objectweb.asm.tree.*;
 
 import java.util.Iterator;
 import java.util.List;
 
-public class WizardryTransformer extends BaseTransformer {
+public final class WizardryTransformer extends BaseTransformer {
 
-    private static final String HOOKS = "baubles/core/transformers/WizardryTransformer$Hooks";
+    private static final String HOOK = "baubles/core/transformers/WizardryTransformer$Hooks";
 
-    public static byte[] transform(String name, String transformedName, byte[] basicClass) {
-        if (transformedName.equals("com.teamwizardry.wizardry.api.item.BaublesSupport$ArmorAccessor")) return BaublesSupport$ArmorAccessor(basicClass);
-        return basicClass;
+    public static byte[] transform(String _name, String name, byte[] basicClass) {
+        switch (name) {
+            case "com.teamwizardry.wizardry.api.item.BaublesSupport$ArmorAccessor": return transformBaublesSupport$ArmorAccessor(basicClass);
+            case "com.teamwizardry.wizardry.api.item.BaublesSupport$StackAccessor": return transformBaublesSupport$StackAccessor(basicClass);
+            default: return basicClass;
+        }
     }
 
-    private static byte[] BaublesSupport$ArmorAccessor(byte[] basicClass) {
+    private static byte[] transformBaublesSupport$StackAccessor(byte[] basicClass) {
         ClassNode cls = read(basicClass);
         for (MethodNode method : cls.methods) {
-            if (method.name.equals("getBaublesFallbackArmor")) {
-                Iterator<AbstractInsnNode> iterator = method.instructions.iterator();
+            if (method.name.equals("get")) {
+                AbstractInsnNode node = method.instructions.getFirst();
+                InsnList list = new InsnList();
                 LabelNode l_con = new LabelNode();
-                boolean check = false;
-                while (iterator.hasNext()) {
-                    AbstractInsnNode node = iterator.next();
-                    if (node.getOpcode() == ASTORE && ((VarInsnNode) node).var == 3) {
-                        check = true;
-                        InsnList list = new InsnList();
-                        list.add(new InsnNode(ICONST_1));
-                        list.add(new JumpInsnNode(IFEQ, l_con));
-                        list.add(new VarInsnNode(ALOAD, 3));
-                        list.add(new VarInsnNode(ALOAD, 2));
-                        list.add(new MethodInsnNode(INVOKESTATIC, HOOKS, "$addStacks", "(Lbaubles/api/cap/IBaublesItemHandler;Lcom/google/common/collect/ImmutableList$Builder;)Ljava/util/List;", false));
-                        list.add(new InsnNode(ARETURN));
-                        method.instructions.insert(node, list);
-                    }
-                    else if (check && node.getOpcode() == ARETURN) {
-                        while (node.getOpcode() != ALOAD) node = node.getPrevious();
-                        InsnList list = new InsnList();
-                        list.add(l_con);
-                        method.instructions.insertBefore(node, list);
-                        break;
-                    }
-                }
+                list.add(new InsnNode(ICONST_1));
+                list.add(new JumpInsnNode(IFEQ, l_con));
+                list.add(new VarInsnNode(ALOAD, 1));
+                list.add(new MethodInsnNode(INVOKESTATIC, HOOK, "StackAccessor$isBauble", "(Lnet/minecraft/item/ItemStack;)Z", false));
+                list.add(new InsnNode(IRETURN));
+                list.add(l_con);
+                list.add(new FrameNode(F_SAME, 0, null, 0, null));
+                method.instructions.insertBefore(node, list);
+                break;
             }
-            else if (method.name.equals("getBaublesOnly")) {
+        }
+        return write(cls);
+    }
+
+    private static byte[] transformBaublesSupport$ArmorAccessor(byte[] basicClass) {
+        ClassNode cls = read(basicClass);
+        for (MethodNode method : cls.methods) {
+            if (method.name.equals("getBaublesOnly") || method.name.equals("getBaublesFallbackArmor")) {
                 Iterator<AbstractInsnNode> iterator = method.instructions.iterator();
-                LabelNode l_con = new LabelNode();
-                boolean check = false;
                 while (iterator.hasNext()) {
                     AbstractInsnNode node = iterator.next();
-                    if (node.getOpcode() == ASTORE && ((VarInsnNode) node).var == 3) {
-                        check = true;
+                    if (node.getOpcode() == INVOKESTATIC && ((MethodInsnNode) node).name.equals("builder")) {
                         InsnList list = new InsnList();
+                        LabelNode l_con = new LabelNode();
                         list.add(new InsnNode(ICONST_1));
                         list.add(new JumpInsnNode(IFEQ, l_con));
-                        list.add(new VarInsnNode(ALOAD, 3));
-                        list.add(new VarInsnNode(ALOAD, 2));
-                        list.add(new MethodInsnNode(INVOKESTATIC, HOOKS, "$addStacks", "(Lbaubles/api/cap/IBaublesItemHandler;Lcom/google/common/collect/ImmutableList$Builder;)Ljava/util/List;", false));
+                        list.add(new VarInsnNode(ALOAD, 1));
+                        list.add(new MethodInsnNode(INVOKESTATIC, HOOK, "ArmorAccessor$getStacks", "(Lnet/minecraft/entity/EntityLivingBase;)Ljava/util/List;", false));
                         list.add(new InsnNode(ARETURN));
-                        method.instructions.insert(node, list);
-                    }
-                    else if (check && node.getOpcode() == ARETURN) {
-                        while (node.getOpcode() != ALOAD) node = node.getPrevious();
-                        InsnList list = new InsnList();
                         list.add(l_con);
+                        list.add(new FrameNode(F_SAME, 0, null, 0, null));
                         method.instructions.insertBefore(node, list);
                         break;
                     }
@@ -78,11 +72,21 @@ public class WizardryTransformer extends BaseTransformer {
 
     @SuppressWarnings("unused")
     public static class Hooks {
-        public static List<ItemStack> $addStacks(IBaublesItemHandler handler, ImmutableList.Builder<ItemStack> list) {
-            for (int i = 0; i < handler.getSlots(); i++) {
-                list.add(handler.getStackInSlot(i));
+
+        public static List<ItemStack> ArmorAccessor$getStacks(EntityLivingBase entity) {
+            ImmutableList.Builder<ItemStack> builder = ImmutableList.builder();
+            IBaublesItemHandler handler = BaublesApi.getBaublesHandler(entity);
+            if (handler != null) {
+                for (int i = 0; i < handler.getSlots(); ++i) {
+                    ItemStack stack = handler.getStackInSlot(i);
+                    if (!stack.isEmpty()) builder.add(stack);
+                }
             }
-            return list.build();
+            return builder.build();
+        }
+
+        public static boolean StackAccessor$isBauble(ItemStack stack) {
+            return stack.getItem() instanceof IBauble || BaublesApi.getBauble(stack) != null;
         }
     }
 }
