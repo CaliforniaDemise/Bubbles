@@ -44,6 +44,7 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 
 import static baubles.common.integration.ModCompatibility.COSMETIC_ARMOR;
+import static baubles.common.integration.ModCompatibility.COSMETIC_ARMOR_LOADED;
 
 public class GuiPlayerExpanded extends InventoryEffectRenderer {
 
@@ -115,7 +116,7 @@ public class GuiPlayerExpanded extends InventoryEffectRenderer {
             this.buttonList.add(this.recipeBook);
         }
 
-        if (Loader.isModLoaded(COSMETIC_ARMOR)) {
+        if (COSMETIC_ARMOR_LOADED) {
             this.initCosButtons();
             this.buttonList.add(this.cosButton);
             this.buttonList.add(this.cosToggleButton);
