@@ -6,6 +6,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.tree.*;
+import vazkii.botania.common.item.equipment.bauble.CloudPendantShim;
 import vazkii.botania.common.item.equipment.bauble.ItemTravelBelt;
 
 import java.util.Iterator;
@@ -23,8 +24,29 @@ public class BotaniaTransformer extends BaseTransformer {
             case "vazkii.botania.common.item.equipment.bauble.ItemMonocle": return BotaniaTransformer.transformItemMonocle(basicClass);
             case "vazkii.botania.common.item.equipment.bauble.ItemTravelBelt": return BotaniaTransformer.transformItemTravelBelt(basicClass);
             case "vazkii.botania.common.item.equipment.bauble.ItemWaterRing": return BotaniaTransformer.transformItemWaterRing(basicClass);
+            case "vazkii.botania.common.network.PacketJump$Handler": return transformPacketJump$Handler(basicClass);
             default: return basicClass;
         }
+    }
+
+    private static byte[] transformPacketJump$Handler(byte[] bytes) {
+        ClassNode cls = read(bytes);
+        for (MethodNode method : cls.methods) {
+            if (method.name.equals("onMessage")) {
+                Iterator<AbstractInsnNode> iterator = method.instructions.iterator();
+                while (iterator.hasNext()) {
+                    AbstractInsnNode node = iterator.next();
+                    if (node.getOpcode() == INVOKEINTERFACE && ((MethodInsnNode) node).name.equals("getStackInSlot")) {
+                        InsnList list = new InsnList();
+                        list.add(new MethodInsnNode(INVOKESTATIC, HOOK, "PacketJump$Handler$getStackInSlot", "(Lbaubles/api/cap/IBaublesItemHandler;I)I", false));
+                        method.instructions.insertBefore(node, list);
+                        method.instructions.remove(node);
+                    }
+                }
+                break;
+            }
+        }
+        return write(cls);
     }
 
     private static byte[] transformItemDivaCharm(byte[] basicClass) {
@@ -183,7 +205,8 @@ public class BotaniaTransformer extends BaseTransformer {
                         break;
                     }
                 }
-            } else if (method.name.equals("onPlayerJump")) {
+            }
+            else if (method.name.equals("onPlayerJump")) {
                 Iterator<AbstractInsnNode> iterator = method.instructions.iterator();
                 while (iterator.hasNext()) {
                     AbstractInsnNode node = iterator.next();
@@ -245,12 +268,29 @@ public class BotaniaTransformer extends BaseTransformer {
 
     @SuppressWarnings("unused")
     public static class Hooks {
+
         public static int $getTravelBeltSlot(EntityPlayer player) {
             IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
             for (int i = 0; i < baubles.getSlots(); i++) {
                 ItemStack stack = baubles.getStackInSlot(i);
                 if (stack.isEmpty()) continue;
                 if (stack.getItem() instanceof ItemTravelBelt) return i;
+            }
+            return -1;
+        }
+
+        public static int PacketJump$Handler$getStackInSlot(IBaublesItemHandler handler, int slot) {
+            if (slot == 0) {
+                for (int i = 0; i < handler.getSlots(); ++i) {
+                    ItemStack stack = handler.getStackInSlot(i);
+                    if (!stack.isEmpty() && stack.getItem() instanceof CloudPendantShim) return i;
+                }
+            }
+            else {
+                for (int i = 0; i < handler.getSlots(); ++i) {
+                    ItemStack stack = handler.getStackInSlot(i);
+                    if (!stack.isEmpty() && stack.getItem() instanceof ItemTravelBelt) return i;
+                }
             }
             return -1;
         }
