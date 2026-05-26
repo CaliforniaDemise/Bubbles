@@ -9,27 +9,29 @@ public class BubblesTransformer implements IClassTransformer {
     private boolean isRLArtifact = false;
 
     @Override
-    public byte[] transform(String name, String transformedName, byte[] basicClass) {
-        if (transformedName.startsWith("baubles.core.transformers.")) return basicClass;
-        if (transformedName.equals("artifacts.Artifacts")) this.isRLArtifact = ArtifactsTransformer.checkArtifacts(basicClass);
-        AstralSorceryTransformer.transform(name, transformedName, basicClass);
-        BetterAnimalsPlusTransformer.transform(name, transformedName, basicClass);
-        CosmeticArmorsTransformer.transform(name, transformedName, basicClass);
+    public byte[] transform(String _name, String name, byte[] bytes) {
+        if (name.startsWith("baubles.core.transformers.")) return bytes;
+        if (name.equals("artifacts.Artifacts")) this.isRLArtifact = ArtifactsTransformer.checkArtifacts(bytes);
+        ArmoredArmsTransformer.transform(_name, name, bytes);
+        AstralSorceryTransformer.transform(_name, name, bytes);
+        BetterAnimalsPlusTransformer.transform(_name, name, bytes);
+        CosmeticArmorsTransformer.transform(_name, name, bytes);
+        PlethoraTransformer.transform(_name, name, bytes);
 
-        basicClass = ArtifactsTransformer.transform(name, transformedName, basicClass, this.isRLArtifact); // Artifacts - Fix hardcoded stuff.
-        basicClass = BotaniaTransformer.transform(name, transformedName, basicClass); // Botania - Fix hardcoded slots.
-        basicClass = CorailTombstoneTransformer.transform(name, transformedName, basicClass); // Corail Tombstone - Fix drops on death.
-        basicClass = CreativeInvTransformer.transform(name, transformedName, basicClass); // Minecraft - Make creative inventory delete all action delete items in bauble slots too.
-        basicClass = EBWizardryTransformer.transform(name, transformedName, basicClass); // Electroblob's Wizardry - Fix bauble items not working.
-        basicClass = EnchantmentTransformer.transform(name, transformedName, basicClass); // Minecraft - Apply enchants of bauble items.
-        basicClass = PotionFingersTransformer.transform(name, transformedName, basicClass); // Potion Fingers - Fix hardcoded slots.
-        basicClass = QualityToolsTransformer.transform(name, transformedName, basicClass); // Quality Tools - Change it to check bauble capability instead of super class and add support for custom bauble types.
-        basicClass = ReliquaryTransformer.transform(name, transformedName, basicClass); // Reliquary - Support reliquary items.
-        basicClass = RootsTransformer.transform(name, transformedName, basicClass);
-        basicClass = SpartanWeaponryTransformer.transform(name, transformedName, basicClass); // Spartan Weaponry - Fix Quiver.
-        basicClass = TrinketsAndBaublesTransformer.transform(name, transformedName, basicClass); // Trinkets and Baubles - Fix crash.
-        basicClass = WearableBackpacksTransformer.transform(name, transformedName, basicClass); // Wearable Backpacks - Fix casting crash.
-        basicClass = WizardryTransformer.transform(name, transformedName, basicClass); // Wizardry - Fix bauble items not working.
-        return basicClass;
+        bytes = ArtifactsTransformer.transform(_name, name, bytes, this.isRLArtifact); // Artifacts - Fix hardcoded stuff.
+        bytes = BotaniaTransformer.transform(_name, name, bytes); // Botania - Fix hardcoded slots.
+        bytes = CorailTombstoneTransformer.transform(_name, name, bytes); // Corail Tombstone - Fix drops on death.
+        bytes = CreativeInvTransformer.transform(_name, name, bytes); // Minecraft - Make creative inventory delete all action delete items in bauble slots too.
+        bytes = EBWizardryTransformer.transform(_name, name, bytes); // Electroblob's Wizardry - Fix bauble items not working.
+        bytes = EnchantmentTransformer.transform(_name, name, bytes); // Minecraft - Apply enchants of bauble items.
+        bytes = PotionFingersTransformer.transform(_name, name, bytes); // Potion Fingers - Fix hardcoded slots.
+        bytes = QualityToolsTransformer.transform(_name, name, bytes); // Quality Tools - Change it to check bauble capability instead of super class and add support for custom bauble types.
+        bytes = ReliquaryTransformer.transform(_name, name, bytes); // Reliquary - Support reliquary items.
+        bytes = RootsTransformer.transform(_name, name, bytes);
+        bytes = SpartanWeaponryTransformer.transform(_name, name, bytes); // Spartan Weaponry - Fix Quiver.
+        bytes = TrinketsAndBaublesTransformer.transform(_name, name, bytes); // Trinkets and Baubles - Fix crash.
+        bytes = WearableBackpacksTransformer.transform(_name, name, bytes); // Wearable Backpacks - Fix casting crash.
+        bytes = WizardryTransformer.transform(_name, name, bytes); // Wizardry - Fix bauble items not working.
+        return bytes;
     }
 }
