@@ -17,6 +17,7 @@ public class BubblesTransformer implements IClassTransformer {
         BetterAnimalsPlusTransformer.transform(_name, name, bytes);
         CosmeticArmorsTransformer.transform(_name, name, bytes);
         PlethoraTransformer.transform(_name, name, bytes);
+        TheOneProbeTransformer.transform(_name, name, bytes);
 
         bytes = ArtifactsTransformer.transform(_name, name, bytes, this.isRLArtifact); // Artifacts - Fix hardcoded stuff.
         bytes = BotaniaTransformer.transform(_name, name, bytes); // Botania - Fix hardcoded slots.
