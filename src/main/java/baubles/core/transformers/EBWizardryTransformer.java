@@ -44,20 +44,32 @@ public final class EBWizardryTransformer extends BaseTransformer {
     }
 
     @SuppressWarnings("unused")
-    public static class Hooks {
+    public static final class Hooks {
 
         public static List<ItemArtefact> WBI$getArtefacts(EntityPlayer player, ItemArtefact.Type... types) {
             List<ItemArtefact> artefacts = new ArrayList<>();
             IBaublesItemHandler handler = BaublesApi.getBaublesHandler(player);
-            Set<ItemArtefact.Type> set = ImmutableSet.copyOf(types);
+            long set = getTypeSet(types);
             for (int i = 0; i < handler.getSlots(); ++i) {
                 ItemStack stack = handler.getStackInSlot(i);
                 if (!stack.isEmpty() && stack.getItem() instanceof ItemArtefact) {
                     ItemArtefact artefact = (ItemArtefact) stack.getItem();
-                    if (set.contains(artefact.getType())) artefacts.add(artefact);
+                    if (check(set, artefact.getType())) artefacts.add(artefact);
                 }
             }
             return artefacts;
+        }
+
+        private static long getTypeSet(ItemArtefact.Type... types) {
+            long out = 0L;
+            for (ItemArtefact.Type type : types) {
+                out |= 1 << type.ordinal();
+            }
+            return out;
+        }
+
+        private static boolean check(long set, ItemArtefact.Type type) {
+            return (set & (1 << type.ordinal())) != 0;
         }
     }
 }
