@@ -18,6 +18,7 @@ public class BubblesTransformer implements IClassTransformer {
         CosmeticArmorsTransformer.transform(_name, name, bytes);
         PlethoraTransformer.transform(_name, name, bytes);
         ThaumicAdditionsTransformer.transform(_name, name, bytes);
+        ThaumicAugmentationTransformer.transform(_name, name, bytes);
         TheOneProbeTransformer.transform(_name, name, bytes);
 
         bytes = ArtifactsTransformer.transform(_name, name, bytes, this.isRLArtifact); // Artifacts - Fix hardcoded stuff.
