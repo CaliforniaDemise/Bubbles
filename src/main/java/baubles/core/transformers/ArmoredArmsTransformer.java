@@ -75,5 +75,9 @@ public final class ArmoredArmsTransformer extends BaseTransformer {
         private static boolean isGlove(Item item) {
             return item == ModItems.POWER_GLOVE || item == ModItems.FERAL_CLAWS || item == ModItems.MECHANICAL_GLOVE || item == ModItems.FIRE_GAUNTLET || item == ModItems.POCKET_PISTON;
         }
+
+        private Hooks() {}
     }
+
+    private ArmoredArmsTransformer() {}
 }

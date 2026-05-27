@@ -45,5 +45,9 @@ public final class TheOneProbeTransformer extends BaseTransformer {
         public static int BaubleTools$getGoggleSlot(int slot, EntityPlayer player) {
             return BaublesApi.isBaubleEquipped(player, ModItems.probeGoggles);
         }
+
+        private Hooks() {}
     }
+
+    private TheOneProbeTransformer() {}
 }

@@ -11,20 +11,21 @@ import org.objectweb.asm.tree.*;
 import java.util.Iterator;
 import java.util.List;
 
+// TODO *Hardcoded*
 public final class WizardryTransformer extends BaseTransformer {
 
     private static final String HOOK = "baubles/core/transformers/WizardryTransformer$Hooks";
 
-    public static byte[] transform(String _name, String name, byte[] basicClass) {
+    public static byte[] transform(String _name, String name, byte[] bytes) {
         switch (name) {
-            case "com.teamwizardry.wizardry.api.item.BaublesSupport$ArmorAccessor": return transformBaublesSupport$ArmorAccessor(basicClass);
-            case "com.teamwizardry.wizardry.api.item.BaublesSupport$StackAccessor": return transformBaublesSupport$StackAccessor(basicClass);
-            default: return basicClass;
+            case "com.teamwizardry.wizardry.api.item.BaublesSupport$ArmorAccessor": return transformBaublesSupport$ArmorAccessor(bytes);
+            case "com.teamwizardry.wizardry.api.item.BaublesSupport$StackAccessor": return transformBaublesSupport$StackAccessor(bytes);
+            default: return bytes;
         }
     }
 
-    private static byte[] transformBaublesSupport$StackAccessor(byte[] basicClass) {
-        ClassNode cls = read(basicClass);
+    private static byte[] transformBaublesSupport$StackAccessor(byte[] bytes) {
+        ClassNode cls = read(bytes);
         for (MethodNode method : cls.methods) {
             if (method.name.equals("get")) {
                 AbstractInsnNode node = method.instructions.getFirst();
@@ -44,8 +45,8 @@ public final class WizardryTransformer extends BaseTransformer {
         return write(cls);
     }
 
-    private static byte[] transformBaublesSupport$ArmorAccessor(byte[] basicClass) {
-        ClassNode cls = read(basicClass);
+    private static byte[] transformBaublesSupport$ArmorAccessor(byte[] bytes) {
+        ClassNode cls = read(bytes);
         for (MethodNode method : cls.methods) {
             if (method.name.equals("getBaublesOnly") || method.name.equals("getBaublesFallbackArmor")) {
                 Iterator<AbstractInsnNode> iterator = method.instructions.iterator();
@@ -88,5 +89,9 @@ public final class WizardryTransformer extends BaseTransformer {
         public static boolean StackAccessor$isBauble(ItemStack stack) {
             return stack.getItem() instanceof IBauble || BaublesApi.getBauble(stack) != null;
         }
+
+        private Hooks() {}
     }
+
+    private WizardryTransformer() {}
 }

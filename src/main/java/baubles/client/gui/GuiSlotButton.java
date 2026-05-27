@@ -1,5 +1,6 @@
 package baubles.client.gui;
 
+import baubles.api.gui.ContainerBaubles;
 import baubles.common.network.PacketChangeOffset;
 import baubles.common.network.PacketHandler;
 import net.minecraft.client.Minecraft;
@@ -10,16 +11,21 @@ import org.lwjgl.opengl.GL11;
 
 public class GuiSlotButton extends GuiButton {
 
-    protected final GuiPlayerExpanded parent;
+    protected final ContainerBaubles container;
 
     private final boolean isDown;
     private int ticks;
 
     public GuiSlotButton(int id, GuiPlayerExpanded parent, int x, int y, int widthIn, int heightIn, boolean isDown) {
+        this(id, parent.getContainer(), x, y, widthIn, heightIn, isDown);
+    }
+
+    public GuiSlotButton(int id, ContainerBaubles container, int x, int y, int widthIn, int heightIn, boolean isDown) {
         super(id, x, y, widthIn, heightIn, "");
         this.isDown = isDown;
-        this.parent = parent;
+        this.container = container;
     }
+
 
     @Override
     public boolean mousePressed(@NotNull Minecraft mc, int mouseX, int mouseY) {
@@ -28,7 +34,7 @@ public class GuiSlotButton extends GuiButton {
             this.ticks = 10;
             int amount = isDown ? 1 : -1;
             PacketHandler.INSTANCE.sendToServer(new PacketChangeOffset(amount));
-            this.parent.getContainer().setOffset(this.parent.getContainer().getSlotByOffset(amount));
+            this.container.setOffset(this.container.getSlotByOffset(amount));
         }
         return pressed;
     }

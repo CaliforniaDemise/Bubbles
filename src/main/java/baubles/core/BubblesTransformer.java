@@ -26,7 +26,7 @@ public class BubblesTransformer implements IClassTransformer {
         bytes = BotaniaTransformer.transform(_name, name, bytes); // Botania - Fix hardcoded slots.
         bytes = CorailTombstoneTransformer.transform(_name, name, bytes); // Corail Tombstone - Fix drops on death.
         bytes = CreativeInvTransformer.transform(_name, name, bytes); // Minecraft - Make creative inventory delete all action delete items in bauble slots too.
-        bytes = EBWizardryTransformer.transform(_name, name, bytes); // Electroblob's Wizardry - Fix bauble items not working.
+        bytes = ElectroblobsWizardryTransformer.transform(_name, name, bytes); // Electroblob's Wizardry - Fix bauble items not working.
         bytes = EnchantmentTransformer.transform(_name, name, bytes); // Minecraft - Apply enchants of bauble items.
         bytes = PotionFingersTransformer.transform(_name, name, bytes); // Potion Fingers - Fix hardcoded slots.
         bytes = QualityToolsTransformer.transform(_name, name, bytes); // Quality Tools - Change it to check bauble capability instead of super class and add support for custom bauble types.

@@ -14,17 +14,17 @@ import org.objectweb.asm.tree.*;
 
 import java.util.Iterator;
 
-public class CreativeInvTransformer extends BaseTransformer {
+public final class CreativeInvTransformer extends BaseTransformer {
 
     private static final String HOOK = "baubles/core/transformers/CreativeInvTransformer$Hooks";
 
-    public static byte[] transform(String name, String transformedName, byte[] basicClass) {
-        if (transformedName.equals("net.minecraft.client.gui.inventory.GuiContainerCreative")) return transformGuiContainerCreative(basicClass);
-        return basicClass;
+    public static byte[] transform(String _name, String name, byte[] bytes) {
+        if (name.equals("net.minecraft.client.gui.inventory.GuiContainerCreative")) return transformGuiContainerCreative(bytes);
+        return bytes;
     }
 
-    private static byte[] transformGuiContainerCreative(byte[] basicClass) {
-        ClassNode cls = read(basicClass);
+    private static byte[] transformGuiContainerCreative(byte[] bytes) {
+        ClassNode cls = read(bytes);
         for (MethodNode method : cls.methods) {
             if (method.name.equals(getName("handleMouseClick", "func_184098_a"))) {
                 Iterator<AbstractInsnNode> iterator = method.instructions.iterator();
@@ -46,15 +46,20 @@ public class CreativeInvTransformer extends BaseTransformer {
     }
 
     @SuppressWarnings("unused")
-    public static class Hooks {
+    public static final class Hooks {
+
         public static void $cleanup() {
             PacketHandler.INSTANCE.sendToServer(new PacketCreativeClean());
         }
+
+        private Hooks() {}
     }
 
-    public static class PacketCreativeClean implements IMessage, IMessageHandler<PacketCreativeClean, IMessage> {
+    public static final class PacketCreativeClean implements IMessage, IMessageHandler<PacketCreativeClean, IMessage> {
+
         @Override public void fromBytes(ByteBuf buf) {}
         @Override public void toBytes(ByteBuf buf) {}
+
         @Override
         public IMessage onMessage(PacketCreativeClean message, MessageContext ctx) {
             IThreadListener mainThread = (WorldServer) ctx.getServerHandler().player.world;
@@ -67,4 +72,6 @@ public class CreativeInvTransformer extends BaseTransformer {
             return null;
         }
     }
+
+    private CreativeInvTransformer() {}
 }

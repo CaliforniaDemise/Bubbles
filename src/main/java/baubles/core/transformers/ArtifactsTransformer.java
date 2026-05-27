@@ -21,33 +21,33 @@ import java.util.ListIterator;
  * Lovely lovely.
  * Love from Croatia 🇭🇷♥
  **/
-public class ArtifactsTransformer extends BaseTransformer {
+public final class ArtifactsTransformer extends BaseTransformer {
 
     private static final String HOOK = "baubles/core/transformers/ArtifactsTransformer$Hooks";
 
-    public static byte[] transform(String name, String transformedName, byte[] basicClass, boolean isRLArtifact) {
-       switch (transformedName) {
-           case "artifacts.client.model.layer.LayerAmulet": return ArtifactsTransformer.transformLayerAmulet(basicClass, isRLArtifact);
-           case "artifacts.client.model.layer.LayerBelt": return ArtifactsTransformer.transformLayerBelt(basicClass, isRLArtifact);
-           case "artifacts.client.model.layer.LayerCloak": return ArtifactsTransformer.transformLayerCloak(basicClass, isRLArtifact);
-           case "artifacts.client.model.layer.LayerDrinkingHat": return ArtifactsTransformer.transformLayerDrinkingHat(basicClass, isRLArtifact);
-           case "artifacts.client.model.layer.LayerGloves": return ArtifactsTransformer.transformLayerGloves(basicClass);
-           case "artifacts.client.model.layer.LayerNightVisionGoggles": return ArtifactsTransformer.transformLayerNightVisionGoggles(basicClass, isRLArtifact);
-           case "artifacts.client.model.layer.LayerSnorkel": return ArtifactsTransformer.transformLayerSnorkel(basicClass, isRLArtifact);
-           case "artifacts.common.item.AttributeModifierBauble": return ArtifactsTransformer.transformAttributeModifierBauble(basicClass);
-           case "artifacts.common.item.BaubleAmulet": return ArtifactsTransformer.transformBaubleAmulet(basicClass, isRLArtifact);
-           case "artifacts.common.item.BaubleBottledCloud": return ArtifactsTransformer.transformBaubleBottledCloud(basicClass); // Non-RL
-           default: return basicClass;
+    public static byte[] transform(String _name, String name, byte[] bytes, boolean isRLArtifact) {
+       switch (name) {
+           case "artifacts.client.model.layer.LayerAmulet": return transformLayerAmulet(bytes, isRLArtifact);
+           case "artifacts.client.model.layer.LayerBelt": return transformLayerBelt(bytes, isRLArtifact);
+           case "artifacts.client.model.layer.LayerCloak": return transformLayerCloak(bytes, isRLArtifact);
+           case "artifacts.client.model.layer.LayerDrinkingHat": return transformLayerDrinkingHat(bytes, isRLArtifact);
+           case "artifacts.client.model.layer.LayerGloves": return transformLayerGloves(bytes);
+           case "artifacts.client.model.layer.LayerNightVisionGoggles": return transformLayerNightVisionGoggles(bytes, isRLArtifact);
+           case "artifacts.client.model.layer.LayerSnorkel": return transformLayerSnorkel(bytes, isRLArtifact);
+           case "artifacts.common.item.AttributeModifierBauble": return transformAttributeModifierBauble(bytes);
+           case "artifacts.common.item.BaubleAmulet": return transformBaubleAmulet(bytes, isRLArtifact);
+           case "artifacts.common.item.BaubleBottledCloud": return transformBaubleBottledCloud(bytes); // Non-RL
+           default: return bytes;
        }
     }
 
-    public static boolean checkArtifacts(byte[] basicClass) {
-        ClassNode cls = read(basicClass);
+    public static boolean checkArtifacts(byte[] bytes) {
+        ClassNode cls = read(bytes);
         return cls.visibleAnnotations.get(0).values.get(3).equals("RLArtifacts");
     }
 
-    private static byte[] transformAttributeModifierBauble(byte[] basicClass) {
-        ClassNode cls = read(basicClass);
+    private static byte[] transformAttributeModifierBauble(byte[] bytes) {
+        ClassNode cls = read(bytes);
         for (MethodNode method : cls.methods) {
             if (method.name.equals("applyModifiers")) {
                 Iterator<AbstractInsnNode> iterator = method.instructions.iterator();
@@ -68,9 +68,9 @@ public class ArtifactsTransformer extends BaseTransformer {
         return write(cls);
     }
 
-    private static byte[] transformLayerAmulet(byte[] basicClass, boolean isRLArtifact) {
-        if (!isRLArtifact) return basicClass;
-        ClassNode cls = read(basicClass);
+    private static byte[] transformLayerAmulet(byte[] bytes, boolean isRLArtifact) {
+        if (!isRLArtifact) return bytes;
+        ClassNode cls = read(bytes);
         for (MethodNode method : cls.methods) {
             if (method.name.equals("setTexturesGetModel")) {
                 ListIterator<AbstractInsnNode> iterator = method.instructions.iterator();
@@ -95,9 +95,9 @@ public class ArtifactsTransformer extends BaseTransformer {
         return write(cls);
     }
 
-    private static byte[] transformLayerBelt(byte[] basicClass, boolean isRLArtifact) {
-        if (!isRLArtifact) return basicClass;
-        ClassNode cls = read(basicClass);
+    private static byte[] transformLayerBelt(byte[] bytes, boolean isRLArtifact) {
+        if (!isRLArtifact) return bytes;
+        ClassNode cls = read(bytes);
         for (MethodNode method : cls.methods) {
             if (method.name.equals("setTexturesGetModel")) {
                 ListIterator<AbstractInsnNode> iterator = method.instructions.iterator();
@@ -122,9 +122,9 @@ public class ArtifactsTransformer extends BaseTransformer {
         return write(cls);
     }
 
-    private static byte[] transformLayerCloak(byte[] basicClass, boolean isRLArtifact) {
-        if (!isRLArtifact) return basicClass;
-        ClassNode cls = read(basicClass);
+    private static byte[] transformLayerCloak(byte[] bytes, boolean isRLArtifact) {
+        if (!isRLArtifact) return bytes;
+        ClassNode cls = read(bytes);
         for (MethodNode method : cls.methods) {
             if (method.name.equals("renderChest")) {
                 ListIterator<AbstractInsnNode> iterator = method.instructions.iterator();
@@ -149,9 +149,9 @@ public class ArtifactsTransformer extends BaseTransformer {
         return write(cls);
     }
 
-    private static byte[] transformLayerDrinkingHat(byte[] basicClass, boolean isRLArtifact) {
-        if (!isRLArtifact) return basicClass;
-        ClassNode cls = read(basicClass);
+    private static byte[] transformLayerDrinkingHat(byte[] bytes, boolean isRLArtifact) {
+        if (!isRLArtifact) return bytes;
+        ClassNode cls = read(bytes);
         for (MethodNode method : cls.methods) {
             if (method.name.equals("renderLayer")) {
                 ListIterator<AbstractInsnNode> iterator = method.instructions.iterator();
@@ -176,8 +176,8 @@ public class ArtifactsTransformer extends BaseTransformer {
         return write(cls);
     }
 
-    private static byte[] transformLayerGloves(byte[] basicClass) {
-        ClassNode cls = read(basicClass);
+    private static byte[] transformLayerGloves(byte[] bytes) {
+        ClassNode cls = read(bytes);
         for (MethodNode method : cls.methods) {
             if (method.name.equals("setTextures")) {
                 ListIterator<AbstractInsnNode> iterator = method.instructions.iterator();
@@ -203,9 +203,9 @@ public class ArtifactsTransformer extends BaseTransformer {
         return write(cls);
     }
 
-    private static byte[] transformLayerNightVisionGoggles(byte[] basicClass, boolean isRLArtifact) {
-        if (!isRLArtifact) return basicClass;
-        ClassNode cls = read(basicClass);
+    private static byte[] transformLayerNightVisionGoggles(byte[] bytes, boolean isRLArtifact) {
+        if (!isRLArtifact) return bytes;
+        ClassNode cls = read(bytes);
         for (MethodNode method : cls.methods) {
             if (method.name.equals("renderLayer")) {
                 Iterator<AbstractInsnNode> iterator = method.instructions.iterator();
@@ -229,9 +229,9 @@ public class ArtifactsTransformer extends BaseTransformer {
         return write(cls);
     }
 
-    private static byte[] transformLayerSnorkel(byte[] basicClass, boolean isRLArtifact) {
-        if (!isRLArtifact) return basicClass;
-        ClassNode cls = read(basicClass);
+    private static byte[] transformLayerSnorkel(byte[] bytes, boolean isRLArtifact) {
+        if (!isRLArtifact) return bytes;
+        ClassNode cls = read(bytes);
         for (MethodNode method : cls.methods) {
             if (method.name.equals("renderLayer")) {
                 Iterator<AbstractInsnNode> iterator = method.instructions.iterator();
@@ -259,9 +259,9 @@ public class ArtifactsTransformer extends BaseTransformer {
      * MODDERS LOOK AT API PACKAGE {@link baubles.api.BaublesApi#isBaubleEquipped(EntityPlayer, Item)} CHALLENGE
      * FUCKING IMPOSSIBLE
      **/
-    private static byte[] transformBaubleAmulet(byte[] basicClass, boolean isRLArtifact) {
-        if (!isRLArtifact) return basicClass;
-        ClassNode cls = read(basicClass);
+    private static byte[] transformBaubleAmulet(byte[] bytes, boolean isRLArtifact) {
+        if (!isRLArtifact) return bytes;
+        ClassNode cls = read(bytes);
         for (MethodNode method : cls.methods) {
             if (method.name.equals("onLivingDeath")) {
                 Iterator<AbstractInsnNode> iterator = method.instructions.iterator();
@@ -288,8 +288,8 @@ public class ArtifactsTransformer extends BaseTransformer {
      * MODDERS LOOK AT API PACKAGE {@link baubles.api.BaublesApi#isBaubleEquipped(EntityPlayer, Item)} CHALLENGE
      * FUCKING IMPOSSIBLE
      **/
-    private static byte[] transformBaubleBottledCloud(byte[] basicClass) {
-        ClassNode cls = read(basicClass);
+    private static byte[] transformBaubleBottledCloud(byte[] bytes) {
+        ClassNode cls = read(bytes);
         for (MethodNode method : cls.methods) {
             if (method.name.equals("onClientTick")) {
                 Iterator<AbstractInsnNode> iterator = method.instructions.iterator();
@@ -313,7 +313,7 @@ public class ArtifactsTransformer extends BaseTransformer {
     }
 
     @SuppressWarnings("unused")
-    public static class Hooks {
+    public static final class Hooks {
         public static int[] $slotArray(EntityPlayer player) {
             IBaublesItemHandler handler = BaublesApi.getBaublesHandler(player);
             int[] out = new int[handler.getSlots()];
@@ -419,5 +419,9 @@ public class ArtifactsTransformer extends BaseTransformer {
             }
             return -1;
         }
+
+        private Hooks() {}
     }
+
+    private ArtifactsTransformer() {}
 }

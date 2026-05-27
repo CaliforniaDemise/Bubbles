@@ -73,5 +73,9 @@ public final class ThaumicAdditionsTransformer extends BaseTransformer {
         public static int[] ItemBeltStriding$getAllSlots(int[] validSlots, LivingEvent event) {
             return CoreUtility.getSlotArray(event.getEntityLiving());
         }
+
+        private Hooks() {}
     }
+
+    private ThaumicAdditionsTransformer() {}
 }

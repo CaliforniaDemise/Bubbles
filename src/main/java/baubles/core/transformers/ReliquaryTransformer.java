@@ -8,20 +8,20 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import org.objectweb.asm.tree.*;
 
-public class ReliquaryTransformer extends BaseTransformer {
+public final class ReliquaryTransformer extends BaseTransformer {
 
     private static final String HOOK = "baubles/core/transformers/ReliquaryTransformer$Hooks";
 
-    public static byte[] transform(String name, String transformedName, byte[] basicClass) {
-        switch (transformedName) {
-            case "xreliquary.items.ItemAngelheartVial": return transformItemAngelHeartVial(basicClass);
-            case "xreliquary.items.ItemPhoenixDown": return transformItemPhoenixDown(basicClass);
-            default: return basicClass;
+    public static byte[] transform(String _name, String name, byte[] bytes) {
+        switch (name) {
+            case "xreliquary.items.ItemAngelheartVial": return transformItemAngelHeartVial(bytes);
+            case "xreliquary.items.ItemPhoenixDown": return transformItemPhoenixDown(bytes);
+            default: return bytes;
         }
     }
 
-    private static byte[] transformItemAngelHeartVial(byte[] basicClass) {
-        ClassNode cls = read(basicClass);
+    private static byte[] transformItemAngelHeartVial(byte[] bytes) {
+        ClassNode cls = read(bytes);
         for (MethodNode method : cls.methods) {
             if (method.name.equals("decreaseAngelHeartByOne")) {
                 AbstractInsnNode node = method.instructions.getLast();
@@ -37,8 +37,8 @@ public class ReliquaryTransformer extends BaseTransformer {
         return write(cls);
     }
 
-    private static byte[] transformItemPhoenixDown(byte[] basicClass) {
-        ClassNode cls = read(basicClass);
+    private static byte[] transformItemPhoenixDown(byte[] bytes) {
+        ClassNode cls = read(bytes);
         for (MethodNode method : cls.methods) {
             if (method.name.equals("revertPhoenixDownToAngelicFeather")) {
                 AbstractInsnNode node = method.instructions.getLast();
@@ -81,5 +81,9 @@ public class ReliquaryTransformer extends BaseTransformer {
                 }
             }
         }
+
+        private Hooks() {}
     }
+
+    private ReliquaryTransformer() {}
 }

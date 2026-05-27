@@ -6,14 +6,14 @@ import org.objectweb.asm.tree.*;
 
 import java.util.Iterator;
 
-public class TrinketsAndBaublesTransformer extends BaseTransformer {
+public final class TrinketsAndBaublesTransformer extends BaseTransformer {
 
-    public static byte[] transform(String name, String transformedName, byte[] basicClass) {
-        switch (transformedName) {
-            case "xzeroair.trinkets.util.compat.baubles.BaublesHelper": return transformBaublesHelper(basicClass);
-            case "xzeroair.trinkets.client.gui.TrinketGuiButton": return transformTrinketGuiButton(basicClass);
-            case "xzeroair.trinkets.container.TrinketInventoryContainer": return transformTrinketInventoryContainer(basicClass);
-            default: return basicClass;
+    public static byte[] transform(String _name, String name, byte[] bytes) {
+        switch (name) {
+//            case "xzeroair.trinkets.util.compat.baubles.BaublesHelper": return transformBaublesHelper(bytes);
+            case "xzeroair.trinkets.client.gui.TrinketGuiButton": return transformTrinketGuiButton(bytes);
+//            case "xzeroair.trinkets.container.TrinketInventoryContainer": return transformTrinketInventoryContainer(bytes);
+            default: return bytes;
         }
     }
 
@@ -21,8 +21,8 @@ public class TrinketsAndBaublesTransformer extends BaseTransformer {
      * Uses IBaublesItemHandler#setPlayer even though it's an internal class.
      * Fuck you.
      **/
-    private static byte[] transformBaublesHelper(byte[] basicClass) {
-        ClassNode cls = read(basicClass);
+    private static byte[] transformBaublesHelper(byte[] bytes) {
+        ClassNode cls = read(bytes);
         cls.methods.removeIf(method -> method.name.equals("getBaublesHandler"));
         { // getBaublesHandler(EntityLivingBase)
             MethodVisitor method = cls.visitMethod(ACC_PUBLIC | ACC_STATIC, "getBaublesHandler", "(Lnet/minecraft/entity/EntityLivingBase;)Lbaubles/api/cap/IBaublesItemHandler;", null, null);
@@ -69,8 +69,8 @@ public class TrinketsAndBaublesTransformer extends BaseTransformer {
         return write(cls);
     }
 
-    private static byte[] transformTrinketGuiButton(byte[] basicClass) {
-        ClassNode cls = read(basicClass);
+    private static byte[] transformTrinketGuiButton(byte[] bytes) {
+        ClassNode cls = read(bytes);
         for (MethodNode method : cls.methods) {
             if (method.name.equals(getName("drawButton", "func_191745_a"))) {
                 Iterator<AbstractInsnNode> iterator = method.instructions.iterator();
@@ -94,8 +94,8 @@ public class TrinketsAndBaublesTransformer extends BaseTransformer {
         return write(cls);
     }
 
-    private static byte[] transformTrinketInventoryContainer(byte[] basicClass) {
-        ClassNode cls = read(basicClass);
+    private static byte[] transformTrinketInventoryContainer(byte[] bytes) {
+        ClassNode cls = read(bytes);
         for (MethodNode method : cls.methods) {
             if (method.name.equals(getName("transferStackInSlot", "func_82846_b"))) {
                 Iterator<AbstractInsnNode> iterator = method.instructions.iterator();
@@ -115,4 +115,6 @@ public class TrinketsAndBaublesTransformer extends BaseTransformer {
         }
         return write(cls);
     }
+
+    private TrinketsAndBaublesTransformer() {}
 }

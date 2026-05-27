@@ -2,7 +2,6 @@ package baubles.core.transformers;
 
 import baubles.api.BaublesApi;
 import baubles.api.cap.IBaublesItemHandler;
-import com.google.common.collect.ImmutableSet;
 import electroblob.wizardry.item.ItemArtefact;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -10,19 +9,18 @@ import org.objectweb.asm.tree.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-public final class EBWizardryTransformer extends BaseTransformer {
+public final class ElectroblobsWizardryTransformer extends BaseTransformer {
 
     private static final String HOOK = "baubles/core/transformers/EBWizardryTransformer$Hooks";
 
-    public static byte[] transform(String _name, String name, byte[] basicClass) {
-        if (name.equals("electroblob.wizardry.integration.baubles.WizardryBaublesIntegration")) return transformWizardryBaublesIntegration(basicClass);
-        return basicClass;
+    public static byte[] transform(String _name, String name, byte[] bytes) {
+        if (name.equals("electroblob.wizardry.integration.baubles.WizardryBaublesIntegration")) return transformWizardryBaublesIntegration(bytes);
+        return bytes;
     }
 
-    private static byte[] transformWizardryBaublesIntegration(byte[] basicClass) {
-        ClassNode cls = read(basicClass);
+    private static byte[] transformWizardryBaublesIntegration(byte[] bytes) {
+        ClassNode cls = read(bytes);
         for (MethodNode method : cls.methods) {
             if (method.name.equals("getEquippedArtefacts")) {
                 AbstractInsnNode node = method.instructions.getFirst();
@@ -71,5 +69,9 @@ public final class EBWizardryTransformer extends BaseTransformer {
         private static boolean check(long set, ItemArtefact.Type type) {
             return (set & (1 << type.ordinal())) != 0;
         }
+
+        private Hooks() {}
     }
+
+    private ElectroblobsWizardryTransformer() {}
 }

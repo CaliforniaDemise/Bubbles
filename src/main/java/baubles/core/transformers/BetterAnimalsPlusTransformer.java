@@ -14,16 +14,16 @@ public final class BetterAnimalsPlusTransformer extends BaseTransformer {
 
     private static final String HOOK = "baubles/core/transformers/BetterAnimalsPlusTransformer$Hooks";
 
-    public static byte[] transform(String _name, String name, byte[] basicClass) {
+    public static byte[] transform(String _name, String name, byte[] bytes) {
         switch (name) {
             case "its_meow.betteranimalsplus.common.item.ItemBearCapeBaubles":
-            case "its_meow.betteranimalsplus.common.item.ItemWolfCapeBaubles": return transformCapes(basicClass);
-            default: return basicClass;
+            case "its_meow.betteranimalsplus.common.item.ItemWolfCapeBaubles": return transformCapes(bytes);
+            default: return bytes;
         }
     }
 
-    private static byte[] transformCapes(byte[] basicClass) {
-        ClassNode cls = read(basicClass);
+    private static byte[] transformCapes(byte[] bytes) {
+        ClassNode cls = read(bytes);
         for (MethodNode method : cls.methods) {
             if (method.name.equals("isValidArmor")) {
                 Iterator<AbstractInsnNode> iterator = method.instructions.iterator();
@@ -50,5 +50,9 @@ public final class BetterAnimalsPlusTransformer extends BaseTransformer {
             IBaublesItemHandler handler = BaublesApi.getBaublesHandler((EntityPlayer) entity);
             return CoreUtility.getSlot(entity, stack -> stack.getItem() instanceof ItemCape);
         }
+
+        private Hooks() {}
     }
+
+    private BetterAnimalsPlusTransformer() {}
 }

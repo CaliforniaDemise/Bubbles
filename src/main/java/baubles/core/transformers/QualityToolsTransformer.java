@@ -13,17 +13,18 @@ import org.objectweb.asm.tree.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class QualityToolsTransformer extends BaseTransformer {
+// TODO Find a better way to handle this
+public final class QualityToolsTransformer extends BaseTransformer {
 
     private static final String HOOK = "baubles/core/transformers/QualityToolsTransformer$Hooks";
 
-    public static byte[] transform(String name, String transformedName, byte[] basicClass) {
-        if (transformedName.equals("com.tmtravlr.qualitytools.baubles.BaublesHandler")) return transformBaublesHandler(basicClass);
-        return basicClass;
+    public static byte[] transform(String _name, String name, byte[] bytes) {
+        if (name.equals("com.tmtravlr.qualitytools.baubles.BaublesHandler")) return transformBaublesHandler(bytes);
+        return bytes;
     }
 
-    private static byte[] transformBaublesHandler(byte[] basicClass) {
-        ClassNode cls = read(basicClass);
+    private static byte[] transformBaublesHandler(byte[] bytes) {
+        ClassNode cls = read(bytes);
         Iterator<MethodNode> mIterator = cls.methods.iterator();
         while (mIterator.hasNext()) {
             MethodNode method = mIterator.next();
@@ -123,9 +124,8 @@ public class QualityToolsTransformer extends BaseTransformer {
         return write(cls);
     }
 
-    // TODO Find a better way to handle this
     @SuppressWarnings("unused")
-    public static class Hooks {
+    public static final class Hooks {
         public static ArrayList<String> $getBaublesNameForSlot(IBaublesItemHandler handler, int slot) {
             ArrayList<String> list = new ArrayList<>();
             IBaubleType type = handler.getSlotType(slot);
@@ -148,5 +148,9 @@ public class QualityToolsTransformer extends BaseTransformer {
             if (!name.contains(":")) name = "baubles:" + name;
             return new ResourceLocation(name);
         }
+
+        private Hooks() {}
     }
+
+    private QualityToolsTransformer() {}
 }

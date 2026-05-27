@@ -10,15 +10,15 @@ import java.util.Iterator;
 /**
  * Fuck you Vazkii!!
  **/
-public class PotionFingersTransformer extends BaseTransformer {
+public final class PotionFingersTransformer extends BaseTransformer {
 
-    public static byte[] transform(String name, String transformedName, byte[] basicClass) {
-        if (transformedName.equals("vazkii.potionfingers.ItemRing")) return transformItemRing(basicClass);
-        return basicClass;
+    public static byte[] transform(String _name, String name, byte[] bytes) {
+        if (name.equals("vazkii.potionfingers.ItemRing")) return transformItemRing(bytes);
+        return bytes;
     }
 
-    private static byte[] transformItemRing(byte[] basicClass) {
-        ClassNode cls = read(basicClass);
+    private static byte[] transformItemRing(byte[] bytes) {
+        ClassNode cls = read(bytes);
         boolean wornTickExists = false;
         Iterator<MethodNode> iterator = cls.methods.iterator();
         while (iterator.hasNext()) {
@@ -159,4 +159,6 @@ public class PotionFingersTransformer extends BaseTransformer {
         }
         return write(cls);
     }
+
+    private PotionFingersTransformer() {}
 }

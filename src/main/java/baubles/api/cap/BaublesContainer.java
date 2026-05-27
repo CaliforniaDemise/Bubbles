@@ -128,6 +128,11 @@ public class BaublesContainer implements IBaublesItemHandler, INBTSerializable<N
     }
 
     @Override
+    public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+        return isItemValidForSlot(slot, stack, getEntity());
+    }
+
+    @Override
     public void setStackInSlot(int slot, @NotNull ItemStack stack) {
         if (stack.isEmpty() || this.isItemValidForSlot(slot, stack, this.player)) {
             this.setStack(slot, stack);

@@ -14,23 +14,23 @@ import org.objectweb.asm.tree.*;
 import java.util.List;
 
 
-public class EnchantmentTransformer extends BaseTransformer {
+public final class EnchantmentTransformer extends BaseTransformer {
 
     private static final String HOOK = "baubles/core/transformers/EnchantmentTransformer$Hooks";
 
-    public static byte[] transform(String name, String transformedName, byte[] basicClass) {
-        switch (transformedName) {
-            case "net.minecraft.enchantment.Enchantment": return EnchantmentTransformer.transformEnchantment(basicClass);
-            case "net.minecraft.item.Item": return EnchantmentTransformer.transformItem(basicClass);
-            default: return basicClass;
+    public static byte[] transform(String _name, String name, byte[] bytes) {
+        switch (name) {
+            case "net.minecraft.enchantment.Enchantment": return EnchantmentTransformer.transformEnchantment(bytes);
+            case "net.minecraft.item.Item": return EnchantmentTransformer.transformItem(bytes);
+            default: return bytes;
         }
     }
 
     /**
      * Transforms {@link Enchantment#getEntityEquipment(EntityLivingBase)} for making enchantments in baubles work.
      **/
-    private static byte[] transformEnchantment(byte[] basicClass) {
-        ClassNode cls = read(basicClass);
+    private static byte[] transformEnchantment(byte[] bytes) {
+        ClassNode cls = read(bytes);
         for (MethodNode method : cls.methods) {
             if (method.name.equals(getName("getEntityEquipment", "func_185260_a"))) {
                 AbstractInsnNode node = method.instructions.getLast();
@@ -49,8 +49,8 @@ public class EnchantmentTransformer extends BaseTransformer {
     /**
      * Transforms {@link Item#canApplyAtEnchantingTable(ItemStack, Enchantment)} for making enchantments appliable for baubles.
      **/
-    private static byte[] transformItem(byte[] basicClass) {
-        ClassNode cls = read(basicClass);
+    private static byte[] transformItem(byte[] bytes) {
+        ClassNode cls = read(bytes);
         for (MethodNode method : cls.methods) {
             if (method.name.equals("canApplyAtEnchantingTable")) {
                 AbstractInsnNode node = method.instructions.getLast();
@@ -88,7 +88,8 @@ public class EnchantmentTransformer extends BaseTransformer {
     }
 
     @SuppressWarnings("unused")
-    public static class Hooks {
+    public static final class Hooks {
+
         public static List<ItemStack> Enchantment$getEntityEquipment_tooLazy(List<ItemStack> list, Enchantment enchantment, EntityLivingBase entity) {
             if (!(entity instanceof EntityPlayer)) return list;
             IBaublesItemHandler handler = BaublesApi.getBaublesHandler((EntityPlayer) entity);
@@ -101,5 +102,9 @@ public class EnchantmentTransformer extends BaseTransformer {
             }
             return list;
         }
+
+        private Hooks() {}
     }
+
+    private EnchantmentTransformer() {}
 }

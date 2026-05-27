@@ -173,5 +173,9 @@ public final class ImprovedBackpacksTransformer extends BaseTransformer {
             }
             return ItemStack.EMPTY;
         }
+
+        private Hooks() {}
     }
+
+    private ImprovedBackpacksTransformer() {}
 }

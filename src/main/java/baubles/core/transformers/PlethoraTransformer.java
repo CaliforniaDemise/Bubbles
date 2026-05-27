@@ -94,5 +94,9 @@ public final class PlethoraTransformer extends BaseTransformer {
             return BaublesApi.getBaublesHandler(entity);
 
         }
+
+        private Hooks() {}
     }
+
+    private PlethoraTransformer() {}
 }

@@ -4,6 +4,7 @@ import baubles.api.BaublesApi;
 import baubles.api.IBauble;
 import baubles.api.cap.BaublesCapabilities;
 import baubles.api.cap.BaublesContainer;
+import baubles.api.gui.ContainerBaubles;
 import baubles.common.network.PacketHandler;
 import baubles.common.network.PacketSyncSlots;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -18,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public class ContainerPlayerExpanded extends Container {
+public class ContainerPlayerExpanded extends Container implements ContainerBaubles {
 
     private static final EntityEquipmentSlot[] equipmentSlots = new EntityEquipmentSlot[]{EntityEquipmentSlot.HEAD, EntityEquipmentSlot.CHEST, EntityEquipmentSlot.LEGS, EntityEquipmentSlot.FEET};
     public final InventoryCrafting craftMatrix = new InventoryCrafting(this, 2, 2);
@@ -96,16 +97,19 @@ public class ContainerPlayerExpanded extends Container {
         this.onCraftMatrixChanged(this.craftMatrix);
     }
 
+    @Override
     public int getSlotByOffset(int slotIndex) {
         if (slotIndex < 0) slotIndex += this.baubles.getSlots();
         return (this.offset + slotIndex) % this.baubles.getSlots();
     }
 
+    @Override
     public void setOffset(int offset) {
         if (this.baubles.getSlots() < 9) return;
         this.offset = offset;
     }
 
+    @Override
     public void resetOffset() {
         this.offset = 0;
     }

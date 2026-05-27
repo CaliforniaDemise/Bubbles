@@ -12,17 +12,17 @@ import org.objectweb.asm.tree.ClassNode;
 
 import java.util.*;
 
-public class CorailTombstoneTransformer extends BaseTransformer {
+public final class CorailTombstoneTransformer extends BaseTransformer {
 
     private static final String HOOK = "baubles/core/transformers/CorailTombstoneTransformer$Hooks";
 
-    public static byte[] transform(String name, String transformedName, byte[] basicClass) {
-        if (transformedName.equals("ovh.corail.tombstone.compatibility.CompatibilityBaubles")) return transformCompatibilityBaubles(basicClass);
-        return basicClass;
+    public static byte[] transform(String _name, String name, byte[] bytes) {
+//        if (name.equals("ovh.corail.tombstone.compatibility.CompatibilityBaubles")) return transformCompatibilityBaubles(bytes);
+        return bytes;
     }
 
-    private static byte[] transformCompatibilityBaubles(byte[] basicClass) {
-        ClassNode cls = read(basicClass);
+    private static byte[] transformCompatibilityBaubles(byte[] bytes) {
+        ClassNode cls = read(bytes);
         cls.methods.removeIf(m -> m.name.equals("autoEquip"));
         { // autoEquip
             MethodVisitor m = cls.visitMethod(ACC_PUBLIC, "autoEquip", "(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraftforge/items/ItemStackHandler;Ljava/util/List;Z)V", null, null);
@@ -72,5 +72,9 @@ public class CorailTombstoneTransformer extends BaseTransformer {
                 }
             }
         }
+
+        private Hooks() {}
     }
+
+    private CorailTombstoneTransformer() {}
 }

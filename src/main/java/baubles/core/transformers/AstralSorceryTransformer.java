@@ -1,6 +1,5 @@
 package baubles.core.transformers;
 
-import baubles.api.cap.IBaublesItemHandler;
 import baubles.core.CoreUtility;
 import net.minecraft.entity.player.EntityPlayer;
 import org.objectweb.asm.tree.*;
@@ -11,13 +10,13 @@ public final class AstralSorceryTransformer extends BaseTransformer {
 
     private static final String HOOK = "baubles/core/transformers/AstralSorceryTransformer$Hooks";
 
-    public static byte[] transform(String _name, String name, byte[] basicClass) {
-        if (name.equals("hellfirepvp.astralsorcery.common.util.BaublesHelper")) return transformBaublesHelper(basicClass);
-        return basicClass;
+    public static byte[] transform(String _name, String name, byte[] bytes) {
+        if (name.equals("hellfirepvp.astralsorcery.common.util.BaublesHelper")) return transformBaublesHelper(bytes);
+        return bytes;
     }
 
-    private static byte[] transformBaublesHelper(byte[] basicClass) {
-        ClassNode cls = read(basicClass);
+    private static byte[] transformBaublesHelper(byte[] bytes) {
+        ClassNode cls = read(bytes);
         for (MethodNode method : cls.methods) {
             if (method.name.equals("getWornBaublesForType")) {
                 Iterator<AbstractInsnNode> iterator = method.instructions.iterator();
@@ -42,5 +41,9 @@ public final class AstralSorceryTransformer extends BaseTransformer {
         public static int[] BaublesHelper$getSlotArray(int[] validSlots, EntityPlayer player) {
             return CoreUtility.getSlotArray(player);
         }
+
+        private Hooks() {}
     }
+
+    private AstralSorceryTransformer() {}
 }

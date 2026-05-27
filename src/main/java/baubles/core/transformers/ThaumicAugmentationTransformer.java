@@ -278,5 +278,9 @@ public final class ThaumicAugmentationTransformer extends BaseTransformer {
         public static int TAHooksCommon$updateElytraFlag(int validSlot, EntityLivingBase entity) {
             return CoreUtility.getSlot(entity, stack -> !stack.isEmpty() && stack.getItem() instanceof IElytraCompat && ((IElytraCompat) stack.getItem()).allowElytraFlight((EntityPlayer) entity, stack));
         }
+
+        private Hooks() {}
     }
+
+    private ThaumicAugmentationTransformer() {}
 }
