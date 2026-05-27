@@ -22,7 +22,7 @@ public final class ImprovedBackpacksTransformer extends BaseTransformer {
             case "ru.poopycoders.improvedbackpacks.init.ModGui": return transformModGui(bytes);
             case "ru.poopycoders.improvedbackpacks.inventory.containers.ContainerBackpack": return transformContainerBackpack(bytes);
             case "ru.poopycoders.improvedbackpacks.listeners.EventListener": return transformEventListener(bytes);
-            case "ru.poopycoders.improvedbackpacks.network.client.CMessageOpenBackpack$Handler$1": return transformCMessageOpenBackpack$Handler$1(bytes);
+            case "ru.poopycoders.improvedbackpacks.network.client.CMessageOpenBackpack$Handler": return transformCMessageOpenBackpack$Handler(bytes);
             default: return bytes;
         }
     }
@@ -130,7 +130,7 @@ public final class ImprovedBackpacksTransformer extends BaseTransformer {
         return write(cls);
     }
 
-    private static byte[] transformCMessageOpenBackpack$Handler$1(byte[] bytes) {
+    private static byte[] transformCMessageOpenBackpack$Handler(byte[] bytes) {
         ClassNode cls = read(bytes);
         for (MethodNode method : cls.methods) {
             if (method.name.equals("run")) {
