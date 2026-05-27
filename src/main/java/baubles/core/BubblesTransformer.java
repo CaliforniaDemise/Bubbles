@@ -17,6 +17,7 @@ public class BubblesTransformer implements IClassTransformer {
         BetterAnimalsPlusTransformer.transform(_name, name, bytes);
         CosmeticArmorsTransformer.transform(_name, name, bytes);
         ImprovedBackpacksTransformer.transform(_name, name, bytes);
+        NaturalPledgeTransformer.transform(_name, name, bytes);
         PlethoraTransformer.transform(_name, name, bytes);
         ThaumicAdditionsTransformer.transform(_name, name, bytes);
         ThaumicAugmentationTransformer.transform(_name, name, bytes);
