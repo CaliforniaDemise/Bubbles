@@ -7,7 +7,7 @@ group = project.group
 version = project.mod_version
 
 base {
-    archivesName = project.archive_name
+    archivesName = '!' + project.archive_name
 }
 
 java {
