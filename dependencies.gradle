@@ -157,6 +157,11 @@ dependencies {
         runtimeOnly 'curse.maven:redstone-repository-300750:3483422'
     }
 
+    if (simply_backpacks.toBoolean()) {
+        forgelin = true
+        runtimeOnly 'curse.maven:simply-backpacks-311595:3028832'
+    }
+
     if (quality_tools.toBoolean()) {
         runtimeOnly 'curse.maven:potion-core-242872:2905184'
         runtimeOnly 'curse.maven:quality-tools-264756:2732994'
