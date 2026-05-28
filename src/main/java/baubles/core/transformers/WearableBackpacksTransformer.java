@@ -24,21 +24,7 @@ public final class WearableBackpacksTransformer extends BaseTransformer {
     private static byte[] transformBackpackHelper(byte[] bytes) {
         ClassNode cls = read(bytes);
         for (MethodNode method : cls.methods) {
-            if (method.name.equals("setBackpackBaubleSlotItemStack")) {
-                AbstractInsnNode node = method.instructions.getFirst();
-                InsnList list = new InsnList();
-                LabelNode l_con = new LabelNode();
-                list.add(new InsnNode(ICONST_1));
-                list.add(new JumpInsnNode(IFEQ, l_con));
-                list.add(new VarInsnNode(ALOAD, 0));
-                list.add(new VarInsnNode(ALOAD, 1));
-                list.add(new MethodInsnNode(INVOKESTATIC, HOOK, "BackpackHelper$setStack", "(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/item/ItemStack;)V", false));
-                list.add(new InsnNode(RETURN));
-                list.add(l_con);
-                list.add(new FrameNode(F_SAME, 0, null, 0, null));
-                method.instructions.insertBefore(node, list);
-            }
-            else if (method.name.equals("getBackpackBaubleSlotItemStack")) {
+            if (method.name.equals("getBackpackBaubleSlotItemStack")) {
                 Iterator<AbstractInsnNode> iterator = method.instructions.iterator();
                 while (iterator.hasNext()) {
                     AbstractInsnNode node = iterator.next();
@@ -51,6 +37,20 @@ public final class WearableBackpacksTransformer extends BaseTransformer {
                         break;
                     }
                 }
+            }
+            else if (method.name.equals("setBackpackBaubleSlotItemStack")) {
+                AbstractInsnNode node = method.instructions.getFirst();
+                InsnList list = new InsnList();
+                LabelNode l_con = new LabelNode();
+                list.add(new InsnNode(ICONST_1));
+                list.add(new JumpInsnNode(IFEQ, l_con));
+                list.add(new VarInsnNode(ALOAD, 0));
+                list.add(new VarInsnNode(ALOAD, 1));
+                list.add(new MethodInsnNode(INVOKESTATIC, HOOK, "BackpackHelper$setStack", "(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/item/ItemStack;)V", false));
+                list.add(new InsnNode(RETURN));
+                list.add(l_con);
+                list.add(new FrameNode(F_SAME, 0, null, 0, null));
+                method.instructions.insertBefore(node, list);
                 break;
             }
         }
