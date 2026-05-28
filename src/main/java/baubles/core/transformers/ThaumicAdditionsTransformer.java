@@ -6,7 +6,7 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import org.objectweb.asm.tree.*;
 import org.zeith.thaumicadditions.items.baubles.ItemBeltMeteor;
 import org.zeith.thaumicadditions.items.baubles.ItemBeltStriding;
-import org.zeith.thaumicadditions.items.baubles.ItemBeltTraveler;
+import org.zeith.thaumicadditions.items.baubles.ItemBeltTraveller;
 
 import java.util.Iterator;
 
@@ -67,7 +67,7 @@ public final class ThaumicAdditionsTransformer extends BaseTransformer {
     public static final class Hooks {
 
         public static int LivingEventsTAR$getSlot(int slotIndex, EntityPlayer player) {
-            return CoreUtility.getSlot(player, stack -> stack.getItem() instanceof ItemBeltTraveler || stack.getItem() instanceof ItemBeltMeteor || stack.getItem() instanceof ItemBeltStriding);
+            return CoreUtility.getSlot(player, stack -> stack.getItem() instanceof ItemBeltTraveller || stack.getItem() instanceof ItemBeltMeteor || stack.getItem() instanceof ItemBeltStriding);
         }
 
         public static int[] ItemBeltStriding$getAllSlots(int[] validSlots, LivingEvent event) {
