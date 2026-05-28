@@ -40,11 +40,11 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.util.Objects;
 
-@Mod(modid = Baubles.MODID, name = "Baubles", version = Tags.MOD_VERSION, guiFactory = "baubles.client.gui.BaublesGuiFactory", dependencies = "after:minieffects@[2.3.2,)")
+@Mod(modid = Baubles.MODID, name = Tags.MOD_NAME, version = Tags.VERSION, guiFactory = "baubles.client.gui.BaublesGuiFactory", dependencies = "after:minieffects@[2.3.2,)")
 @SuppressWarnings("unused") // mods instance class
 public class Baubles {
 
-    public static final String MODID = "baubles";
+    public static final String MODID = Tags.MOD_ID;
     public static final Logger log = LogManager.getLogger(MODID.toUpperCase());
     public static final int GUI = 0;
     @SidedProxy(clientSide = "baubles.client.ClientProxy", serverSide = "baubles.common.CommonProxy")

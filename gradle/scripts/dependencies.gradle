@@ -1,0 +1,217 @@
+apply from: 'gradle/scripts/helpers.gradle'
+
+repositories {
+    // Other repositories described by default:
+    // CleanroomMC: https://maven.cleanroommc.com
+    exclusiveContent {
+        forRepository {
+            maven {
+                name 'CurseMaven'
+                url 'https://cursemaven.com'
+            }
+        }
+        filter {
+            includeGroup 'curse.maven'
+        }
+    }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name 'Modrinth'
+                url 'https://api.modrinth.com/maven'
+            }
+        }
+        filter {
+            includeGroup 'maven.modrinth'
+        }
+    }
+    mavenLocal() // Must be last for caching to work
+}
+
+final Properties props = new Properties().tap {  it.load(file('mods.properties').newInputStream()); it }
+
+var autoreglib = false
+var botania = props.botania.toBoolean()
+var cofh_core = false
+var config_anytime = false
+var electroblobs_wizardry = props.electroblobs_wizardry.toBoolean()
+var forgelin = false
+var hammerlib = false
+var jei = props.just_enough_items.toBoolean()
+var librarianlib = false
+var mixins = false
+var redstone_flux = false
+var thaumcraft = props.thaumcraft.toBoolean()
+
+dependencies {
+    runtimeOnly 'com.cleanroommc:strip-latest-forge-requirements:1.0'
+    runtimeOnly 'com.cleanroommc:osxnarratorblocker:1.0'
+
+    if (props.actually_additions.toBoolean()) {
+        runtimeOnly 'curse.maven:actuallyadditions-228404:3117927'
+    }
+
+    compileOnly rfg.deobf('curse.maven:armored-arms-1331377:7868281')
+    if (props.armored_arms.toBoolean()) {
+        runtimeOnly 'curse.maven:armored-arms-1331377:7868281'
+    }
+
+    compileOnly rfg.deobf('curse.maven:better-animals-plus-303557:2933382')
+    if (props.better_animals_plus.toBoolean()) {
+        runtimeOnly 'curse.maven:better-animals-plus-303557:2933382'
+    }
+
+    compileOnly rfg.deobf('curse.maven:the-one-probe-245211:2667280')
+    if (props.the_one_probe.toBoolean()) {
+        runtimeOnly 'curse.maven:the-one-probe-245211:2667280'
+    }
+
+    compileOnly rfg.deobf('curse.maven:rlartifacts-819886:4475428')
+    if (props.artifacts_mod.toInteger() != 0) {
+        if (props.artifacts_mod.toInteger() == 1) runtimeOnly 'curse.maven:artifacts-312353:4871204'
+        else runtimeOnly 'curse.maven:rlartifacts-819886:4475428'
+    }
+
+    compileOnly rfg.deobf('curse.maven:cosmeticarmor-237307:2937869')
+    if (props.cosmetic_armor.toBoolean()) runtimeOnly 'curse.maven:cosmeticarmor-237307:2937869'
+
+    compileOnly ('com.cleanroommc:groovyscript:1.4.3') { transitive = false }
+    if (props.groovyscript.toBoolean()) {
+        mixins = true
+        runtimeOnly ('com.cleanroommc:groovyscript:1.4.3') { transitive = false }
+    }
+
+    compileOnly rfg.deobf('curse.maven:improved-backpacks-270457:2918455')
+    if (props.improved_backpacks.toBoolean()) {
+        runtimeOnly 'curse.maven:improved-backpacks-270457:2918455'
+    }
+
+    compileOnly rfg.deobf('curse.maven:minieffects-1081085:6143104')
+    if (props.mini_effects.toBoolean()) {
+        mixins = true
+        runtimeOnly 'curse.maven:minieffects-1081085:6143104'
+    }
+
+    if (props.mouse_tweaks.toInteger() != 0) {
+        if (props.mouse_tweaks.toInteger() == 1) runtimeOnly "curse.maven:mouse-tweaks-60089:3359843"
+        else runtimeOnly "curse.maven:mouse-tweaks-unofficial-461660:4661407"
+    }
+
+    compileOnly rfg.deobf('curse.maven:natural-pledge-247704:2740703')
+    if (props.natural_pledge.toBoolean()) {
+        botania = true
+        forgelin = true
+        librarianlib = true
+        runtimeOnly 'curse.maven:natural-pledge-247704:2740703'
+    }
+
+    if (props.nuclearcraft.toInteger() != 0) {
+        if (props.nuclearcraft.toInteger() == 2) runtimeOnly 'curse.maven:nuclearcraft-336895:8133438'
+        else runtimeOnly 'curse.maven:nuclearcraft-226254:8087650'
+    }
+
+    if (props.plethora.toBoolean()) {
+        runtimeOnly 'curse.maven:cc-tweaked-282001:2992872'
+        runtimeOnly 'curse.maven:plethora-248425:2858569'
+    }
+
+    if (props.quality_tools.toBoolean()) {
+        runtimeOnly 'curse.maven:potion-core-242872:2905184'
+        runtimeOnly 'curse.maven:quality-tools-264756:2732994'
+    }
+
+    compileOnly rfg.deobf('curse.maven:spartan-weaponry-278141:5564836')
+    if (props.spartan_weaponry.toBoolean()) {
+        mixins = true
+        runtimeOnly 'curse.maven:spartan-weaponry-278141:5564836'
+    }
+
+    compileOnly rfg.deobf('curse.maven:thaumic-additions-232564:5394706')
+    if (props.thaumic_additions.toBoolean()) {
+        hammerlib = true
+        thaumcraft = true
+        runtimeOnly 'curse.maven:thaumic-additions-232564:5394706'
+    }
+
+    compileOnly rfg.deobf('curse.maven:thaumic-augmentation-319441:6047659')
+    if (props.thaumic_augmentation.toBoolean()) {
+        thaumcraft = true
+        runtimeOnly 'curse.maven:thaumic-augmentation-319441:6047659'
+    }
+
+    compileOnly rfg.deobf('curse.maven:universaltweaks-705000:5529764')
+    if (props.universal_tweaks.toBoolean()) {
+        mixins = true
+        config_anytime = true
+        runtimeOnly 'curse.maven:universaltweaks-705000:5529764'
+    }
+
+    compileOnly rfg.deobf('curse.maven:wings-302584:2829351')
+    if (props.wings.toBoolean()) {
+        runtimeOnly 'curse.maven:llibrary-243298:3116493'
+        runtimeOnly 'curse.maven:wings-302584:2829351'
+    }
+
+    if (props.trinkets_and_baubles.toBoolean()) {
+        runtimeOnly 'curse.maven:trinkets-and-baubles-279900:5717039'
+    }
+
+    if (props.reliquary.toBoolean()) {
+        runtimeOnly 'curse.maven:reliquary-241319:2761319'
+    }
+
+    if (props.wizardry.toBoolean()) {
+        forgelin = true
+        librarianlib = true
+        runtimeOnly 'curse.maven:wizardry-278155:5160012'
+    }
+
+    compileOnly rfg.deobf('curse.maven:botania-225643:3330934')
+    if (botania) {
+        autoreglib = true
+        runtimeOnly 'curse.maven:botania-225643:3330934'
+    }
+
+    if (config_anytime) {
+        runtimeOnly 'com.cleanroommc:configanytime:3.0'
+    }
+
+    compileOnly rfg.deobf('curse.maven:ebwizardry-265642:5354477')
+    if (electroblobs_wizardry) {
+        runtimeOnly 'curse.maven:ebwizardry-265642:5354477'
+    }
+
+    if (hammerlib) {
+        runtimeOnly 'curse.maven:hammerlib-247401:6348753'
+    }
+
+    compileOnly 'mezz:jei:4.31.2'
+    if (jei) {
+        runtimeOnly 'mezz:jei:4.31.2'
+    }
+
+    compileOnly rfg.deobf('curse.maven:librarianlib-252910:3041340')
+    if (librarianlib) {
+        forgelin = true
+        runtimeOnly 'curse.maven:librarianlib-252910:3041340'
+    }
+
+    if (forgelin) {
+        runtimeOnly 'curse.maven:forgelin-248453:2727070'
+    }
+
+    compileOnly rfg.deobf('curse.maven:thaumcraft-223628:2629023')
+    if (thaumcraft) {
+        runtimeOnly 'curse.maven:thaumcraft-223628:2629023'
+    }
+
+    if (autoreglib) {
+        runtimeOnly 'curse.maven:autoreglib-250363:2746011'
+    }
+
+    compileOnly rfg.deobf('curse.maven:cofh-core-69162:2920433')
+    if (cofh_core) {
+        redstone_flux = true
+        runtimeOnly 'curse.maven:cofh-core-69162:2920433'
+    }
+}

@@ -9,5 +9,14 @@ pluginManagement {
                 includeGroup 'com.gtnewhorizons.retrofuturagradle'
             }
         }
+        gradlePluginPortal()
+        mavenCentral()
+        mavenLocal()
     }
 }
+
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
+rootProject.name = rootProject.projectDir.getName()
