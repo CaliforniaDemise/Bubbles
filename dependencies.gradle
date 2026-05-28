@@ -33,6 +33,7 @@ var thaumcraft = thaumcraft.toBoolean() // Thaumic Additions, MIA, Thaumic Augme
 var tconstruct = false
 
 dependencies {
+    runtimeOnly 'com.cleanroommc:strip-latest-forge-requirements:1.0'
 
     if (actually_additions.toBoolean()) {
         runtimeOnly 'curse.maven:actuallyadditions-228404:3117927'
@@ -222,7 +223,10 @@ dependencies {
     }
 
     compileOnly rfg.deobf('curse.maven:wings-302584:2829351')
-    if (wings.toBoolean()) runtimeOnly 'curse.maven:wings-302584:2829351'
+    if (wings.toBoolean()) {
+        runtimeOnly 'curse.maven:llibrary-243298:3116493'
+        runtimeOnly 'curse.maven:wings-302584:2829351'
+    }
 
     if (trinkets_and_baubles.toBoolean()) {
         runtimeOnly 'curse.maven:trinkets-and-baubles-279900:5717039'
@@ -282,15 +286,6 @@ dependencies {
         runtimeOnly 'curse.maven:forgelin-248453:2727070'
     }
 
-    if (mixins) {
-        annotationProcessor 'org.ow2.asm:asm-debug-all:5.2'
-        annotationProcessor 'com.google.guava:guava:24.1.1-jre'
-        annotationProcessor 'com.google.code.gson:gson:2.8.6'
-        String mixinBooter = modUtils.enableMixins('zone.rong:mixinbooter:9.1')
-        api (mixinBooter) { transitive = false }
-        annotationProcessor (mixinBooter) { transitive = false }
-    }
-
     compileOnly rfg.deobf('curse.maven:thaumcraft-223628:2629023')
     if (thaumcraft) {
         runtimeOnly 'curse.maven:thaumcraft-223628:2629023'
@@ -323,4 +318,12 @@ dependencies {
         runtimeOnly 'curse.maven:mantle-74924:2713386'
         runtimeOnly 'curse.maven:tconstruct-74072:2902483'
     }
+
+    annotationProcessor 'org.ow2.asm:asm-debug-all:5.2'
+    annotationProcessor 'com.google.guava:guava:24.1.1-jre'
+    annotationProcessor 'com.google.code.gson:gson:2.8.6'
+    String mixinBooter = modUtils.enableMixins('zone.rong:mixinbooter:9.1')
+    api (mixinBooter) { transitive = false }
+    annotationProcessor (mixinBooter) { transitive = false }
+    runtimeOnly (mixinBooter) { transitive = false }
 }

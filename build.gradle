@@ -19,7 +19,7 @@ java {
 minecraft {
     mcVersion = "1.12.2"
     extraRunJvmArguments.add("-Dfml.coreMods.load=$project.plugin_class")
-    extraRunJvmArguments.addAll("-Xms128m", "-Xmx2048m")
+    extraRunJvmArguments.addAll("-Xms$game_memory", "-Xmx$game_memory")
     injectedTags.put("MOD_VERSION", project.version)
     useDependencyAccessTransformers = true
 }
