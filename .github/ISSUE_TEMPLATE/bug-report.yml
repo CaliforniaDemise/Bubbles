@@ -1,0 +1,87 @@
+name: Bug Report
+description: Create a report for a bug or an issue
+labels: [bug]
+body:
+  - type: dropdown
+    id: mod-loader
+    attributes:
+      label: Mod Loader
+      description: Which mod loader do you use?
+      options:
+        - Cleanroom
+        - Forge
+    validations:
+      required: true
+  - type: input
+    id: mod-loader-version
+    attributes:
+      label: Mod Loader Version
+      description: Write the mod loader version here
+      placeholder: ex. Forge 14.23.5.2864, Cleanroom 0.5.12-alpha
+    validations:
+      required: true
+  - type: input
+    id: modpack
+    attributes:
+      label: Modpack
+      description: A link to the modpack, if it occurred in one.
+    validations:
+      required: false
+  - type: input
+    id: log
+    attributes:
+      label: Log
+      description: A link to the full game log. Use [mclo.gs](https://mclo.gs/) or [Gist](https://gist.github.com/)
+    validations:
+      required: true
+  - type: input
+    id: crash-report
+    attributes:
+      label: Crash Report (If exists)
+      description: A link to the crash report. Use [mclo.gs](https://mclo.gs/) or [Gist](https://gist.github.com/)
+    validations:
+      required: false
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What Happened
+      description: What happened in game
+    validations:
+      required: false
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What was supposed to happen
+    validations:
+      required: false
+  - type: textarea
+    id: reproducing-steps
+    attributes:
+      label: Steps to Reproduce
+      description: A detailed list of how to encounter this bug. It can be brief it's easy to encounter.
+      placeholder: |
+        1. Step 1
+        2. Step 2
+        3. Step 3
+        ...
+    validations:
+      required: true
+  - type: textarea
+    id: additional-details
+    attributes:
+      label: Additional Details
+      description: Anything to add?
+    validations:
+      required: false
+  - type: checkboxes
+    id: checkbox
+    attributes:
+      label: Please read and confirm
+      options:
+        - label: This bug isn't reported already
+          required: true
+        - label: This bug occurs on the latest version of Bubbles
+          required: true
+        - label: This bug occurs without Cleanroom
+          required: false
